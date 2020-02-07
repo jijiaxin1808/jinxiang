@@ -1,8 +1,132 @@
-html,
-body,
-:global(#root) {
-  height: 100%;
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+code,
+form,
+fieldset,
+legend,
+input,
+button,
+textarea,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
 }
-* {
-  background: black;
+body {
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  /* css common */
+}
+body body,
+body div,
+body dl,
+body dt,
+body dd,
+body ul,
+body ol,
+body li,
+body h1,
+body h2,
+body h3,
+body h4,
+body h5,
+body h6,
+body pre,
+body code,
+body form,
+body fieldset,
+body legend,
+body input,
+body button,
+body textarea,
+body p,
+body blockquote,
+body th,
+body td {
+  margin: 0;
+  padding: 0;
+}
+body body {
+  background: #fff;
+  color: #555;
+  font-size: 14px;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+body td,
+body th,
+body caption {
+  font-size: 14px;
+}
+body h1,
+body h2,
+body h3,
+body h4,
+body h5,
+body h6 {
+  font-weight: normal;
+  font-size: 100%;
+}
+body address,
+body caption,
+body cite,
+body code,
+body dfn,
+body em,
+body strong,
+body th,
+body var {
+  font-style: normal;
+  font-weight: normal;
+}
+body a {
+  color: #555;
+  text-decoration: none;
+}
+body a:hover {
+  text-decoration: underline;
+}
+body img {
+  border: none;
+}
+body ol,
+body ul,
+body li {
+  list-style: none;
+}
+body input,
+body textarea,
+body select,
+body button {
+  font: 14px Verdana, Helvetica, Arial, sans-serif;
+}
+body table {
+  border-collapse: collapse;
+}
+body html {
+  overflow-y: scroll;
+}
+body .clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+body .clearfix {
+  *zoom: 1;
 }
