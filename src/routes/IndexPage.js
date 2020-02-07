@@ -1,10 +1,11 @@
 import React from 'react';
 import { connect } from 'dva';
 import styles from './IndexPage.css';
-
+import { Button } from  "antd";
 function IndexPage() {
   return (
     <div className={styles.normal}>
+      <Button>antd载入成功</Button>
       <h1 className={styles.title}>Yay! Welcome to dva!</h1>
       <div className={styles.welcome} />
       <ul className={styles.list}>
