@@ -1,4 +1,4 @@
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import { Layout, Menu, Icon } from 'antd';
 import React, { useState } from "react";
 import { connect } from "dva";
 import menuConfig from "../utils/menuConfig";
@@ -7,7 +7,7 @@ import "./index.less";
 import MainContent from "./mainContent";
 
 const { SubMenu } = Menu;
-const { Header, Content, Sider, Footer } = Layout;
+const { Header, Sider, Footer } = Layout;
 
 
 const MainMenu = ()=> {

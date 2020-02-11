@@ -12,8 +12,8 @@ const { Content } = Layout;
 const MainContent = ()=> {
 	return (
 		<Content className="content">
-			<Route path="/manage/" component={Test} />
-			<Route path="/manage/test" component={()=>(<div>test1</div>)} />
+			<Route path="/manage/test" component={Test} />
+			<Route path="/manage/test1" component={()=>(<div>test1</div>)} />
 		</Content>
 	);
 }
