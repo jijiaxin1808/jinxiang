@@ -43,7 +43,7 @@ const Login = (props)=> {
             )}
           </Form.Item>
           <Form.Item className = "flex-center" >
-            <Button type="primary" htmlType="submit" className="login-form-button margin-center">
+            <Button type="primary" htmlType="submit" className="login-form-button">
               登录
             </Button>
           </Form.Item>

@@ -23,7 +23,7 @@ const MainHeader = ()=> {
     return (
         <Header className = "header">
             <div className = "header-logo">
-                <img/>
+                <img alt = "logo"/>
                 <div>
                     <h2>近享公众平台</h2>
                     <p>近??, 享生活</p>
@@ -32,8 +32,6 @@ const MainHeader = ()=> {
             <div className = "header-user">
                 <Icon />
                 <Dropdown overlay={menu} placement="bottomLeft">
-                    {/* <h1>迷迷糊糊</h1>
-                    <p>近享官方团队成员</p> */}
                     <Button>迷迷糊糊</Button>
                 </Dropdown>
             </div>
