@@ -11,6 +11,7 @@ const { SubMenu } = Menu;
 const {  Sider, Footer } = Layout;
 
 const MainMenu = ()=> {
+  
   const [collapsed, setcollapsed ] =  useState(false)
 
     return (
@@ -21,8 +22,6 @@ const MainMenu = ()=> {
         onCollapse = {()=>{setcollapsed(!collapsed)}}
         style={{
           overflow: 'auto',
-          // height: '100vh',
-          // position: 'fixed',
           left: 0,
         }}
       >
