@@ -5,10 +5,10 @@ import menuConfig from "../utils/menuConfig";
 import { Link } from "dva/router";
 import "./index.less";
 import MainContent from "./mainContent";
+import Hedaer from "./header";
 
 const { SubMenu } = Menu;
-const { Header, Sider, Footer } = Layout;
-
+const {  Sider, Footer } = Layout;
 
 const MainMenu = ()=> {
   const [collapsed, setcollapsed ] =  useState(false)
@@ -53,17 +53,12 @@ const MainMenu = ()=> {
         </Menu>
       </Sider>
       <Layout >
-        <Header style={{ background: '#fff', padding: 0 }} >这里是header</Header>
+        <Hedaer />
           <MainContent/>
         <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
       </Layout>
     </Layout>
     )
-  
 }
-
-
-
-
 
 export default connect()(MainMenu);

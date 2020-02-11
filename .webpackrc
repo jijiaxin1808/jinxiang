@@ -2,5 +2,8 @@
     "extraBabelPlugins": [
         ["import", { "libraryName": "antd", "libraryDirectory": "es", "style": "css" }]
     ],
-    "disableCSSModules":true
+    "disableCSSModules":true,
+    "theme": {
+  "@mainColor": "#F59A23"
+    }
 }

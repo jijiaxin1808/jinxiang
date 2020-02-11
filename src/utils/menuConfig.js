@@ -1,7 +1,7 @@
 const menuConfig = [
     {
         title:"首页",
-        url: "/manage/index",
+        url: "/manage/home",
         icon:"home"
     },
     {
@@ -10,27 +10,27 @@ const menuConfig = [
         children: [
             {
                 title: "开屏页",
-                url:""
+                url:"/manage/openPage"
             },
             {
                 title: "热门搜索",
-                url:""
+                url:"/manage/hotSearch"
             },
             {
                 title: "轮播图",
-                url:""
+                url:"/manage/carousel"
             },
             {
                 title: "首页分类",
-                url:""
+                url:"/manage/indexSort"
             },
             {
                 title: "全部分类",
-                url:""
+                url:"/manage/allSort"
             },
             {
                 title: "推送",
-                url:""
+                url:"/manage/push"
             }
         ]
     },
@@ -40,26 +40,26 @@ const menuConfig = [
         children: [
             {
                 title: "学校账户",
-                url:""
+                url:"/manage/schoolA"
             },
             {
                 title: "题库",
-                url:""
+                url:"/manage/qustionBank"
             },
             {
                 title: "活动",
-                url:""
+                url:"/manage/activity"
             },
             {
                 title: "用户",
-                url:""
+                url:"/manage/users"
             }
         ]
     },
     {
         title:"美化",
         icon:"heart",
-        url:"/beautify"
+        url:"/manage/beautify"
     },
     {
         title:"数据可视",
@@ -67,21 +67,26 @@ const menuConfig = [
         children: [
             {
                 title: "用户分析",
-                url:""
+                url:"/manage/usersAnalysis"
             },
             {
                 title: "功能分析",
-                url:""
+                url:"/manage/functionAnalysis"
             },
             {
                 title: "订单分析",
-                url:""
+                url:"/manage/orderAnalysis"
             },
             {
                 title: "活动分析",
-                url:""
+                url:"/manage/activityAnalysis"
             }
         ]
+    },
+    {
+        title: "个人中心",
+        icon: "user",
+        url: "/manage/user"
     },
 
 
