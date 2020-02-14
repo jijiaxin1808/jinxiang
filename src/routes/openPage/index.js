@@ -3,6 +3,7 @@ import "./index.less";
 import { Icon, Button, Tabs, Card, Modal, Form, Input, Upload} from "antd";
 import * as API from "../../config/api";
 import Loading from "../../components/loading";
+import { BlockPicker   } from 'react-color';
 
 const { TabPane } = Tabs;
 
@@ -11,6 +12,7 @@ const OpenPageContent = (props)=> {
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);      
     const [loading, setLoading] = useState(true);
+    const [color, setColor] = useState("black")
 
     useEffect(()=>{
         const params = {
@@ -47,6 +49,7 @@ const OpenPageContent = (props)=> {
 
     const handleOk = ()=> {
         setConfirmLoading(true);
+        setColor("black")
         setTimeout(() => {
             setConfirmLoading(false);
             setVisible(false);
@@ -111,15 +114,16 @@ const OpenPageContent = (props)=> {
                         </Upload>
                     )}
                     </Form.Item>
-                    <Form.Item label="背景颜色" >
-                    {getFieldDecorator('upload', {
+                    <Form.Item label="选择颜色" >
+                    {getFieldDecorator('color', {
                         valuePropName: 'color',
                     })(
-                       <Input prefix ={ <Icon type="bg-colors" />} />
+                        <BlockPicker    onChange = {(values)=>{setColor(values.hex)}}  />
                     )}
                     </Form.Item>
                 </Form>
-                <div className = "openPage-preview"></div>
+                
+                <div className = "openPage-preview" style = {{backgroundColor:`${color}`}}></div>
                 </div>
             </Modal>
         </div>

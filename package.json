@@ -12,6 +12,7 @@
     "babel-plugin-import": "^1.13.0",
     "dva": "^2.4.1",
     "react": "^16.2.0",
+    "react-color": "^2.18.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^5.1.2"
   },

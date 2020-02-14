@@ -42,7 +42,8 @@ function Axios(url, data = null, method = "GET") {
         method,
         headers: {
             "Content-Type":"application/json",
-            "token":localStorage.getItem("token")
+            // "token":localStorage.getItem("token")
+            "token":"86f3705005b940a0a21f4d948eb0d04f"
         }
     })
 }
