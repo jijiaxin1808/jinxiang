@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Icon, Button, Tabs, Card, Modal, Form, Input, Upload} from "antd";
+import { Icon, Button, Tabs, Card, Modal, Form, message, Upload} from "antd";
 import * as API from "../../config/api";
 import Loading from "../../components/loading";
 import { BlockPicker   } from 'react-color';
@@ -45,6 +45,38 @@ const OpenPageContent = (props)=> {
     };  
 
     const { getFieldDecorator } = props.form;
+
+
+    const Props = {
+      name: 'image',
+      action: 'http://blog.csxjh.vip:8000/images/upload',
+      headers: {
+        token: "86f3705005b940a0a21f4d948eb0d04f",
+      },
+      onChange(info) {
+          console.log(info.file.response,"fileeeee")
+        }
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     const handleOk = ()=> {
@@ -95,23 +127,11 @@ const OpenPageContent = (props)=> {
                         valuePropName: 'fileList',
                         getValueFromEvent: normFile,
                     })(
-                        <Upload name="logo" action="/upload.do" listType="picture">
+                        <Upload {...Props}>
                         <Button>
-                            <Icon type="upload" />上传图片
+                          <Icon type="upload" />点击上传
                         </Button>
-                        </Upload>,
-                    )}
-                    </Form.Item>
-                    <Form.Item label="背景填充" >
-                    {getFieldDecorator('upload', {
-                        valuePropName: 'fileList',
-                        getValueFromEvent: normFile,
-                    })(
-                        <Upload name="logo" action="/upload.do" listType="picture">
-                        <Button>
-                            <Icon type="upload" />上传图片
-                        </Button>
-                        </Upload>
+                      </Upload>,
                     )}
                     </Form.Item>
                     <Form.Item label="选择颜色" >

@@ -21,3 +21,7 @@ export function deletetopSearch(params) {
     const url = "topSearchs/delete"
     return Axios(spliceUrl(url, params), {}, "DELETE");
 }
+export function updatetopSearch(data) {
+    const url = "topSearchs/updateShowed"
+    return Axios(url, data, "PUT");
+}

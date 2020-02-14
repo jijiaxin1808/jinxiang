@@ -31,17 +31,31 @@ const Add = (props)=> {
 		API.deletetopSearch({id})
 		.then(res=> {
 			if(res.data.code === 0) {
-				message.success("shanchu");
 				const newData = [...data].filter(item=> {
-					console.log(item,id);
 					return item.id!==id;
 				})
-				console.log(newData);
 				setData(newData);
 			}
 		})
 	}
-
+	const cancel = (id)=> {
+		const params = {
+			id: id,
+			showed: false
+		}
+		API.updatetopSearch(params)
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...data].map(item=> {
+					if(item.id === id) {
+						return {...item,showed:false}
+					}
+					return item
+				})
+				setData(newData);
+			}
+		})
+	}
 
     const handleOk =async ()=> {
 		setConfirmLoading(true);
@@ -90,7 +104,8 @@ const Add = (props)=> {
 			title: '操作',
 			dataIndex: 'showed',
 			key: "id",
-			render: (text, record) => text?<Button>下线</Button>:<Button onClick = {()=>{deleteSearch(record.id)}}>删除</Button>,
+			render: (text, record) => text?<Button onClick = {()=> {cancel(record.id)}}>下线</Button>:
+			<Button onClick = {()=>{deleteSearch(record.id)}}>删除</Button>,
 		},
 	  ];
 
