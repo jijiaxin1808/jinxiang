@@ -20,7 +20,7 @@ const MainContent = ()=> {
 			<Route path="/manage/test" component={Test} />
 			<Route path="/manage/home" component={Home} />
 			<Route path="/manage/openPage" component={OpenPage} />
-			<Route path="/manage/hotSearch" component={HotSearch} />
+			<Route path="/manage/trending" component={HotSearch} />
 		</Content>
 	);
 }
