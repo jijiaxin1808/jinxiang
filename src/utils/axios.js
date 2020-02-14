@@ -19,18 +19,20 @@ axios.interceptors.response.use(data=> {
     //   return Promise.reject();
     }
     return data;
-  }, err=> {
-    if (err.response.status === 504||err.response.status === 404) {
-        openNotification('服务器出错了')
-    } 
-    else if (err.response.status === 403) {
-        openNotification('权限不足,请联系管理员!')
-    }
-    else {
-        openNotification('未知错误!')
-    }
-    return Promise.reject(err);
-  })
+  }
+//   , err=> {
+//     if (err.response.status === 504||err.response.status === 404) {
+//         openNotification('服务器出错了')
+//     } 
+//     else if (err.response.status === 403) {
+//         openNotification('权限不足,请联系管理员!')
+//     }
+//     else {
+//         openNotification('未知错误!')
+//     }
+//     return Promise.reject(err);
+//   }
+  )
 
 function Axios(url, data = null, method = "GET") {
     const data1 = JSON.stringify(data);
@@ -39,7 +41,8 @@ function Axios(url, data = null, method = "GET") {
         data: data1,
         method,
         headers: {
-            "Content-Type":"application/json"
+            "Content-Type":"application/json",
+            "token":localStorage.getItem("token")
         }
     })
 }

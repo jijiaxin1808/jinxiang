@@ -1,17 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.less";
 import { Icon, Button, Tabs, Card, Modal, Form, Input, Upload} from "antd";
+import * as API from "../../config/api";
+import Loading from "../../components/loading";
 
 const { TabPane } = Tabs;
 
-
-
 const OpenPageContent = (props)=> {
-    let [data, setData] = useState();
-    setData([1]);
-    let [visible, setVisible] = useState(false);
-    let [confirmLoading, setConfirmLoading] = useState(false);      
-    
+    const [data, setData] = useState([1]);
+    const [visible, setVisible] = useState(false);
+    const [confirmLoading, setConfirmLoading] = useState(false);      
+    const [loading, setLoading] = useState(true);
+
+    useEffect(()=>{
+        const params = {
+            page:1,
+            size:10  
+        }
+        API.getAllbootPages(params)
+        .then(async res=> {
+            if(res.data.code === 0) {
+                await setData(res.data.data);
+                setLoading(false);
+            }
+        })
+    },[])
+
     const handleSubmit = e => {
         e.preventDefault();
         props.form.validateFields((err, values) => {
@@ -43,7 +57,7 @@ const OpenPageContent = (props)=> {
     }
     const Content = 
         <div>
-            {
+            {/* {
                 data.map((item)=> {
                     return (
                         <div>
@@ -51,9 +65,8 @@ const OpenPageContent = (props)=> {
                         </div>
                     )
                 })
-            }
+            } */}
         </div>
-
     const emptyConent = 
         <div>
             <Card onClick={()=> {setVisible(true)}} hoverable style={{ width: 175, height: 325 }} className = "flex-center">
@@ -111,19 +124,16 @@ const OpenPageContent = (props)=> {
             </Modal>
         </div>
 
-    if(!data.length) {
-        return (
-            <>
-                {emptyConent}
-            </>
-        )
+    if(loading) {
+        return <Loading />
     }
+    else {
+        if(data&&data.length) {
+            return (<>{Content}</>) 
+        }
+        else  return (<>{emptyConent}</>) 
 
-    return (
-        <>
-            {Content}
-        </>
-    )
+    }
 }
 const WarpedInput = Form.create({ name: 'openPageInput' })(OpenPageContent);
 

@@ -25,8 +25,7 @@ const MainHeader = ()=> {
                 </div>
             </div>
             <div className = "header-user">
-                <Icon />
-                <Dropdown overlay={menu} placement = "bottomCenter">
+                <Dropdown overlay={menu} placement = "bottomCenter" className = "">
                     <Badge count={5}>
                         <Avatar shape="square" size="large" icon="user" />  
                     </Badge>
