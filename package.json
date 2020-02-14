@@ -11,6 +11,7 @@
     "axios": "^0.19.2",
     "babel-plugin-import": "^1.13.0",
     "dva": "^2.4.1",
+    "now": "^17.0.3",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^5.1.2"

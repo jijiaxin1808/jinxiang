@@ -114,6 +114,7 @@ const OpenPageContent = (props)=> {
         return (
             <>
                 {emptyConent}
+                <Button onClick = {()=>{setData([1])}}>闭嘴</Button>
             </>
         )
     }
@@ -121,6 +122,7 @@ const OpenPageContent = (props)=> {
     return (
         <>
             {Content}
+            <Button onClick = {()=>{setData([])}}>闭嘴</Button>
         </>
     )
 }

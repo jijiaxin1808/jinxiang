@@ -7549,6 +7549,11 @@ normalize-url@^1.4.0:
     query-string "^4.1.0"
     sort-keys "^1.0.0"
 
+now@^17.0.3:
+  version "17.0.3"
+  resolved "https://registry.npm.taobao.org/now/download/now-17.0.3.tgz#74f2ed05cc1814b475f1c51c0f2e5adbb745d7d7"
+  integrity sha1-dPLtBcwYFLR18cUcDy5a27dF19c=
+
 npm-package-arg@^6.1.0:
   version "6.1.1"
   resolved "https://registry.npm.taobao.org/npm-package-arg/download/npm-package-arg-6.1.1.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnpm-package-arg%2Fdownload%2Fnpm-package-arg-6.1.1.tgz#02168cb0a49a2b75bf988a28698de7b529df5cb7"
