@@ -20,10 +20,10 @@ axios.interceptors.response.use(data=> {
     }
     return data;
   }, err=> {
-    if (err.response.status == 504||err.response.status == 404) {
+    if (err.response.status === 504||err.response.status === 404) {
         openNotification('服务器出错了')
     } 
-    else if (err.response.status == 403) {
+    else if (err.response.status === 403) {
         openNotification('权限不足,请联系管理员!')
     }
     else {

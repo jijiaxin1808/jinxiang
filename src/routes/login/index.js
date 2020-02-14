@@ -17,9 +17,9 @@ const Login = (props)=> {
 			await API.loginByPwd(data)
 			.then( async res=> {
 				if(res.data.code === 0) {
+					localStorage.setItem("token",res.data.data.token)
 					await message.success("登录成功");
 					props.history.push("/manage");
-					// message.success("登录成功");
 				}
 			})
 			setLoading(false);

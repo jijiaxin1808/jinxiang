@@ -6,7 +6,6 @@ import OpenPage from "../openPage";
 import HotSearch from "../hotSearch";
 import "./index.less"
 
-
 const Test = ()=> {
     return (
         <div>TEST</div>

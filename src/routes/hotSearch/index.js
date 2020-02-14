@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Divider, Tabs, Button, Tag, Table} from "antd";
-import axios from "axios";
+import { Divider, Tabs, Button, Table} from "antd";
 
 
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./index.less";
 import { Icon, Button, Tabs, Card, Modal, Form, Input, Upload} from "antd";
 
@@ -7,7 +7,8 @@ const { TabPane } = Tabs;
 
 
 const OpenPageContent = (props)=> {
-    let [data, setData] = useState([1]);
+    let [data, setData] = useState();
+    setData([1]);
     let [visible, setVisible] = useState(false);
     let [confirmLoading, setConfirmLoading] = useState(false);      
     

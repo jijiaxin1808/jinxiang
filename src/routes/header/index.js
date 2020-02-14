@@ -1,13 +1,12 @@
 import React from "react";
 import { Layout, Icon } from "antd";
 import "./index.less";
-import { Menu, Dropdown, Button, Badge, Avatar } from 'antd';
-import { Link } from "dva/router";
+import { Menu, Dropdown,Badge, Avatar } from 'antd';
 
 const menu = (
     <Menu>
       <Menu.Item>
-        <div onClick = {()=>{localStorage.clear(); window.location.href = "/login"}}>推出登录</div>
+        <div onClick = {()=>{localStorage.clear(); window.location.href = "/#/login"}}>退出登录</div>
       </Menu.Item>
     </Menu>
 );
@@ -28,7 +27,6 @@ const MainHeader = ()=> {
             <div className = "header-user">
                 <Icon />
                 <Dropdown overlay={menu} placement = "bottomCenter">
-                    {/* <Button>迷迷糊糊</Button> */}
                     <Badge count={5}>
                         <Avatar shape="square" size="large" icon="user" />  
                     </Badge>
