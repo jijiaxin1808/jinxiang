@@ -25,3 +25,8 @@ export function updatetopSearch(data) {
     const url = "topSearchs/updateShowed"
     return Axios(url, data, "PUT");
 }
+export function createopenPage(data) {
+    const url = "bootPages/create";
+    return Axios(url, data, "POST");
+}
+

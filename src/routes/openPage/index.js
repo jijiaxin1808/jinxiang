@@ -8,11 +8,14 @@ import { BlockPicker   } from 'react-color';
 const { TabPane } = Tabs;
 
 const OpenPageContent = (props)=> {
-    const [data, setData] = useState([1]);
+    const [data, setData] = useState([]);
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);      
     const [loading, setLoading] = useState(true);
     const [color, setColor] = useState("black")
+    const [imgUrl1, setImgUrl1] = useState();
+    const [imgUrl2, setImgUrl2] = useState();
+
 
     useEffect(()=>{
         const params = {
@@ -46,7 +49,6 @@ const OpenPageContent = (props)=> {
 
     const { getFieldDecorator } = props.form;
 
-
     const Props = {
       name: 'image',
       action: 'http://blog.csxjh.vip:8000/images/upload',
@@ -54,57 +56,119 @@ const OpenPageContent = (props)=> {
         token: "86f3705005b940a0a21f4d948eb0d04f",
       },
       onChange(info) {
-          console.log(info.file.response,"fileeeee")
+          if(info.file.status === "done" && info.file.response.code === 0) {
+              setImgUrl1(info.file.response.data);
+          }
         }
     };
+    const Props2 = {
+        name: 'image',
+        action: 'http://blog.csxjh.vip:8000/images/upload',
+        headers: {
+          token: "86f3705005b940a0a21f4d948eb0d04f",
+        },
+        onChange(info) {
+            if(info.file.status === "done" && info.file.response.code === 0) {
+                setImgUrl2(info.file.response.data);
+            }
+          }
+      };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    const handleOk = ()=> {
+    const handleOk =async()=> {
         setConfirmLoading(true);
+        const openPageData = {
+            upperImage: imgUrl1,
+            bgColor: color,
+            bgImage: imgUrl2
+        }
+        // console.log(openPageData,"openPageData")
+        await API.createopenPage(openPageData)
+        .then(res=> {
+            if(res.data.code === 0) {
+                const newData = [...data];
+                newData.unshift(openPageData);
+                setData(newData);
+            }
+        })
         setColor("black")
-        setTimeout(() => {
             setConfirmLoading(false);
             setVisible(false);
-        }, 2000);
     }
     const handleCancel = ()=> {
         setVisible(false);
     }
+
     const Content = 
-        <div>
-            {/* {
-                data.map((item)=> {
+        <div className = "openPage-pages">
+            {
+                data.map(item=> {
                     return (
-                        <div>
-                            
+                        <div key = {item.id} style = {{marginLeft: 20}}>
+                            <div style = {{background:`url(${item.upperImage}),url(${item.bgImage}),${item.bgColor}`}} className = "openPage-page"></div>
+                            {item.showed?<Button disabled = {true}>使用中</Button>:<Button>上线</Button>}
                         </div>
                     )
                 })
-            } */}
+            }
+            <Card onClick={()=> {setVisible(true)}} hoverable style={{ width: 180, height: 335, marginLeft: 20 }} className = "flex-center">
+                <div>
+                <p>继续添加图片</p>
+                <Button className = "margin-center"><Icon type = "plus"/>添加图片</Button>
+                </div>
+            </Card>
+            <Modal
+            title="新增开屏页"
+            visible={visible}
+            confirmLoading={confirmLoading}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            className = "openPage-modal"
+            okText = "确认"
+            cancelText = "取消"
+            >
+                <div style = {{display: "flex"}}>
+                <Form onSubmit={handleSubmit} className="openPage-form">
+                    <Form.Item label="悬浮图片" >
+                    {getFieldDecorator('img1', {
+                        valuePropName: 'fileList',
+                        getValueFromEvent: normFile,
+                    })(
+                        <Upload {...Props}>
+                        <Button>
+                          <Icon type="upload" />点击上传
+                        </Button>
+                      </Upload>,
+                    )}
+                    </Form.Item>
+                    <Form.Item label="背景填充" >
+                    {getFieldDecorator('img2', {
+                        valuePropName: 'fileList',
+                        getValueFromEvent: normFile,
+                    })(
+                        <Upload {...Props2}>
+                        <Button>
+                          <Icon type="upload" />点击上传
+                        </Button>
+                      </Upload>,
+                    )}
+                    </Form.Item>
+                    <Form.Item label="选择颜色" >
+                    {getFieldDecorator('color', {
+                        valuePropName: 'color',
+                    })(
+                        <BlockPicker    onChange = {(values)=>{setColor(values.hex)}}  />
+                    )}
+                    </Form.Item>
+                </Form>
+                
+                <div className = "openPage-preview" style = {{backgroundColor:`${color}`}}></div>
+                </div>
+            </Modal>
         </div>
+
     const emptyConent = 
         <div>
-            <Card onClick={()=> {setVisible(true)}} hoverable style={{ width: 175, height: 325 }} className = "flex-center">
+            <Card onClick={()=> {setVisible(true)}} hoverable style={{ width: 180, height: 335 }} className = "flex-center">
                 <div>
                     <p>您尚未添加任何图片</p>
                     <Button className = "margin-center"><Icon type = "plus"/>添加图片</Button>
@@ -123,11 +187,23 @@ const OpenPageContent = (props)=> {
                 <div style = {{display: "flex"}}>
                 <Form onSubmit={handleSubmit} className="openPage-form">
                     <Form.Item label="悬浮图片" >
-                    {getFieldDecorator('upload', {
+                    {getFieldDecorator('img1', {
                         valuePropName: 'fileList',
                         getValueFromEvent: normFile,
                     })(
                         <Upload {...Props}>
+                        <Button>
+                          <Icon type="upload" />点击上传
+                        </Button>
+                      </Upload>,
+                    )}
+                    </Form.Item>
+                    <Form.Item label="背景填充" >
+                    {getFieldDecorator('img2', {
+                        valuePropName: 'fileList',
+                        getValueFromEvent: normFile,
+                    })(
+                        <Upload {...Props2}>
                         <Button>
                           <Icon type="upload" />点击上传
                         </Button>
