@@ -29,4 +29,8 @@ export function createopenPage(data) {
     const url = "bootPages/create";
     return Axios(url, data, "POST");
 }
+export function deleteopenPage(params) {
+    const url = "bootPages/delete"
+    return Axios(spliceUrl(url, params), {}, "DELETE");
+}
 

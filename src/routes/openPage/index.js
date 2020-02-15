@@ -81,7 +81,6 @@ const OpenPageContent = (props)=> {
             bgColor: color,
             bgImage: imgUrl2
         }
-        // console.log(openPageData,"openPageData")
         await API.createopenPage(openPageData)
         .then(res=> {
             if(res.data.code === 0) {
@@ -97,7 +96,17 @@ const OpenPageContent = (props)=> {
     const handleCancel = ()=> {
         setVisible(false);
     }
-
+    const handleDelete = (id)=> {
+        API.deleteopenPage({id})
+        .then(res=> {
+            if(res.data.code === 0) {
+                const newData = [...data].filter(item=>{
+                    return item.id!==id
+                });
+                setData(newData);
+            }
+        })
+    }
     const Content = 
         <div className = "openPage-pages">
             {
@@ -106,6 +115,7 @@ const OpenPageContent = (props)=> {
                         <div key = {item.id} style = {{marginLeft: 20}}>
                             <div style = {{background:`url(${item.upperImage}),url(${item.bgImage}),${item.bgColor}`}} className = "openPage-page"></div>
                             {item.showed?<Button disabled = {true}>使用中</Button>:<Button>上线</Button>}
+                            <Button onClick = {()=>{handleDelete(item.id)}} style = {{marginLeft: 30}}>删除</Button>
                         </div>
                     )
                 })
