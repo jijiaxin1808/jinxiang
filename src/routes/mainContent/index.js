@@ -5,6 +5,8 @@ import Home from "../home";
 import OpenPage from "../openPage";
 import HotSearch from "../hotSearch";
 import IndexSort from "../indexSort";
+import Users from "../users";
+
 import "./index.less"
 
 const { Content } = Layout;
@@ -15,6 +17,7 @@ const MainContent = ()=> {
 			<Route path="/manage/openPage" component={OpenPage} />
 			<Route path="/manage/trending" component={HotSearch} />
 			<Route path="/manage/indexSort" component={IndexSort} />
+			<Route path="/manage/users" component={Users} />
 		</Content>
 	);
 }

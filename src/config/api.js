@@ -33,4 +33,9 @@ export function deleteopenPage(params) {
     const url = "bootPages/delete"
     return Axios(spliceUrl(url, params), {}, "DELETE");
 }
+export function searchUsers(params) {
+    const url = "users/listByLike";
+    return Axios(spliceUrl(url, params));
+}
+
 
