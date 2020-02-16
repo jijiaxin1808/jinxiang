@@ -1,6 +1,6 @@
 import React from "react";
 import "./index.less";
-import { Table, Divider, Button } from "antd";
+import { Table, Button } from "antd";
 
 
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./index.less";
 import * as API from "../../config/api";
-import { Tabs, Divider, Form, Input, Icon, Button } from "antd";
+import { Tabs, Divider, Form, Input, Icon, Button, Table, Tag } from "antd";
 
 
 const { TabPane } = Tabs;
@@ -63,8 +63,69 @@ const UserManage = (props)=> {
 const WarppedUserManage = Form.create()(UserManage);
 
 const BlcakList = ()=> {
+
+    const columns = [
+        {
+          title: '序号',
+          dataIndex: 'key',
+          key: 'key'
+        },
+        {
+          title: '用户名',
+          dataIndex: 'name',
+          key: 'name',
+        },
+        {
+          title: '手机号',
+          dataIndex: 'phone',
+          key: 'phone',
+        },
+        {
+          title: '封禁期限',
+          key: 'date',
+          dataIndex: 'date',
+        },
+        {
+          title: '操作',
+          key: 'handle',
+          dataIndex: 'key',
+          render: text => <Button onClick = {()=>{cancel(text)}}>解除</Button>
+        },
+    ];
+      
+      const data = [
+        {
+          key: '1',
+          name: 'John Brown',
+          phone: 32,
+          date: 'New York No. 1 Lake Park',
+          tags: ['nice', 'developer'],
+        },
+        {
+          key: '2',
+          name: 'Jim Green',
+          phone: 42,
+          date: 'London No. 1 Lake Park',
+          tags: ['loser'],
+        },
+        {
+          key: '3',
+          name: 'Joe Black',
+          phone: 32,
+          date: 'Sidney No. 1 Lake Park',
+          tags: ['cool', 'teacher'],
+        },
+    ];
+    const cancel = (id)=> {
+
+    }
+    
+
     return (
-        <div>黑名单</div>
+        <div>
+            <div className = "title-text">黑名单</div>
+            <Table columns = {columns} dataSource = {data} />
+        </div>
     )
  
 }

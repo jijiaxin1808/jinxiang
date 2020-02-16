@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Icon, Button, Tabs, Card, Modal, Form, message, Upload} from "antd";
+import { Icon, Button, Tabs, Card, Modal, Form, Upload} from "antd";
 import * as API from "../../config/api";
 import Loading from "../../components/loading";
 import { BlockPicker   } from 'react-color';

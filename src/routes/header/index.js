@@ -1,5 +1,5 @@
 import React from "react";
-import { Layout, Icon } from "antd";
+import { Layout } from "antd";
 import "./index.less";
 import { Menu, Dropdown,Badge, Avatar } from 'antd';
 
