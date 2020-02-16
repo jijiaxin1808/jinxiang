@@ -1,16 +1,30 @@
-import { Form, Icon, Input, Button } from 'antd';
-import React from "react";
+import { Form, Icon, Input, Button, message } from 'antd';
+import React, {useState} from "react";
 import "./index.less";
+import * as API from "../../config/api";
 
 const Login = (props)=> {
-
-    const handleSubmit = e => {
+	const [loading, setLoading] = useState(false);
+    const handleSubmit =  e => {
         e.preventDefault();
-        props.form.validateFields((err, values) => {
+        props.form.validateFields( async (err, values) => {
         if (!err) {
-            console.log('Received values of form: ', values);
-        }
-        });
+			const data = {
+				phone: values.username,
+				pwd: values.password
+			}
+			setLoading(true);
+			await API.loginByPwd(data)
+			.then( async res=> {
+				if(res.data.code === 0) {
+					localStorage.setItem("token",res.data.data.token)
+					await message.success("登录成功");
+					props.history.push("/manage");
+				}
+			})
+			setLoading(false);
+		}
+		});
     };
 
     const { getFieldDecorator } = props.form;
@@ -43,7 +57,7 @@ const Login = (props)=> {
             )}
           </Form.Item>
           <Form.Item className = "flex-center" >
-            <Button type="primary" htmlType="submit" className="login-form-button">
+            <Button type="primary" htmlType="submit" className="login-form-button" loading = {loading}>
               登录
             </Button>
           </Form.Item>

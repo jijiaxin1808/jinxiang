@@ -14,7 +14,7 @@ const menuConfig = [
             },
             {
                 title: "热门搜索",
-                url:"/manage/hotSearch"
+                url:"/manage/trending"
             },
             {
                 title: "轮播图",

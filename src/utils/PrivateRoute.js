@@ -1,6 +1,6 @@
 import React from "react";
-import { Route, Redirect, } from "react-router-dom";
-import { isAuthenticated } from "./session";
+import { Route, Redirect, } from "dva/router";
+import  isAuthenticated  from "./session";
 
 const PrivateRoute = ({component: Component, ...rest}) => (
 	<Route {...rest} render={(props) => (

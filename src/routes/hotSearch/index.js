@@ -1,72 +1,114 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Divider, Tabs, Button, Tag, Table} from "antd";
-
-
+import { Button, Tabs, Modal, Form, Input, Table, Divider, Radio} from "antd";
+import * as API from "../../config/api";
 
 
 const { TabPane } = Tabs;
 
-const Add = ()=> {
+const Add = (props)=> {
 
-    const columns = [
-        {
-          title: '状态',
-          dataIndex: 'status',
-          key: "id",
-          render: text => text?"当前":"历史",
-        },
-        {
-          title: '序号',
-          dataIndex: 'id',
-          render: text => text
-        },
-        {
-          title: '名称',
-          dataIndex: 'name',
-          render: text => text
-        },
-        {
-          title: '活动ID',
-          dataIndex: 'Aid',
-          render: text => text
-        },
-        {
-            title: '关键词',
-            dataIndex: 'keyWord',
-            render: text => text
-        },
-        {
-            title: '操作',
-            dataIndex: 'status',
-            key: "id",
-            render: text => text?<Button>下线</Button>:<Button>删除</Button>,
-          },
-      ];
-      
-      const data = [
-        {
-          id: '1',
-          status: true,
-          name: 32,
-          Aid: 'New York No. 1 Lake Park',
-          keyWord: 'nice'
-        },
-        {
-          id: '2',
-          status: false,
-          name: 42,
-          Aid: 'London No. 1 Lake Park',
-          keyWord: 'loser'
-        },
-        {
-          id: '3',
-          status: true,
-          name: 32,
-          Aid: 'Sidney No. 1 Lake Park',
-          keyWord: 'cool'
-        },
-      ];
+	const [visible, setVisible] = useState(false);
+	const [confirmLoading, setConfirmLoading] = useState(false);  
+	let [data, setData] = useState([]);
+
+	const { getFieldDecorator, getFieldsValue } = props.form;
+
+    useEffect(()=>{
+        const params = {
+            page:1,
+            size:10  
+        }
+        API.getAlltopSearch(params)
+        .then(async res=> {
+            if(res.data.code === 0) {
+            setData(res.data.data);
+            }
+        })
+    },[])
+
+	const deleteSearch = (id)=> {
+		API.deletetopSearch({id})
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...data].filter(item=> {
+					return item.id!==id;
+				})
+				setData(newData);
+			}
+		})
+	}
+	const cancel = (id)=> {
+		const params = {
+			id: id,
+			showed: false
+		}
+		API.updatetopSearch(params)
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...data].map(item=> {
+					if(item.id === id) {
+						return {...item,showed:false}
+					}
+					return item
+				})
+				setData(newData);
+			}
+		})
+	}
+
+    const handleOk =async ()=> {
+		setConfirmLoading(true);
+		const {name, type} = getFieldsValue();
+		const newdata = {name, type, content:"书"}
+		await API.topSearchCreate(newdata).then(res=> {
+			if(res.data.code === 0) {
+				let newData = [...data]
+				newData.unshift(res.data.data);
+				setData(newData);
+				setVisible(false);
+				setConfirmLoading(false);
+			}
+		})
+    }
+    const handleCancel = ()=> {
+        setVisible(false);
+    }
+
+	const columns = [
+		{
+		  title: '状态',
+		  dataIndex: 'showed',
+		  key: "id",
+		  render: text => text?"当前":"历史",
+		},
+		{
+		  title: '序号',
+		  dataIndex: 'id',
+		  key: "id",
+		  render: text => text
+		},
+		{
+		  title: '名称',
+		  dataIndex: 'name',
+		  key: "id",
+		  render: text => text
+		},
+		{
+		  title: '活动ID/关键词',
+		  dataIndex: 'type',
+		  key: "id",
+		  render: text => text
+		},
+		{
+			title: '操作',
+			dataIndex: 'showed',
+			key: "id",
+			render: (text, record) => text?<Button onClick = {()=> {cancel(record.id)}}>下线</Button>:
+			<Button onClick = {()=>{deleteSearch(record.id)}}>删除</Button>,
+		},
+	  ];
+
 
     return (
         <div>
@@ -77,12 +119,51 @@ const Add = ()=> {
             <p className = "title-text">自定义热门搜索</p>
             <p>自定义热门搜索可以是活动，也可以是关键词，二者择一。</p>
             <p style = {{display: "inline-block"}}>若是活动请填写已过审的活动ID，用户点击该关键词将跳转活动页面；若是关键词，请填写关键词，用户点击将自动搜索该词汇。</p>
-            <Button type = "primary" className = "hotSearch-button-add">新增</Button>
+			<Button type = "primary" className = "hotSearch-button-add" onClick = {()=> {setVisible(true)}}>新增</Button>
+			<Modal
+            title="新增热门搜索"
+            visible={visible}
+            confirmLoading={confirmLoading}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            className = "openPage-modal"
+            okText = "确认"
+            cancelText = "取消"
+            >
+                <div>
+                <Form  >
+                    <Form.Item label="名称" >
+                    {getFieldDecorator('name', {
+						valuePropName: 'input',
+						rules: [{ required: true, message: '请输入热门搜索名称' }]
+                    })(
+                       <Input placeholder = "请输入热门搜索名称" />
+                    )}
+                    </Form.Item>
+					<Form.Item label="类型" >
+                    {getFieldDecorator('type', {
+						valuePropName: 'radio-button',
+						defaultValue: "keyWord"
+                    })(
+						<Radio.Group  buttonStyle="solid">
+							<Radio.Button value="关键词" key = {1}>关键词</Radio.Button>
+							<Radio.Button value="活动" key = {2}>活动</Radio.Button>
+						</Radio.Group>
+                    )}
+                    </Form.Item>
+                </Form>
+                </div>
+            </Modal>
+			
             <Table columns={columns} dataSource={data} className = "hotSearch-table-add" />
         </div>
     )
 }
 
+
+
+
+const WarppedAdd = Form.create()(Add);
 
 const Manage = ()=> {
 
@@ -222,7 +303,7 @@ const HotSearch = ()=> {
             <div className = "title">热门搜索</div>
             <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
-                    <Add />
+                    <WarppedAdd />
                 </TabPane>
                 <TabPane tab="管理热门搜索" key="2">
                     <Manage />
