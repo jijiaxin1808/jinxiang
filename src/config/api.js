@@ -37,5 +37,23 @@ export function searchUsers(params) {
     const url = "users/listByLike";
     return Axios(spliceUrl(url, params));
 }
+export function getGooodstopSearch() {
+    const url = "goods/getTopSearch"
+    return Axios(url);
+}
+
+export function deleteGoodsTopSearch(data) {
+    const url = "goods/addTopSearchFilter";
+    return Axios(url, data, "POST")
+}
+
+export function getBlockedList(params) {
+    const url = "users/listBlocked";
+    return Axios(spliceUrl(url, params));
+}
+export function blockUser(data) {
+    const url = "admins/blockAccount";
+    return Axios(url, data, "PUT"); 
+}
 
 
