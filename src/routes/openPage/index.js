@@ -166,7 +166,7 @@ const OpenPageContent = (props)=> {
                     {getFieldDecorator('color', {
                         valuePropName: 'color',
                     })(
-                        <BlockPicker    onChange = {(values)=>{setColor(values.hex)}}  />
+                        <BlockPicker defaultValue = "black"   onChange = {(values)=>{setColor(values.hex)}}  />
                     )}
                     </Form.Item>
                 </Form>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./index.less";
 import * as API from "../../config/api";
-import { Tabs, Divider, Form, Input, Icon, Button, Table, Tag } from "antd";
+import { Tabs, Divider, Form, Input, Icon, Button, Table } from "antd";
 
 
 const { TabPane } = Tabs;
