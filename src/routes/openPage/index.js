@@ -16,7 +16,6 @@ const OpenPageContent = (props)=> {
     const [imgUrl1, setImgUrl1] = useState();
     const [imgUrl2, setImgUrl2] = useState();
 
-
     useEffect(()=>{
         const params = {
             page:1,
@@ -166,7 +165,7 @@ const OpenPageContent = (props)=> {
                     {getFieldDecorator('color', {
                         valuePropName: 'color',
                     })(
-                        <BlockPicker    onChange = {(values)=>{setColor(values.hex)}}  />
+                        <BlockPicker defaultValue = "black"   onChange = {(values)=>{setColor(values.hex)}}  />
                     )}
                     </Form.Item>
                 </Form>
@@ -249,10 +248,6 @@ const WarpedInput = Form.create({ name: 'openPageInput' })(OpenPageContent);
 
 const OpenPage = ()=> {
 
-    const handleSave = ()=> {
-
-    }
-
     const callback = (key)=> {
         console.log(key);
     }
@@ -266,9 +261,7 @@ const OpenPage = ()=> {
                     <WarpedInput />
                 </TabPane>
             </Tabs>
-            <div className = "flex-center">
-                <Button onClick = {handleSave}>保存设置</Button>
-            </div>
+            <div className = "warn">还差一个首屏页的状态更改   还有具体的图片叠加效果(等ui图)</div>
         </div>
     )
 }

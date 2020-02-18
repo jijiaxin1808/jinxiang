@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./index.less";
 import * as API from "../../config/api";
-import { Tabs, Divider, Form, Input, Icon, Button, Table, Tag } from "antd";
+import { Tabs, Divider, Form, Input, Icon, Button, Table, Modal, Radio, message, Popconfirm } from "antd";
 
 
 const { TabPane } = Tabs;
@@ -9,6 +9,10 @@ const { TabPane } = Tabs;
 const UserManage = (props)=> {
 
     const [data, setData] = useState();
+	const [blockModelLoading, setBlockModelLoading] = useState(false);
+	const [blockVisibly, setBlockVisibly] = useState(false);
+	const [blockTime, setBlockTime] = useState(0);
+	const [blockId, setBlockid] = useState();
 
     const handleSubmit = e => {
           e.preventDefault();
@@ -28,7 +32,81 @@ const UserManage = (props)=> {
             })
             }
           });
-        }
+	}
+
+	const apply = async (id)=> {
+		const newdata = {
+			userId: id,
+			blockDays: 0
+		}
+		await API.blockUser(newdata)
+		.then(res=> {
+			if(res.data.code === 0) {
+				message.success("永久封禁成功")
+			}
+		})
+	}
+
+
+	const columns = [
+        {
+          title: '序号',
+          dataIndex: 'id',
+          key: 'id'
+        },
+        {
+          title: '用户名',
+          dataIndex: 'name',
+          key: 'name',
+        },
+        {
+          title: '封禁',
+          key: 'block',
+          dataIndex: 'id',
+          render: text => <Button onClick = {()=> {setBlockVisibly(true); setBlockid(text)  }}>封禁</Button>
+		},
+		{
+			title: '申请',
+			key: 'apply',
+			dataIndex: 'id',
+			render: text => 
+			<Popconfirm
+			title="确定永久封禁当前用户?"
+			onConfirm={()=> {apply(text)}}
+			onCancel={()=>{}}
+			okText= "确认"
+			cancelText="取消"
+		  >
+			<Button >申请</Button>
+		  </Popconfirm>,
+		},
+    ];
+	
+
+    const handleBlockOk =async ()=> {
+		setBlockModelLoading(true);
+
+		const newdata = {
+			userId: blockId,
+			blockDays: blockTime
+		}
+		await API.blockUser(newdata)
+		.then(res=> {
+			if(res.data.code === 0) {
+
+			}
+		})
+		setBlockVisibly(false);
+		setBlockModelLoading(false);
+		setBlockid();
+    }
+    const handleBlockCancel = ()=> {
+		setBlockVisibly(false);
+		setBlockid();
+    }
+
+
+
     const { getFieldDecorator } = props.form
     return (
         <div>
@@ -55,7 +133,23 @@ const UserManage = (props)=> {
                 </Button>
               </Form.Item>
             </Form>
-                {data?<>{data.length?<div>有用户</div>:<div>搜索的用户不存在</div>}</>:<></>}
+				<Modal
+					title="请选择封禁时长"
+					visible={blockVisibly}
+					confirmLoading={blockModelLoading}
+					onOk={handleBlockOk}
+					onCancel={handleBlockCancel}
+					className = "openPage-modal"
+					okText = "确认"
+					cancelText = "取消"
+				>
+				 <Radio.Group defaultValue={3} size="large" onChange = {(value)=>{setBlockTime(value); message.success(value)}}>
+					<Radio.Button value={3}>3天</Radio.Button>
+					<Radio.Button value={7}>7天</Radio.Button>
+					<Radio.Button value={30}>30天</Radio.Button>
+				</Radio.Group>
+				</Modal>
+                {data?<>{data.length?<Table columns = {columns} dataSource = {data} /> :<div>搜索的用户不存在</div>}</>:<></>}
         </div>
     )
 	
@@ -64,11 +158,27 @@ const WarppedUserManage = Form.create()(UserManage);
 
 const BlcakList = ()=> {
 
+	const [data, setData] = useState([]);
+
+	useEffect(()=> {
+		const Pdata = {
+			page: 1,
+			size: 10
+		} 
+		API.getBlockedList(Pdata)
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data);
+			}
+		})
+	},[])
+
+
     const columns = [
         {
           title: '序号',
-          dataIndex: 'key',
-          key: 'key'
+          dataIndex: 'id',
+          key: 'id'
         },
         {
           title: '用户名',
@@ -82,8 +192,8 @@ const BlcakList = ()=> {
         },
         {
           title: '封禁期限',
-          key: 'date',
-          dataIndex: 'date',
+          key: 'unblockTime',
+          dataIndex: 'unblockTime',
         },
         {
           title: '操作',
@@ -93,29 +203,6 @@ const BlcakList = ()=> {
         },
     ];
       
-      const data = [
-        {
-          key: '1',
-          name: 'John Brown',
-          phone: 32,
-          date: 'New York No. 1 Lake Park',
-          tags: ['nice', 'developer'],
-        },
-        {
-          key: '2',
-          name: 'Jim Green',
-          phone: 42,
-          date: 'London No. 1 Lake Park',
-          tags: ['loser'],
-        },
-        {
-          key: '3',
-          name: 'Joe Black',
-          phone: 32,
-          date: 'Sidney No. 1 Lake Park',
-          tags: ['cool', 'teacher'],
-        },
-    ];
     const cancel = (id)=> {
 
     }
@@ -138,6 +225,7 @@ const Users = ()=> {
             <Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
                 <TabPane tab="用户管理" key="1">
                     <WarppedUserManage />
+					<div className = "warn">还差一个封禁解除接口</div>
                 </TabPane>
                 <TabPane tab="黑名单" key="2">
                     <BlcakList />

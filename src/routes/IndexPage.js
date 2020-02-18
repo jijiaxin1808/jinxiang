@@ -34,7 +34,7 @@ const MainMenu = ()=> {
                 return (
                   <SubMenu key={index} title={<span><Icon type={item.icon} /><span>{item.title}</span></span>}>
                   {item.children.map((item, index) => (
-                    <Menu.Item key={index}><Link style = {{textDecoration:"none"}} to={item.url}>{item.title}</Link></Menu.Item>
+                    <Menu.Item key={item.title}><Link style = {{textDecoration:"none"}} to={item.url}>{item.title}</Link></Menu.Item>
                   ))}
                 </SubMenu>
                 )

@@ -10,7 +10,8 @@ const Add = (props)=> {
 
 	const [visible, setVisible] = useState(false);
 	const [confirmLoading, setConfirmLoading] = useState(false);  
-	let [data, setData] = useState([]);
+	const [data, setData] = useState([]);
+	const [addDisable, setAddDisbale] = useState(false);
 
 	const { getFieldDecorator, getFieldsValue } = props.form;
 
@@ -26,6 +27,21 @@ const Add = (props)=> {
             }
         })
     },[])
+	
+	useEffect(()=> {	
+		if(addDisable && data.length && data.filter(item => item.showed === true)) {
+			setAddDisbale(true);
+		}
+		else if(!addDisable&&!data.filter(item => item.showed === true)) {
+		setAddDisbale(false);
+        }
+        
+
+// 1. 如果是可用状态 检测管不管
+// 2. 如果是不可用状态 检查开不开
+
+	},[data])
+
 
 	const deleteSearch = (id)=> {
 		API.deletetopSearch({id})
@@ -79,7 +95,7 @@ const Add = (props)=> {
 		{
 		  title: '状态',
 		  dataIndex: 'showed',
-		  key: "id",
+		  key: "showed",
 		  render: text => text?"当前":"历史",
 		},
 		{
@@ -91,24 +107,30 @@ const Add = (props)=> {
 		{
 		  title: '名称',
 		  dataIndex: 'name',
-		  key: "id",
+		  key: "name",
 		  render: text => text
 		},
 		{
-		  title: '活动ID/关键词',
-		  dataIndex: 'type',
-		  key: "id",
-		  render: text => text
+            title: '关键词',
+			dataIndex: 'type',
+			key:"e",
+            render: (text, R) => text==="活动"?"":R.content
+
 		},
+		{
+            title: '活动',
+			dataIndex: 'type',
+			key:"a",
+            render: (text, R) => text==="活动"?R.content:""
+        },
 		{
 			title: '操作',
 			dataIndex: 'showed',
-			key: "id",
+			key: "handle",
 			render: (text, record) => text?<Button onClick = {()=> {cancel(record.id)}}>下线</Button>:
 			<Button onClick = {()=>{deleteSearch(record.id)}}>删除</Button>,
 		},
 	  ];
-
 
     return (
         <div>
@@ -119,7 +141,10 @@ const Add = (props)=> {
             <p className = "title-text">自定义热门搜索</p>
             <p>自定义热门搜索可以是活动，也可以是关键词，二者择一。</p>
             <p style = {{display: "inline-block"}}>若是活动请填写已过审的活动ID，用户点击该关键词将跳转活动页面；若是关键词，请填写关键词，用户点击将自动搜索该词汇。</p>
-			<Button type = "primary" className = "hotSearch-button-add" onClick = {()=> {setVisible(true)}}>新增</Button>
+			<Button type = "primary" className = "hotSearch-button-add" 
+			onClick = {()=> {setVisible(true)}} disabled = {addDisable}>
+				新增
+			</Button>
 			<Modal
             title="新增热门搜索"
             visible={visible}
@@ -167,84 +192,99 @@ const WarppedAdd = Form.create()(Add);
 
 const Manage = ()=> {
 
+	const [goodsData, setGoodsData] = useState([]);
+
+	useEffect(()=> {
+		API.getGooodstopSearch()
+		.then(res=> {
+			if(res.data.code === 0) {
+				setGoodsData(res.data.data);
+			}
+		})
+	},[])
+
+	const userDelete = (id)=> {
+		API.deleteGoodsTopSearch({id})
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...goodsData];
+				newData.filter(item=>item.id!==id);
+				setGoodsData(newData);
+			}
+		})
+	}
+
+
     const userColumns = [
         {
           title: '序号',
-          dataIndex: 'id',
+		  dataIndex: 'id',
+		  key:"id",
           render: text => text
         },
         {
           title: '热门搜索',
-          dataIndex: 'name',
+		  dataIndex: 'name',
+		  key:"name",
           render: text => text
         },
         {
           title: '搜索量',
-          dataIndex: 'number',
+		  dataIndex: 'freq',
+		  key: "freq",
           render: text => text
         },
         {
             title: '操作',
             dataIndex: 'status',
-            key: "id",
-            render: text => <Button>下线</Button>,
-          },
+            key: "handle",
+            render: text => <Button onClick = {()=>{userDelete(text)}}>下线</Button>,
+        },
     ];
       
-    const userData = [
-        {
-          id: '1',
-          name: 32,
-          number: 2312,
-        },
-        {
-          id: '2',
-          name: 42,
-          number: 312321,
-        },
-        {
-          id: '3',
-          name: 32,
-          number: 321321312
-        },
-    ];
+
     
     const handleColumns = [
         {
           title: '状态',
           dataIndex: 'status',
-          key: "id",
+          key: "status",
           render: text => text?"当前":"历史",
         },
         {
           title: '序号',
-          dataIndex: 'id',
+		  dataIndex: 'id',
+		  key:"id",
           render: text => text
         },
         {
           title: '配置人',
-          dataIndex: 'name',
+		  dataIndex: 'name',
+		  key: "name",
           render: text => text
         },
         {
           title: '显示范围',
-          dataIndex: 'Aid',
+		  dataIndex: 'Aid',
+		  key: "Aid",
           render: text => text
         },
         {
             title: '类型',
-            dataIndex: 'keyWord',
+			dataIndex: 'keyWord',
+			key: "keyWord",
             render: text => text
         },
         {
             title: '活动id/关键词',
-            dataIndex: 'keyWord',
+			dataIndex: 'keyWord',
+			key:"e",
             render: text => text
         },
         {
             title: '操作',
             dataIndex: 'status',
-            key: "id",
+            key: "handle",
             render: text => <Button>下线</Button>
           },
       ];
@@ -280,8 +320,8 @@ const Manage = ()=> {
         <div>
             <p className = "title-text">用户热门搜索</p>
             <div className = "hotSearch-div-userSearch">
-                <Table columns={userColumns} dataSource={userData} className = "hotSearch-table-userSearch" pagination = {false} />
-                <Table columns={userColumns} dataSource={userData} className = "hotSearch-table-userSearch" pagination = {false}/>
+                <Table columns={userColumns} dataSource={goodsData} className = "hotSearch-table-userSearch" pagination = {false} />
+                <Table columns={userColumns} dataSource={goodsData} className = "hotSearch-table-userSearch" pagination = {false}/>
             </div>
             <p className = "title-text">配置热门搜索</p>
             <Table columns={handleColumns} dataSource={handleData}/>
@@ -304,6 +344,11 @@ const HotSearch = ()=> {
             <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
                     <WarppedAdd />
+					<div className = 'warn'>下线商品热搜接口有问题</div>
+					<div className = 'warn'>新增热搜的实时查询确认没有写</div>
+					<div className = 'warn'>商品热门搜索的数量不够</div>
+					<div className = 'warn'>全部热门搜索的接口</div>
+                    <div className = 'warn'>热门搜索的添加热门搜索  新增的默认状态为展示</div>
                 </TabPane>
                 <TabPane tab="管理热门搜索" key="2">
                     <Manage />

@@ -37,5 +37,39 @@ export function searchUsers(params) {
     const url = "users/listByLike";
     return Axios(spliceUrl(url, params));
 }
+export function getGooodstopSearch() {
+    const url = "goods/getTopSearch"
+    return Axios(url);
+}
 
+export function deleteGoodsTopSearch(data) {
+    const url = "goods/addTopSearchFilter";
+    return Axios(url, data, "POST");
+}
+
+export function getBlockedList(params) {
+    const url = "users/listBlocked";
+    return Axios(spliceUrl(url, params));
+}
+export function blockUser(data) {
+    const url = "admins/blockAccount";
+    return Axios(url, data, "PUT"); 
+}
+export function questionBySchool(params) {
+    const url = "questionBanks/listBySchoolId";
+    return Axios(spliceUrl(url, params));
+}
+export function createQuestion(data) {
+    const url = "questionBanks/create";
+    return Axios(url, data, "POST");
+}
+
+export function getAllActivity(params) {
+    const url = "activities/listAll";
+    return Axios(spliceUrl(url, params));
+}
+export function deleteActive(params) {
+    const url = "activities/delete";
+    return Axios(spliceUrl(url, params),{},"DELETE");
+}
 
