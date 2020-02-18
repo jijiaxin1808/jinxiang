@@ -29,12 +29,17 @@ const Add = (props)=> {
     },[])
 	
 	useEffect(()=> {	
-		if(!addDisable && data.length && data.filter(item => item.showed === true)) {
+		if(addDisable && data.length && data.filter(item => item.showed === true)) {
 			setAddDisbale(true);
 		}
-		else {
+		else if(!addDisable&&!data.filter(item => item.showed === true)) {
 		setAddDisbale(false);
-		}
+        }
+        
+
+// 1. 如果是可用状态 检测管不管
+// 2. 如果是不可用状态 检查开不开
+
 	},[data])
 
 
@@ -343,6 +348,7 @@ const HotSearch = ()=> {
 					<div className = 'warn'>新增热搜的实时查询确认没有写</div>
 					<div className = 'warn'>商品热门搜索的数量不够</div>
 					<div className = 'warn'>全部热门搜索的接口</div>
+                    <div className = 'warn'>热门搜索的添加热门搜索  新增的默认状态为展示</div>
                 </TabPane>
                 <TabPane tab="管理热门搜索" key="2">
                     <Manage />

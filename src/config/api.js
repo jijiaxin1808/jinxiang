@@ -44,7 +44,7 @@ export function getGooodstopSearch() {
 
 export function deleteGoodsTopSearch(data) {
     const url = "goods/addTopSearchFilter";
-    return Axios(url, data, "POST")
+    return Axios(url, data, "POST");
 }
 
 export function getBlockedList(params) {
@@ -57,10 +57,19 @@ export function blockUser(data) {
 }
 export function questionBySchool(params) {
     const url = "questionBanks/listBySchoolId";
-    return Axios(spliceUrl(url, params))
+    return Axios(spliceUrl(url, params));
 }
 export function createQuestion(data) {
     const url = "questionBanks/create";
-    return Axios(url, data, "POST")
+    return Axios(url, data, "POST");
+}
+
+export function getAllActivity(params) {
+    const url = "activities/listAll";
+    return Axios(spliceUrl(url, params));
+}
+export function deleteActive(params) {
+    const url = "activities/delete";
+    return Axios(spliceUrl(url, params),{},"DELETE");
 }
 
