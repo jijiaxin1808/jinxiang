@@ -248,10 +248,6 @@ const WarpedInput = Form.create({ name: 'openPageInput' })(OpenPageContent);
 
 const OpenPage = ()=> {
 
-    const handleSave = ()=> {
-
-    }
-
     const callback = (key)=> {
         console.log(key);
     }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Button, Tabs, Modal, Form, Input, Table, Divider, Radio, message} from "antd";
+import { Button, Tabs, Modal, Form, Input, Table, Divider, Radio} from "antd";
 import * as API from "../../config/api";
 
 

@@ -10,9 +10,7 @@ const UserManage = (props)=> {
 
     const [data, setData] = useState();
 	const [blockModelLoading, setBlockModelLoading] = useState(false);
-	const [applyModelLoading, setApplyModelLoading] = useState(false);
 	const [blockVisibly, setBlockVisibly] = useState(false);
-	const [applyVisibly, setApplyVisibly] = useState(false);
 	const [blockTime, setBlockTime] = useState(0);
 	const [blockId, setBlockid] = useState();
 

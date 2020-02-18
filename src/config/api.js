@@ -55,5 +55,12 @@ export function blockUser(data) {
     const url = "admins/blockAccount";
     return Axios(url, data, "PUT"); 
 }
-
+export function questionBySchool(params) {
+    const url = "questionBanks/listBySchoolId";
+    return Axios(spliceUrl(url, params))
+}
+export function createQuestion(data) {
+    const url = "questionBanks/create";
+    return Axios(url, data, "POST")
+}
 

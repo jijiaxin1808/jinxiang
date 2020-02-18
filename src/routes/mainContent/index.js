@@ -6,6 +6,16 @@ import OpenPage from "../openPage";
 import HotSearch from "../hotSearch";
 import IndexSort from "../indexSort";
 import Users from "../users";
+import QuestionBank from "../qustionBank";
+import ActivityAnalysis from "../activityAnalysis";
+import FunctionAnalysis from "../functionAnalysis";
+import OrderAnalysis from "../orderAnalysis";
+import UsersAnalysis from "../usersAnalysis";
+import Beautify from "../beautify";
+import SchoolA from "../schoolA";
+import Push from "../push";
+import User from "../user";
+import Carousel from "../carousel"
 
 import "./index.less"
 
@@ -18,6 +28,16 @@ const MainContent = ()=> {
 			<Route path="/manage/trending" component={HotSearch} />
 			<Route path="/manage/indexSort" component={IndexSort} />
 			<Route path="/manage/users" component={Users} />
+			<Route path="/manage/activityAnalysis" component={ActivityAnalysis} />
+			<Route path="/manage/functionAnalysis" component={FunctionAnalysis} />
+			<Route path="/manage/orderAnalysis" component={OrderAnalysis} />
+			<Route path="/manage/usersAnalysis" component={UsersAnalysis} />
+			<Route path="/manage/qustionBank" component={QuestionBank} />
+			<Route path="/manage/beautify" component={Beautify} />
+			<Route path="/manage/schoolA" component={SchoolA} />
+			<Route path="/manage/push" component={Push} />
+			<Route path="/manage/user" component={User} />
+			<Route path="/manage/carousel" component={Carousel} />
 		</Content>
 	);
 }
