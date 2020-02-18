@@ -1,20 +1,15 @@
 import React from "react";
-import { Layout, Icon } from "antd";
+import { Layout } from "antd";
 import "./index.less";
-import { Menu, Dropdown, Button } from 'antd';
-import { Link } from "dva/router";
+import { Menu, Dropdown,Badge, Avatar } from 'antd';
 
 const menu = (
     <Menu>
       <Menu.Item>
-        <Link to = "/manage/user">个人信息</Link>
-      </Menu.Item>
-      <Menu.Item>
-        <div onClick = {()=>{this.localStorage.clear(); window.location.href = "/manage/login"}}>推出登录</div>
+        <div onClick = {()=>{localStorage.clear(); window.location.href = "/#/login"}}>退出登录</div>
       </Menu.Item>
     </Menu>
 );
-
 
 
 const { Header } = Layout;
@@ -30,9 +25,10 @@ const MainHeader = ()=> {
                 </div>
             </div>
             <div className = "header-user">
-                <Icon />
-                <Dropdown overlay={menu} placement="bottomLeft">
-                    <Button>迷迷糊糊</Button>
+                <Dropdown overlay={menu} placement = "bottomCenter" className = "">
+                    <Badge count={5}>
+                        <Avatar shape="square" size="large" icon="user" />  
+                    </Badge>
                 </Dropdown>
             </div>
         </Header>

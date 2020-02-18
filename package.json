@@ -13,6 +13,7 @@
     "dva": "^2.4.1",
     "now": "^17.0.3",
     "react": "^16.2.0",
+    "react-color": "^2.18.0",
     "react-dom": "^16.2.0",
     "react-router-dom": "^5.1.2"
   },
