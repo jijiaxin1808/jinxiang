@@ -146,6 +146,9 @@ const QustionBank = (props)=> {
 			</Modal>
             <Table columns={columns} dataSource={data} style = {{marginTop: 20}} />
             <div className = "warn">额  暂时没发现bug</div>
+            <div className = "warn">新增modal标题错误</div>
+            <div className = "warn">莫得删除按钮</div>
+            <div className = "warn">额 字数上限</div>
         </div>
     )
 }
