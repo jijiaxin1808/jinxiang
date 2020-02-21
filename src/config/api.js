@@ -76,3 +76,11 @@ export function createActive(data) {
     const url = "activities/create";
     return Axios(url, data, "POST");
 }
+export function removeBlock(data) {
+    const url = "admins/removeBlock";
+    return Axios(url, data, "PUT");
+}
+export function deleteQuestion(params) {
+    const url = "questionBanks/delete";
+    return Axios(spliceUrl(url, params), {}, "DELETE")
+}

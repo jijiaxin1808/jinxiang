@@ -239,7 +239,7 @@ const Add = (props)=> {
         <div className = "warn">状态码没懂 审核搁浅</div>
         <div className = "warn">活动被我删没了 但是删除功能是好使的</div>
         <Modal
-            title="请选择封禁时长"
+            title="新增活动"
             visible={blockVisibly}
             confirmLoading={blockModelLoading}
             onOk={handleBlockOk}

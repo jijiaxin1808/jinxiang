@@ -29,10 +29,10 @@ const Add = (props)=> {
     },[])
 	
 	useEffect(()=> {	
-		if(addDisable && data.length && data.filter(item => item.showed === true)) {
+		if(!addDisable && data.length && data.filter(item => item.showed === true).length) {
 			setAddDisbale(true);
 		}
-		else if(!addDisable&&!data.filter(item => item.showed === true)) {
+		else if(addDisable&&!data.filter(item => item.showed === true).length) {
 		setAddDisbale(false);
         }
         
@@ -75,8 +75,8 @@ const Add = (props)=> {
 
     const handleOk =async ()=> {
 		setConfirmLoading(true);
-		const {name, type} = getFieldsValue();
-		const newdata = {name, type, content:"书"}
+		const {name, type, content} = getFieldsValue();
+		const newdata = {name, type, content}
 		await API.topSearchCreate(newdata).then(res=> {
 			if(res.data.code === 0) {
 				let newData = [...data]
@@ -115,7 +115,6 @@ const Add = (props)=> {
 			dataIndex: 'type',
 			key:"e",
             render: (text, R) => text==="活动"?"":R.content
-
 		},
 		{
             title: '活动',
@@ -176,6 +175,14 @@ const Add = (props)=> {
 						</Radio.Group>
                     )}
                     </Form.Item>
+                    <Form.Item  >
+                    {getFieldDecorator('content', {
+						valuePropName: 'inut',
+						rules: [{ required: true, message: '请输入内容' }]
+                    })(
+                       <Input placeholder = "请输入内容" />
+                    )}
+                    </Form.Item>
                 </Form>
                 </div>
             </Modal>
@@ -207,8 +214,7 @@ const Manage = ()=> {
 		API.deleteGoodsTopSearch({id})
 		.then(res=> {
 			if(res.data.code === 0) {
-				const newData = [...goodsData];
-				newData.filter(item=>item.id!==id);
+				const newData = [...goodsData].filter(item=>item.id!==id);
 				setGoodsData(newData);
 			}
 		})
@@ -238,7 +244,7 @@ const Manage = ()=> {
             title: '操作',
             dataIndex: 'status',
             key: "handle",
-            render: text => <Button onClick = {()=>{userDelete(text)}}>下线</Button>,
+            render: (text, R) => <Button onClick = {()=>{userDelete(R.id)}}>下线</Button>,
         },
     ];
       
