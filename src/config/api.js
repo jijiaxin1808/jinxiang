@@ -65,11 +65,14 @@ export function createQuestion(data) {
 }
 
 export function getAllActivity(params) {
-    const url = "activities/listAll";
+    const url = "activities/listBySchoolId";
     return Axios(spliceUrl(url, params));
 }
 export function deleteActive(params) {
     const url = "activities/delete";
     return Axios(spliceUrl(url, params),{},"DELETE");
 }
-
+export function createActive(data) {
+    const url = "activities/create";
+    return Axios(url, data, "POST");
+}

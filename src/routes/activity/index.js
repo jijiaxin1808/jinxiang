@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Tabs, Form, Divider, Button, Modal, Radio, Input, Upload, message, Table, Popconfirm } from "antd";
+import { Tabs, Form, Divider, Button, Modal, Radio, Input, Upload, message, Table, Popconfirm, Icon, Popover, List} from "antd";
 import * as API from "../../config/api";
 
 const { TabPane } = Tabs;
@@ -7,9 +7,9 @@ const { TabPane } = Tabs;
 const Add = (props)=> {
     const [blockModelLoading, setBlockModelLoading] = useState(false);
 	const [blockVisibly, setBlockVisibly] = useState(false);
-    const [RadioValue, setRadioValue] = useState();
     const { TextArea } = Input;
     const [data, setData] = useState([]);
+    const [imgUrl, setImgUrl] = useState();
 
     useEffect(()=> {
         const params = {
@@ -24,23 +24,57 @@ const Add = (props)=> {
         })
     },[])
 
+    const Props = {
+        name: 'image',
+        action: 'http://blog.csxjh.vip:8000/images/upload',
+        headers: {
+          token: "86f3705005b940a0a21f4d948eb0d04f",
+        },
+        onChange(info) {
+            if(info.file.status === "done" && info.file.response.code === 0) {
+                setImgUrl(info.file.response.data);
+            }
+          }
+    };
+
+    const infoContent = (values)=> {
+        const data = Object.values(values);
+        console.log(data);
+        return (
+            <List
+            header={<div>Header</div>}
+            footer={<div>Footer</div>}
+            dataSource={data}
+            />
+        )
+    }
+
 
     const handleBlockOk =async ()=> {
 		setBlockModelLoading(true);
 
-		// const newdata = {
-		// 	userId: blockId,
-		// 	blockDays: blockTime
-		// }
-		// await API.blockUser(newdata)
-		// .then(res=> {
-		// 	if(res.data.code === 0) {
-
-		// 	}
-		// })
-		setBlockVisibly(false);
-		setBlockModelLoading(false);
-    }
+        await props.form.validateFields((err, values) => {
+              if (!err) {
+                API.createActive({...values, imgUrl})
+                .then(res=> {
+                    if(res.data.code === 0) {
+                        const id = res.data.data.id;
+                        const status = res.data.data.status;
+                        const newData =  [...data];
+                        newData.unshift({id, ...values, status});
+                        setData(newData);
+                        setBlockVisibly(false);
+                        setBlockModelLoading(false);
+                    }
+                }).catch(err=> {
+                    if(err) {
+                        setBlockModelLoading(false);
+                    }
+                })
+              }
+          });
+        setBlockModelLoading(false);
+}
     const handleBlockCancel = ()=> {
 		setBlockVisibly(false);
     }
@@ -73,7 +107,17 @@ const Add = (props)=> {
           title: '当前状态',
           key: 'status',
           dataIndex: 'status',
-          render: text => text
+          render: (text, R) => {
+                if(text === 0) {
+                    return "未审核"
+                }
+                else if((text === 3||text ===1)&&!R.failReason) {
+                    return "审核未通过"
+                }
+                else if(text === 4) {
+                    return "审核已通过"
+                }
+          }
 		},
 		{
 			title: '活动id',
@@ -94,23 +138,92 @@ const Add = (props)=> {
             title: "操作",
             key: 'handle',
             dataIndex: 'id',
-            render: (text, R) =>
-                <Popconfirm
-                title="确定删除该活动?"
-                onConfirm={()=> {deleteActive(text)}}
-                onCancel={()=>{}}
-                okText= "确认"
-                cancelText="取消"
-              >
-                <Button >删除</Button>
-              </Popconfirm>
+            render: (text, R) =>{
+                if(R.status === 0) {
+                    return (
+                        <>
+                        <Popconfirm
+                        title="确定删除该活动?"
+                        onConfirm={()=> {deleteActive(text)}}
+                        onCancel={()=>{}}
+                        okText= "确认"
+                        cancelText="取消"
+                        >
+                            <Button >删除</Button>
+                        </Popconfirm>
+                        <Popover 
+                        content={<><p>名称: {R.name}</p>
+                        <p>简介: {R.profile}</p>
+                        <p>链接: {R.link}</p>
+                        <p>图片: {R.image}</p>
+                        <p>未通过理由: </p>
+                        </>}>
+                        <Button>查看</Button>
+                        </Popover>
+                        <Button>提交审核</Button>
+                        </>
+                    )
+                }
+                else if((R.status === 3||R.status ===1)&&!R.failReason) {
+                    return (
+                        <>
+                        <Popconfirm
+                        title="确定删除该活动?"
+                        onConfirm={()=> {deleteActive(text)}}
+                        onCancel={()=>{}}
+                        okText= "确认"
+                        cancelText="取消"
+                        >
+                            <Button >删除</Button>
+                        </Popconfirm>
+                        <Popover 
+                        content={<><p>名称: {R.name}</p>
+                        <p>简介: {R.profile}</p>
+                        <p>链接: {R.link}</p>
+                        <p>图片: {R.image}</p>
+                        <p>未通过理由: </p>
+                        </>}>
+                        <Button>查看</Button>
+                        </Popover>
+                        <Button>修改</Button>
+                        </> 
+                    )
+                }
+                else if(R.status === 4) {
+                    return (
+                        <>
+                        <Popconfirm
+                        title="确定删除该活动?"
+                        onConfirm={()=> {deleteActive(text)}}
+                        onCancel={()=>{}}
+                        okText= "确认"
+                        cancelText="取消"
+                        >
+                            <Button >删除</Button>
+                        </Popconfirm>
+                        <Popover 
+                        content={<><p>名称: {R.name}</p>
+                        <p>简介: {R.profile}</p>
+                        <p>链接: {R.link}</p>
+                        <p>图片: {R.image}</p>
+                        <p>未通过理由: </p>
+                        </>}>
+                        <Button>查看</Button>
+                        </Popover>
+                        </> 
+                    )
+                }
+
+
+            }
+
           },
     ];
 
 
 
 
-    const {getFieldDecorator} = props.form
+    const {getFieldDecorator} = props.form;
     return (
         <>
         <div className = "title-text">活动</div>
@@ -146,7 +259,7 @@ const Add = (props)=> {
                 )}
                 </Form.Item>
                 <Form.Item>
-                {getFieldDecorator('reason', {
+                {getFieldDecorator('profile', {
                     rules: [{ required: true, message: '请输入理由', },{max:40, message: "不超过40字"}],
                 })(
                     <TextArea  placeholder = "请输入理由" autoSize = {true}/>
@@ -160,41 +273,22 @@ const Add = (props)=> {
                     placeholder="页面链接"
                     />,
                 )}
-                </Form.Item>
+                </Form.Item>       
                 <Form.Item>
-                {getFieldDecorator('radio-group', {
-                    rules: [{ required: true, message: '请选择类型' }],
-
-                })(
-                    <Radio.Group defaultValue="图片" buttonStyle="solid" onChange = {(e)=> {setRadioValue(e.target.value); }} >
-                        <Radio.Button value="关键字">关键字</Radio.Button>
-                        <Radio.Button value="图片">图片</Radio.Button>
-                    </Radio.Group>
-                )}
-                </Form.Item>
-                {RadioValue==="关键字"?          
-                <Form.Item>
-                    {getFieldDecorator('link', {
+                    {getFieldDecorator('keyword', {
                         rules: [{ required: true, message: '请输入关键词' }],
                     })(
                         <Input
                         placeholder="关键词"
                         />,
                     )}
-                </Form.Item>:
-                <Form.Item>
-                {getFieldDecorator('upload', {
-                  valuePropName: 'fileList',
-                //   getValueFromEvent: this.normFile,
-                })(
-                  <Upload name="logo" action="/upload.do" listType="picture">
-                    <Button>
-                        点击上传图片
-                    </Button>
-                  </Upload>,
-                )}
-              </Form.Item>}
+                </Form.Item>
             </Form>
+            <Upload {...Props}>
+                <Button>
+                    <Icon type="upload" /> Click to Upload
+                </Button>
+            </Upload>
         </Modal>
         </>
     )
