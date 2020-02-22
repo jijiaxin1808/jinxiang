@@ -9,28 +9,28 @@ import './index.less';
     constructor(props){
         super(props);
         this.state = {
-            confirmDirty: false,
+            // confirmDirty: false,
             types: '',
-            fields:{
-                Name: "",
-                Activity: "",
-                Picture: "",
-             }
+            Name: "",
+            Activity: "",
+            Picture: "",
+             
           };
     }
   
     handleSubmit = e => {
       e.preventDefault();
+      console.log('Received values of form: ', this.state);
       this.props.form.validateFieldsAndScroll((err, values) => {
         if (!err) {
-          console.log('Received values of form: ', this.state);
+          
         }
       });
     };
   
     handleConfirmBlur = e => {
       const { value } = e.target;
-      this.setState({ confirmDirty: this.state.confirmDirty || !!value });
+      // this.setState({ confirmDirty: this.state.confirmDirty || !!value });
     };
     
     handleReset = () => {
@@ -52,48 +52,42 @@ import './index.less';
         }
     }
 
+    validateServiceName = (rule, value, callback) => {
+        this.setState({
+            Name: value
+        })
+    }
+    
+    validateServiceActivity = (rule, value, callback) =>{
+        this.setState({
+          Activity: value
+        })
+    }
+
+    validateServicePicture = (rule, value, callback) =>{
+      console.log(value);
+      this.setState({
+        Picture: value
+      })
+    }
 
     render() {
       const { getFieldDecorator } = this.props.form;
   
-      const formItemLayout = {
-        labelCol: {
-          xs: { span: 24 },
-          sm: { span: 8 },
-        },
-        wrapperCol: {
-          xs: { span: 24 },
-          sm: { span: 16 },
-        },
-      };
-      const tailFormItemLayout = {
-        wrapperCol: {
-          xs: {
-            span: 24,
-            offset: 0,
-          },
-          sm: {
-            span: 16,
-            offset: 8,
-          },
-        },
-      };
-  
       return (
-        <Form {...formItemLayout} onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit}>
           <Form.Item label="名称">
-            {getFieldDecorator('名称', {
+            {getFieldDecorator('Name', {
               rules: [
-                {
-                  type: 'Name',
-                  message: '请输入名称',
-                },
                 {
                   required: true,
                   message: '请输入名称',
-                },
+                },{
+                    validator: this.validateServiceName 
+                }
               ],
-            })(<Input placeholder="请填写名称" />)}
+            })
+            (<Input placeholder="请填写名称"/>)}
           </Form.Item>
 
           <Form.Item label="类型">
@@ -111,13 +105,11 @@ import './index.less';
             {getFieldDecorator('Activity:', {
               rules: [
                 {
-                  type: 'Activity:',
+                  required: this.state.types==="activity"?true:false,
                   message: '请输入活动ID:',
-                },
-                {
-                  required: true,
-                  message: '请输入活动ID:',
-                },
+                },{
+                    validator: this.validateServiceActivity
+                }
               ],
             })(<Input placeholder="请填写活动ＩＤ"/>)}
           </Form.Item>
@@ -125,22 +117,20 @@ import './index.less';
             {getFieldDecorator('Picture:', {
               rules: [
                 {
-                  type: 'Picture',
+                  required: this.state.types==="picture"?true:false,
                   message: '请输入图片:',
-                },
-                {
-                  required: true,
-                  message: '请输入图片:',
-                },
+                },{
+                  validator: this.validateServicePicture
+              }
               ],
             })(<Picture />)}
           </Form.Item>
 
-          <Form.Item {...tailFormItemLayout}>
+          <Form.Item>
             <Button type="primary" htmlType="submit">
               提交
             </Button>
-            <Button type="primary" htmlType="reset" style={{ marginLeft: 8 }}>
+            <Button type="primary" onClick={this.handleReset} style={{ marginLeft: 8 }}>
               取消
             </Button>
           </Form.Item>
@@ -151,9 +141,7 @@ import './index.less';
   
   const WrappedRegistrationForm = Form.create({ 
       name: 'register',
-      onFieldsChange(props, changedFields) {
-        props.onChange(changedFields);
-      },
+      
       mapPropsToFields(props) {
         return {
           Name: Form.createFormField({

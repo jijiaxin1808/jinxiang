@@ -36,8 +36,11 @@ export default class Avatar extends React.Component {
         this.setState({
           imageUrl,
           loading: false,
+        },()=>{
+          console.log(this.state.imageUrl)
         }),
       );
+      
     }
   };
 
@@ -55,7 +58,7 @@ export default class Avatar extends React.Component {
         listType="picture-card"
         className="avatar-uploader"
         showUploadList={false}
-        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+        action="http://blog.csxjh.vip:8000/carousels/create"
         beforeUpload={beforeUpload}
         onChange={this.handleChange}
       >

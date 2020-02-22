@@ -149,7 +149,6 @@ export default class Carousels extends React.Component{
         this.ChangeInput = this.ChangeInput.bind(this);
         this.SubmitDate = this.SubmitDate.bind(this);
         this.ClickedForms = this.ClickedForms.bind(this);
-        this.handleFormChange = this.handleFormChange.bind(this);
     }
     componentDidMount(){
         Axios.get('http://blog.csxjh.vip:8000/carousels/listAll').then(res=>{
@@ -214,12 +213,6 @@ export default class Carousels extends React.Component{
           })
       }
 
-      handleFormChange(changedFields){
-        this.setState({
-            fields: {...changedFields}
-        })
-      }
-
     render(){
         return (
             <div className='carousels'>
@@ -253,13 +246,12 @@ export default class Carousels extends React.Component{
                 </Carousel>
                 </div> */}
                 <div className={this.state.Show?"carousels-form":"Hidden"} >
-                    <Forms {...this.state.fields} onChange={this.handleFormChange} />
+                    <Forms />
                 </div>
-                {/* <div>
-                    <pre>{JSON.stringify(this.state.fields)}</pre>
-                </div> */}
                 
             </div>
         )
     }
 }
+// {"Type":{"name":"Type","value":"activity","touched":true,"dirty":false,"validating":false}}
+// {"Activity:":{"name":"Activity:","value":"cdv","touched":true,"dirty":true,"validating":true}}
