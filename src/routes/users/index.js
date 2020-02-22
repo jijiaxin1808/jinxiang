@@ -18,7 +18,6 @@ const UserManage = (props)=> {
           e.preventDefault();
           props.form.validateFields((err, values) => {
             if (!err) {
-            //   console.log('Received values of form: ', values);
             const params = {
                 page:1,
                 size:10,
@@ -198,13 +197,19 @@ const BlcakList = ()=> {
         {
           title: '操作',
           key: 'handle',
-          dataIndex: 'key',
+          dataIndex: 'id',
           render: text => <Button onClick = {()=>{cancel(text)}}>解除</Button>
         },
     ];
       
     const cancel = (id)=> {
-
+		API.removeBlock({userId: id})
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...data].filter(item => item.id!==id);
+				setData(newData);
+			}
+		})
     }
     
 

@@ -1,324 +1,277 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./index.less";
-import { Table, Input, InputNumber, Popconfirm, Form } from "antd";
+import { Table, Input, InputNumber, Popconfirm, Form, Button, Modal, Cascader } from "antd";
+import { AlphaPicker } from "react-color";
+import * as API from "../../config/api";
+
+
+
+
+
+
+
+
+
+
+
+
+const MainSort = (props)=> {
+	const [ data, setData ] = useState([]);
+	const [ visible, setVisible ] = useState(false);
+	const [ confirmLoading, setConfirmLoading ] = useState(false);
+	const [ modalData, setModalData ] = useState({})
+	const [ option, setOption ] = useState([]);
+	const { getFieldDecorator, setFieldsValue } = props.form;
+
+	useEffect(()=> {
+		API.getAllmainCategories()
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data)
+			}
+		})
+		API.getALlCategories()
+		.then(res=> {
+			if(res.data.code === 0 ) {
+				const newData = res.data.data.map(item=> ({
+						label:item.name,
+						value: item.name,
+						children: item.secondList.map(item=> ({	
+							label:item.name,
+							value: item.name
+					}))
+				}))
+				setOption(newData);
+			}
+		})
+	}, [])
+
+	const handleOk = ()=> {
+		setVisible(false);
+	}
+	const handleCancel = ()=> {
+		setVisible(false);
+		setFieldsValue({name:"",sort:"",priority:""});
+	}
+
+	const columns = [
+		{
+			title: '序号',
+			dataIndex: 'id',
+			editable: false,
+		},
+		{
+			title: '名称',
+			dataIndex: 'name',
+			editable: true,
+		},
+		{
+			title: '分类',
+			dataIndex: 'categoryList',
+			editable: true,
+			render: text => (text.map(item => (item.name) ))
+		},
+		{
+			title: '权重',
+			dataIndex: 'priority',
+			editable: true,
+		},
+		{
+			title: 'icon',
+			dataIndex: 'icon',
+			editable: true,
+		},
+		{
+			title: '操作',
+			dataIndex: 'operation',
+			render: (text, record) => <Button onClick = {()=> {setVisible(true); 
+				setFieldsValue(record);
+			}}>修改</Button>
+		}
+	];
+	  
+	return (
+		<>
+		<div className = "title-text" style = {{display: "inline-block", marginRight:600}}>主分类</div>
+		<Button onClick = {()=> {setVisible(true)}}>新增</Button>
+		<Table
+		dataSource={data}
+		columns={columns}
+		/>
+		<Modal
+		title= "标签分类"
+		visible={visible}
+		onOk={handleOk}
+		onCancel={handleCancel}
+		okText = "确认"
+		cancelText = "取消"
+		>
+			<Form>
+				<Form.Item label = "名称">
+				{getFieldDecorator('name', {
+					rules: [{ required: true, message: '请输入名称' }],
+				})(
+					<Input
+					placeholder="请输入标签名称"
+					/>,
+				)}
+				</Form.Item>
+				<Form.Item label = "分类">
+				{getFieldDecorator('sort', {
+					rules: [{ required: true, message: 'Please input your Password!' }],
+				})(
+					<Cascader options={option}  placeholder="请选择分类" />
+				)}
+				</Form.Item>
+				<Form.Item>
+				{getFieldDecorator('priority', {
+					rules: [{ required: true, message: '请输入权重' },
+					{pattern: /^[0-9]\d*$/, message:"请输入数字"}],
+				})(
+					<InputNumber/>
+				)}
+				</Form.Item>
+			</Form>
+		</Modal>
+		</>
+	)
+}
+
+		  
+const WarppedMainSort = Form.create()(MainSort);
+
+
+const LabelSort = (props)=> {
+	const [ data, setData ] = useState([]);
+	const [ visible, setVisible ] = useState(false);
+	const [ confirmLoading, setConfirmLoading ] = useState(false);
+	const [ modalData, setModalData ] = useState({})
+	const [ option, setOption ] = useState([]);
+	const { getFieldDecorator, setFieldsValue } = props.form;
+
+	useEffect(()=> {
+		API.getAllLabelCategories()
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data)
+			}
+		})
+		API.getALlCategories()
+		.then(res=> {
+			if(res.data.code === 0 ) {
+				const newData = res.data.data.map(item=> ({
+						label:item.name,
+						value: item.name,
+						children: item.secondList.map(item=> ({	
+							label:item.name,
+							value: item.name
+					}))
+				}))
+				setOption(newData);
+			}
+		})
+	}, [])
+
+	const handleOk = ()=> {
+		setVisible(false);
+	}
+	const handleCancel = ()=> {
+		setVisible(false);
+		setFieldsValue({name:"",sort:"",priority:""});
+	}
+
+	const columns = [
+		{
+			title: '序号',
+			dataIndex: 'id',
+			editable: false,
+		},
+		{
+			title: '名称',
+			dataIndex: 'name',
+			editable: true,
+		},
+		{
+			title: '分类',
+			dataIndex: 'categoryId',
+			editable: true,
+		},
+		{
+			title: '权重',
+			dataIndex: 'priority',
+			editable: true,
+		},
+		{
+			title: '操作',
+			dataIndex: 'operation',
+			render: (text, record) => <Button onClick = {()=> {setVisible(true); 
+				setFieldsValue(record);
+			}}>修改</Button>
+		}
+	];
+		
+	return (
+		<>
+		<div className = "title-text" style = {{display: "inline-block", marginRight:600}} >标签分类</div>
+		<Button onClick = {()=> {setVisible(true)}}>新增</Button>
+		<Table
+		dataSource={data}
+		columns={columns}
+		/>
+		<Modal
+		title= "标签分类"
+		visible={visible}
+		onOk={handleOk}
+		onCancel={handleCancel}
+		okText = "确认"
+		cancelText = "取消"
+		>
+			<Form>
+				<Form.Item label = "名称">
+				{getFieldDecorator('name', {
+					rules: [{ required: true, message: '请输入名称' }],
+				})(
+					<Input
+					placeholder="请输入标签名称"
+					/>,
+				)}
+				</Form.Item>
+				<Form.Item label = "分类">
+				{getFieldDecorator('sort', {
+					rules: [{ required: true, message: 'Please input your Password!' }],
+				})(
+					<Cascader options={option}  placeholder="请选择分类" />
+				)}
+				</Form.Item>
+				<Form.Item>
+				{getFieldDecorator('priority', {
+					rules: [{ required: true, message: '请输入权重' },
+					{pattern: /^[0-9]\d*$/, message:"请输入数字"}],
+
+				})(
+					<InputNumber/>
+				)}
+				</Form.Item>
+			</Form>
+		</Modal>
+		</>
+	)
+}
+
+			
+const WarppedLabelSort = Form.create()(LabelSort);
 
 const IndexSort = ()=> {
-
-        const data = [];
-        for (let i = 0; i < 5; i++) {
-            data.push({
-              	key: i.toString(),
-              	name: `Edrward ${i}`,
-              	age: 32,
-              	address: `London Park no. ${i}`,
-            });
-        }
-        const EditableContext = React.createContext();
-          
-          class EditableCell extends React.Component {
-            getInput = () => {
-              return <Input />;
-            };
-          
-            renderCell = ({ getFieldDecorator }) => {
-              const {
-                editing,
-                dataIndex,
-                title,
-                record,
-                index,
-                children,
-                ...restProps
-              } = this.props;
-              return (
-                <td {...restProps}>
-                  {editing ? (
-                    <Form.Item style={{ margin: 0 }}>
-                      {getFieldDecorator(dataIndex, {
-                        rules: [
-                          {
-                            required: true,
-                            message: `请输入 ${title}!`,
-                          },
-                        ],
-                        initialValue: record[dataIndex],
-                      })(this.getInput())}
-                    </Form.Item>
-                  ) : (
-                    children
-                  )}
-                </td>
-              );
-            };
-          
-            render() {
-              return <EditableContext.Consumer>{this.renderCell}</EditableContext.Consumer>;
-            }
-          }
-          
-		class EditableTable extends React.Component {
-		constructor(props) {
-			super(props);
-			this.state = { data, editingKey: '' };
-			this.columns = [
-			{
-				title: '序号',
-				dataIndex: 'name',
-				width: '25%',
-				editable: false,
-			},
-			{
-				title: '分类',
-				dataIndex: 'age',
-				width: '15%',
-				editable: true,
-			},
-			{
-				title: 'icon',
-				dataIndex: 'address',
-				width: '40%',
-				editable: true,
-			},
-			{
-				title: '操作',
-				dataIndex: 'operation',
-				render: (text, record) => {
-				const { editingKey } = this.state;
-				const editable = this.isEditing(record);
-				return editable ? (
-					<span>
-					<EditableContext.Consumer>
-						{form => (
-						<a
-							onClick={() => this.save(form, record.key)}
-							style={{ marginRight: 8 }}
-						>
-							保存
-						</a>
-						)}
-					</EditableContext.Consumer>
-					<Popconfirm title="确定取消?" onConfirm={() => this.cancel(record.key)} okText = "确认" cancelText = "取消">
-						<a>取消</a>
-					</Popconfirm>
-					</span>
-				) : (
-					<a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
-					修改
-					</a>
-				);
-				},
-			},
-			];
-		}
-		
-		isEditing = record => record.key === this.state.editingKey;
-		
-		cancel = () => {
-			this.setState({ editingKey: '' });
-		};
-		
-		save(form, key) {
-			form.validateFields((error, row) => {
-			if (error) {
-				return;
-			}
-			const newData = [...this.state.data];
-			const index = newData.findIndex(item => key === item.key);
-			if (index > -1) {
-				const item = newData[index];
-				newData.splice(index, 1, {
-				...item,
-				...row,
-				});
-				this.setState({ data: newData, editingKey: '' });
-			} else {
-				newData.push(row);
-				this.setState({ data: newData, editingKey: '' });
-			}
-			});
-		}
-		
-		edit(key) {
-			this.setState({ editingKey: key });
-		}
-		
-		render() {
-			const components = {
-			body: {
-				cell: EditableCell,
-			},
-			};
-		
-			const columns = this.columns.map(col => {
-			if (!col.editable) {
-				return col;
-			}
-			return {
-				...col,
-				onCell: record => ({
-				record,
-				inputType: col.dataIndex === 'age' ? 'number' : 'text',
-				dataIndex: col.dataIndex,
-				title: col.title,
-				editing: this.isEditing(record),
-				}),
-			};
-			});
-		
-			return (
-			<EditableContext.Provider value={this.props.form}>
-				<Table
-				components={components}
-				dataSource={this.state.data}
-				columns={columns}
-				rowClassName="editable-row"
-				// pagination={{
-				// 	onChange: this.cancel,
-				// }}
-				pagination = {false}
-				/>
-			</EditableContext.Provider>
-			);
-		}
-		}
-          
-		const EditableFormTable = Form.create()(EditableTable);
-		
-
-		class LabelSort extends React.Component {
-			constructor(props) {
-				super(props);
-				this.state = { data, editingKey: '' };
-				this.columns = [
-				{
-					title: '序号',
-					dataIndex: 'name',
-					width: '25%',
-					editable: false,
-				},
-				{
-					title: '分类',
-					dataIndex: 'age',
-					width: '15%',
-					editable: true,
-				},
-				{
-					title: '操作',
-					dataIndex: 'operation',
-					render: (text, record) => {
-					const { editingKey } = this.state;
-					const editable = this.isEditing(record);
-					return editable ? (
-						<span>
-						<EditableContext.Consumer>
-							{form => (
-							<a
-								onClick={() => this.save(form, record.key)}
-								style={{ marginRight: 8 }}
-							>
-								保存
-							</a>
-							)}
-						</EditableContext.Consumer>
-						<Popconfirm title="确定取消?" onConfirm={() => this.cancel(record.key)} okText = "确认" cancelText = "取消">
-							<a>取消</a>
-						</Popconfirm>
-						</span>
-					) : (
-						<a disabled={editingKey !== ''} onClick={() => this.edit(record.key)}>
-						修改
-						</a>
-					);
-					},
-				},
-				];
-			}
-			
-			isEditing = record => record.key === this.state.editingKey;
-			
-			cancel = () => {
-				this.setState({ editingKey: '' });
-			};
-			
-			save(form, key) {
-				form.validateFields((error, row) => {
-				if (error) {
-					return;
-				}
-				const newData = [...this.state.data];
-				const index = newData.findIndex(item => key === item.key);
-				if (index > -1) {
-					const item = newData[index];
-					newData.splice(index, 1, {
-					...item,
-					...row,
-					});
-					this.setState({ data: newData, editingKey: '' });
-				} else {
-					newData.push(row);
-					this.setState({ data: newData, editingKey: '' });
-				}
-				});
-			}
-			
-			edit(key) {
-				this.setState({ editingKey: key });
-			}
-			
-			render() {
-				const components = {
-				body: {
-					cell: EditableCell,
-				},
-				};
-			
-				const columns = this.columns.map(col => {
-				if (!col.editable) {
-					return col;
-				}
-				return {
-					...col,
-					onCell: record => ({
-					record,
-					inputType: col.dataIndex === 'age' ? 'number' : 'text',
-					dataIndex: col.dataIndex,
-					title: col.title,
-					editing: this.isEditing(record),
-					}),
-				};
-				});
-			
-				return (
-				<EditableContext.Provider value={this.props.form}>
-					<Table
-					components={components}
-					dataSource={this.state.data}
-					columns={columns}
-					rowClassName="editable-row"
-					// pagination={{
-					// 	onChange: this.cancel,
-					// }}
-					pagination = {false}
-					/>
-				</EditableContext.Provider>
-				);
-			}
-			}
-			  
-			const WarppedLabelSort = Form.create()(LabelSort);
-
-
-
-
-    return (
-        <>
-        <div className = "title">首页分类</div>
-        <p className = "title-text">主分页</p>
-		<EditableFormTable />
-		<p className = "title-text">标签分类</p>
-		<WarppedLabelSort />
-        </>
-    )
-
+	return (
+		<>
+			<div className = "title">首页分类</div> 
+			<div className = "warn">接口有点没懂   此页面互动请求都没写</div>
+			<WarppedMainSort />
+			<WarppedLabelSort />
+		</>
+	)
 }
+
+
+
 export default IndexSort;

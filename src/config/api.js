@@ -14,7 +14,7 @@ export function topSearchCreate(data) {
     return Axios(url, data, "POST");
 }
 export function getAlltopSearch(params) {
-    const url = "topSearchs/listAll"
+    const url = "topSearchs/listBySchoolId"
     return Axios(spliceUrl(url, params));
 }
 export function deletetopSearch(params) {
@@ -65,11 +65,46 @@ export function createQuestion(data) {
 }
 
 export function getAllActivity(params) {
-    const url = "activities/listAll";
+    const url = "activities/listBySchoolId";
     return Axios(spliceUrl(url, params));
 }
 export function deleteActive(params) {
     const url = "activities/delete";
     return Axios(spliceUrl(url, params),{},"DELETE");
 }
-
+export function createActive(data) {
+    const url = "activities/create";
+    return Axios(url, data, "POST");
+}
+export function removeBlock(data) {
+    const url = "admins/removeBlock";
+    return Axios(url, data, "PUT");
+}
+export function deleteQuestion(params) {
+    const url = "questionBanks/delete";
+    return Axios(spliceUrl(url, params), {}, "DELETE")
+}
+export function getAllLabelCategories() {
+    const url = "labelCategories/listAll";
+    return Axios(url);
+}
+export function getALlCategories() {
+    const url = "categories/listAll";
+    return Axios(url);
+}
+export function getAllmainCategories() {
+    const url = "mainCategories/listAll";
+    return Axios(url);
+}
+export function getCategoriesFirst() {
+    const url = "categories/listFirst";
+    return Axios(url);
+};
+export function createCategories(data) {
+    const url = "categories/create";
+    return Axios(url, data, "POST")
+}
+export function getShowedTopSearch(params) {
+    const url = "topSearchs/listByShowed";
+    return Axios(spliceUrl(url,params))
+}

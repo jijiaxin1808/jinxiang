@@ -112,7 +112,7 @@ const OpenPageContent = (props)=> {
                 data.map(item=> {
                     return (
                         <div key = {item.id} style = {{marginLeft: 20}}>
-                            <div style = {{background:`url(${item.upperImage}),url(${item.bgImage}),${item.bgColor}`}} className = "openPage-page"></div>
+                            <div style = {{backgroundImage:`url(http://blog.csxjh.vip:8000/${item.upperImage})`}} className = "openPage-page"></div>
                             {item.showed?<Button disabled = {true}>使用中</Button>:<Button>上线</Button>}
                             <Button onClick = {()=>{handleDelete(item.id)}} style = {{marginLeft: 30}}>删除</Button>
                         </div>
@@ -267,6 +267,10 @@ const OpenPage = ()=> {
                 </TabPane>
             </Tabs>
             <div className = "warn">还差一个首屏页的状态更改   还有具体的图片叠加效果(等ui图)</div>
+             <div className="djradio-sort-icon" style={{background:`url(https://img.iplaysoft.com/wp-content/uploads/2019/free-images/free_stock_photo_2x.jpg)`,
+             width:"48px",height:"48px"}} ></div>
+<div className="djradio-sort-icon" style={{background:`url(http://blog.csxjh.vip:8000/images/2020/2/20/13c589d1bfaebe8d2cc239099fff936d.png)`,
+             width:"48px",height:"48px"}} ></div>
         </div>
     )
 }

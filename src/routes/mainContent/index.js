@@ -17,6 +17,7 @@ import Push from "../push";
 import User from "../user";
 import Carousel from "../carousel"
 import Activity from "../activity";
+import AllSort from "../allSort";
 
 import "./index.less"
 
@@ -40,6 +41,7 @@ const MainContent = ()=> {
 			<Route path="/manage/user" component={User} />
 			<Route path="/manage/carousel" component={Carousel} />
 			<Route path="/manage/Activity" component={Activity} />
+			<Route path="/manage/allSort" component={AllSort} />
 		</Content>
 	);
 }

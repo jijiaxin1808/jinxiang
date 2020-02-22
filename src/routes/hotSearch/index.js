@@ -12,6 +12,7 @@ const Add = (props)=> {
 	const [confirmLoading, setConfirmLoading] = useState(false);  
 	const [data, setData] = useState([]);
 	const [addDisable, setAddDisbale] = useState(false);
+    const [inputType, setInputType] = useState();
 
 	const { getFieldDecorator, getFieldsValue } = props.form;
 
@@ -29,11 +30,13 @@ const Add = (props)=> {
     },[])
 	
 	useEffect(()=> {	
-		if(addDisable && data.length && data.filter(item => item.showed === true)) {
-			setAddDisbale(true);
+		if(!addDisable && data.length && data.filter(item => item.showed === true).length) {
+            setAddDisbale(true);
+            setVisible(false);
 		}
-		else if(!addDisable&&!data.filter(item => item.showed === true)) {
-		setAddDisbale(false);
+		else if(addDisable&&!data.filter(item => item.showed === true).length) {
+            setAddDisbale(false);
+            setVisible(false);
         }
         
 
@@ -75,8 +78,8 @@ const Add = (props)=> {
 
     const handleOk =async ()=> {
 		setConfirmLoading(true);
-		const {name, type} = getFieldsValue();
-		const newdata = {name, type, content:"书"}
+		const {name, type, content} = getFieldsValue();
+		const newdata = {name, type, content}
 		await API.topSearchCreate(newdata).then(res=> {
 			if(res.data.code === 0) {
 				let newData = [...data]
@@ -115,7 +118,6 @@ const Add = (props)=> {
 			dataIndex: 'type',
 			key:"e",
             render: (text, R) => text==="活动"?"":R.content
-
 		},
 		{
             title: '活动',
@@ -170,10 +172,21 @@ const Add = (props)=> {
 						valuePropName: 'radio-button',
 						defaultValue: "keyWord"
                     })(
-						<Radio.Group  buttonStyle="solid">
+                        <Radio.Group  buttonStyle="solid" 
+                        onChange = {(e)=> {e.target.value==="活动"?setInputType(/^[0-9]\d*$/):setInputType("")}}
+                        >
 							<Radio.Button value="关键词" key = {1}>关键词</Radio.Button>
 							<Radio.Button value="活动" key = {2}>活动</Radio.Button>
 						</Radio.Group>
+                    )}
+                    </Form.Item>
+                    <Form.Item  >
+                    {getFieldDecorator('content', {
+						valuePropName: 'inut',
+                        rules: [{ required: true, message: '请输入内容'}, 
+                        {pattern: inputType, message:"请输入数字ID"}]
+                    })(
+                       <Input placeholder = "请输入内容" />
                     )}
                     </Form.Item>
                 </Form>
@@ -193,27 +206,36 @@ const WarppedAdd = Form.create()(Add);
 const Manage = ()=> {
 
 	const [goodsData, setGoodsData] = useState([]);
-
+    const [handleData, setHandleData] = useState([]);
 	useEffect(()=> {
+        const params = {
+            page: 1,
+            size: 10
+        }
 		API.getGooodstopSearch()
 		.then(res=> {
 			if(res.data.code === 0) {
 				setGoodsData(res.data.data);
 			}
-		})
+        })
+        API.getShowedTopSearch(params)
+        .then(res=> {
+            if(res.data.code === 0) {
+                setHandleData(res.data.data);
+            }
+        })
+        
 	},[])
 
 	const userDelete = (id)=> {
 		API.deleteGoodsTopSearch({id})
 		.then(res=> {
 			if(res.data.code === 0) {
-				const newData = [...goodsData];
-				newData.filter(item=>item.id!==id);
+				const newData = [...goodsData].filter(item=>item.id!==id);
 				setGoodsData(newData);
 			}
 		})
 	}
-
 
     const userColumns = [
         {
@@ -238,7 +260,7 @@ const Manage = ()=> {
             title: '操作',
             dataIndex: 'status',
             key: "handle",
-            render: text => <Button onClick = {()=>{userDelete(text)}}>下线</Button>,
+            render: (text, R) => <Button onClick = {()=>{userDelete(R.id)}}>下线</Button>,
         },
     ];
       
@@ -259,7 +281,7 @@ const Manage = ()=> {
         },
         {
           title: '配置人',
-		  dataIndex: 'name',
+		  dataIndex: 'w',
 		  key: "name",
           render: text => text
         },
@@ -271,13 +293,13 @@ const Manage = ()=> {
         },
         {
             title: '类型',
-			dataIndex: 'keyWord',
-			key: "keyWord",
+			dataIndex: 'type',
+			key: "type",
             render: text => text
         },
         {
             title: '活动id/关键词',
-			dataIndex: 'keyWord',
+			dataIndex: 'content',
 			key:"e",
             render: text => text
         },
@@ -289,29 +311,6 @@ const Manage = ()=> {
           },
       ];
       
-      const handleData = [
-        {
-          id: '1',
-          status: true,
-          name: 32,
-          Aid: 'New York No. 1 Lake Park',
-          keyWord: 'nice'
-        },
-        {
-          id: '2',
-          status: false,
-          name: 42,
-          Aid: 'London No. 1 Lake Park',
-          keyWord: 'loser'
-        },
-        {
-          id: '3',
-          status: true,
-          name: 32,
-          Aid: 'Sidney No. 1 Lake Park',
-          keyWord: 'cool'
-        },
-      ];
 
 
 
@@ -320,8 +319,8 @@ const Manage = ()=> {
         <div>
             <p className = "title-text">用户热门搜索</p>
             <div className = "hotSearch-div-userSearch">
-                <Table columns={userColumns} dataSource={goodsData} className = "hotSearch-table-userSearch" pagination = {false} />
-                <Table columns={userColumns} dataSource={goodsData} className = "hotSearch-table-userSearch" pagination = {false}/>
+                <Table columns={userColumns} dataSource={goodsData.slice(0,5)} className = "hotSearch-table-userSearch" pagination = {false} />
+                <Table columns={userColumns} dataSource={goodsData.slice(5)} className = "hotSearch-table-userSearch" pagination = {false}/>
             </div>
             <p className = "title-text">配置热门搜索</p>
             <Table columns={handleColumns} dataSource={handleData}/>
@@ -344,11 +343,7 @@ const HotSearch = ()=> {
             <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
                     <WarppedAdd />
-					<div className = 'warn'>下线商品热搜接口有问题</div>
-					<div className = 'warn'>新增热搜的实时查询确认没有写</div>
-					<div className = 'warn'>商品热门搜索的数量不够</div>
-					<div className = 'warn'>全部热门搜索的接口</div>
-                    <div className = 'warn'>热门搜索的添加热门搜索  新增的默认状态为展示</div>
+                    <div className = 'warn'>自定义的搜索的  配置人 和展示范围  缺少数据</div>
                 </TabPane>
                 <TabPane tab="管理热门搜索" key="2">
                     <Manage />

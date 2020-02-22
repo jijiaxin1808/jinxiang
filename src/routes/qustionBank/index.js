@@ -24,7 +24,7 @@ const QustionBank = (props)=> {
                 .then(res=> {
                     if(res.data.code === 0) {
                         const newData = [...data];
-                        newData.unshift(Qdata)
+                        newData.unshift({...Qdata,id:res.data.data.id})
                         setData(newData);
                         setModalLoading(false);
                         setMoadlVisible(false);
@@ -53,6 +53,12 @@ const QustionBank = (props)=> {
     },[])
 
     const columns = [
+        {
+        title: 'id',
+        dataIndex: 'id',
+        key: 'id',
+        render: text => text
+        },
       {
         title: '问题',
         dataIndex: 'question',
@@ -83,8 +89,23 @@ const QustionBank = (props)=> {
         dataIndex: "option",
         render: text => text.split("#")[3]
       },
+      {
+        title: '操作',
+        key: 'delete',
+        dataIndex: "id",
+        render: text => <Button onClick = {()=> {deleteQuestion(text)}}>删除</Button>
+      },
     ];
-    
+    const deleteQuestion = (id)=> {
+        API.deleteQuestion({id})
+        .then(res=> {
+            if(res.data.code === 0) {
+                const newData = [...data].filter(item=> item.id!==id);
+                setData(newData);
+            }
+        })
+    }
+
 
     
     return (
@@ -94,7 +115,7 @@ const QustionBank = (props)=> {
             <p style = {{display: "inline-block", marginRight: 700}}>为您的学校设置题库，以确保您的用户均为本校学生。</p>
             <Button onClick = {()=> {setMoadlVisible(true)}} type = "primary">新增</Button>
             <Modal
-					title="请选择封禁时长"
+					title="新增题目"
 					visible={modalVisible}
 					confirmLoading={modalLoading}
 					onOk={handleOk}
@@ -108,35 +129,35 @@ const QustionBank = (props)=> {
                 <Form  >
                     <Form.Item>
                     {getFieldDecorator('question', {
-                        rules: [{ required: true, message: '请输入问题' }],
+                        rules: [{ required: true, message: '请输入问题' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="问题"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A1", {
-                        rules: [{ required: true, message: '请输入回答1' }],
+                        rules: [{ required: true, message: '请输入回答1' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="正确选项"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A2", {
-                        rules: [{ required: true, message: '请输入回答2' }],
+                        rules: [{ required: true, message: '请输入回答2' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="错误选项1"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A3", {
-                        rules: [{ required: true, message: '请输入回答3' }],
+                        rules: [{ required: true, message: '请输入回答3' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="错误选项2"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A4", {
-                        rules: [{ required: true, message: '请输入回答4' }],
+                        rules: [{ required: true, message: '请输入回答4' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="错误选项3"/>
                     )}
@@ -145,10 +166,6 @@ const QustionBank = (props)=> {
                 </>
 			</Modal>
             <Table columns={columns} dataSource={data} style = {{marginTop: 20}} />
-            <div className = "warn">额  暂时没发现bug</div>
-            <div className = "warn">新增modal标题错误</div>
-            <div className = "warn">莫得删除按钮</div>
-            <div className = "warn">额 字数上限</div>
         </div>
     )
 }
