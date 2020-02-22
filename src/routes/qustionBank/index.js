@@ -129,35 +129,35 @@ const QustionBank = (props)=> {
                 <Form  >
                     <Form.Item>
                     {getFieldDecorator('question', {
-                        rules: [{ required: true, message: '请输入问题' },{max:10,message:"超过字数限制"}],
+                        rules: [{ required: true, message: '请输入问题' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="问题"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A1", {
-                        rules: [{ required: true, message: '请输入回答1' }],
+                        rules: [{ required: true, message: '请输入回答1' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="正确选项"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A2", {
-                        rules: [{ required: true, message: '请输入回答2' }],
+                        rules: [{ required: true, message: '请输入回答2' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="错误选项1"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A3", {
-                        rules: [{ required: true, message: '请输入回答3' }],
+                        rules: [{ required: true, message: '请输入回答3' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="错误选项2"/>
                     )}
                     </Form.Item>
                     <Form.Item>
                     {getFieldDecorator("A4", {
-                        rules: [{ required: true, message: '请输入回答4' }],
+                        rules: [{ required: true, message: '请输入回答4' },{max:20,message:"超过字数限制"}],
                     })(
                         <Input placeholder="错误选项3"/>
                     )}
@@ -166,10 +166,6 @@ const QustionBank = (props)=> {
                 </>
 			</Modal>
             <Table columns={columns} dataSource={data} style = {{marginTop: 20}} />
-            <div className = "warn">额  暂时没发现bug</div>
-            <div className = "warn">新增modal标题错误</div>
-            <div className = "warn">莫得删除按钮</div>
-            <div className = "warn">额 字数上限</div>
         </div>
     )
 }
