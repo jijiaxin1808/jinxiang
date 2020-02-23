@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Table, Input, InputNumber, Popconfirm, Form, Button, Modal, Cascader, Tabs, Tag } from "antd";
+import { Table, Input,  Form, Button, Modal, Tabs } from "antd";
 import * as API from "../../config/api";
 
 const { TabPane } = Tabs;
