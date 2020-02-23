@@ -4,8 +4,6 @@ import './index.less';
 import Axios from 'axios';
 import Forms from './form';
 
-const {Option} = Select;
-
 export default class Carousels extends React.Component{
     constructor(props){
         super(props);
@@ -149,11 +147,20 @@ export default class Carousels extends React.Component{
         this.ChangeInput = this.ChangeInput.bind(this);
         this.SubmitDate = this.SubmitDate.bind(this);
         this.ClickedForms = this.ClickedForms.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
     }
     componentDidMount(){
         Axios.get('http://blog.csxjh.vip:8000/carousels/listAll').then(res=>{
             // this.state.dataSource = res;
-            console.log(res);
+    //         "code": 0,
+    // "data": [
+    //     {
+    //         "id": 3,
+    //         "type": "活动",
+    //         "content": "2",
+    //         "showed": false
+    //     }
+    // ]
         }).catch(()=>{
             console.log("轮播图获取失败");
         })
@@ -212,6 +219,12 @@ export default class Carousels extends React.Component{
             Show: true
           })
       }
+    
+    handleCancel(){
+        this.setState({
+            Show: false
+        })
+    }
 
     render(){
         return (
@@ -246,7 +259,7 @@ export default class Carousels extends React.Component{
                 </Carousel>
                 </div> */}
                 <div className={this.state.Show?"carousels-form":"Hidden"} >
-                    <Forms />
+                    <Forms handleCancel={this.handleCancel} />
                 </div>
                 
             </div>
