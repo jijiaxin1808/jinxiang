@@ -75,9 +75,19 @@ export function deleteActive(params) {
 }
 export function createCarousels(params) {
     const url = "carousels/create";
-    return Axios(spliceUrl(url, params),{},"POST");
+    return Axios(url, params,{},"POST");
 }
 export function updateCarousels(params) {
     const url = "carousels/update";
-    return Axios(spliceUrl(url, params),{},"POST");
+    return Axios(url, params,{},"POST");
+}
+
+export function ListAllCarousels(params) {
+    const url = "carousels/listAll";
+    return Axios(spliceUrl(url, params));
+}
+
+export function deleteCarousels(params) {
+    const url = "carousels/delete";
+    return Axios(spliceUrl(url, params),{},"DELETE");
 }

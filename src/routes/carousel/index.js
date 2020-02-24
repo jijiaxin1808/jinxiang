@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, Table, Carousel, Popconfirm, Input, Select } from 'antd';
 import './index.less';
-import Axios from 'axios';
 import Forms from './form';
+import * as API from '../../config/api';
 
 export default class Carousels extends React.Component{
     constructor(props){
@@ -52,95 +52,7 @@ export default class Carousels extends React.Component{
             ],
 
             // dataSource是从后端返回的图片信息
-            dataSource: [
-                {
-                    states: "当前",
-                    num: "9",
-                    name: "过大年",
-                    ID: "0004",
-                    picture: "",
-                    operate: "下线",
-                    key: '1'
-                },
-                {
-                    states: "当前",
-                    num: "8",
-                    name: "过大年",
-                    ID: "0004",
-                    picture: "",
-                    operate: "下线",
-                    key: '2'
-                },
-                {
-                    states: "当前",
-                    num: "7",
-                    name: "过大年",
-                    ID: "0004",
-                    picture: "",
-                    operate: "下线",
-                    key: '3'
-                },
-                {
-                    states: "当前",
-                    num: "6",
-                    name: "过大年",
-                    ID: "0004",
-                    picture: "",
-                    operate: "下线",
-                    key: '4'
-                },
-                {
-                    states: "历史",
-                    num: "5",
-                    name: "校园美景",
-                    ID: "",
-                    picture: "1.jpg",
-                    operate: "删除",
-                    key: '5'
-                },
-                {
-                    states: "历史",
-                    num: "4",
-                    name: "校园美景",
-                    ID: "",
-                    picture: "1.jpg",
-                    operate: "删除",
-                    key: '6'
-                },
-                {
-                    states: "历史",
-                    num: "3",
-                    name: "校园美景",
-                    ID: "",
-                    picture: "1.jpg",
-                    operate: "删除",
-                    key: '7'
-                },
-                {
-                    states: "历史",
-                    num: "2",
-                    name: "校园美景",
-                    ID: "",
-                    picture: "1.jpg",
-                    operate: "删除",
-                    key: '8'
-                },
-                {
-                    states: "历史",
-                    num: "1",
-                    name: "校园美景",
-                    ID: "",
-                    picture: "1.jpg",
-                    operate: "删除",
-                    key: '9'
-                }
-                
-            ],
-            fields: {
-                Name: "",
-                Activity: "",
-                Picture: "",
-            }
+            dataSource: [],
         }
         this.ClickedButton = this.ClickedButton.bind(this);
         this.ClickedTable = this.ClickedTable.bind(this);
@@ -150,27 +62,30 @@ export default class Carousels extends React.Component{
         this.handleCancel = this.handleCancel.bind(this);
     }
     componentDidMount(){
-        Axios.get('http://blog.csxjh.vip:8000/carousels/listAll').then(res=>{
-            // this.state.dataSource = res;
-    //         "code": 0,
-    // "data": [
-    //     {
-    //         "id": 3,
-    //         "type": "活动",
-    //         "content": "2",
-    //         "showed": false
-    //     }
-    // ]
-        }).catch(()=>{
-            console.log("轮播图获取失败");
+        const params = {
+            page:1,
+            size:10  
+        }
+        API.ListAllCarousels(params).then(res=>{
+            if(res.data.code === 0) {
+                const Data = res.data.data;
+                Data.forEach(item=>{
+                    item.states = item.showed?"当前":"历史";
+                    item.num = item.id;
+                    item.name = "Data.name";
+                    item.ID = item.type==="活动"?item.content:"";
+                    item.picture = item.type==="图片"?item.content:"";
+                    item.operate = item.showedz?"下线":"删除";
+                    item.key = item.id;
+                })
+                console.log(Data)
+                this.setState({
+                    dataSource: Data
+                })
+            }
         })
     }
 
-    fields =  {
-        name: "",
-        ID: "",
-        picture: "",
-    }
 
     ChangeInput(e){
         this.fields.name = e.target.value;
@@ -211,7 +126,25 @@ export default class Carousels extends React.Component{
     handleDelete = key => {
         const dataSource = [...this.state.dataSource];
         this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-      };
+        API.deleteCarousels(key).then(res=>{
+            if(res.data.code === 0) {
+                const Data = res.data.data;
+                Data.forEach(item=>{
+                    item.states = item.showed?"当前":"历史";
+                    item.num = item.id;
+                    item.name = "Data.name";
+                    item.ID = item.type==="活动"?item.content:"";
+                    item.picture = item.type==="图片"?item.content:"";
+                    item.operate = item.showedz?"下线":"删除";
+                    item.key = item.id;
+                })
+                console.log(Data)
+                this.setState({
+                    dataSource: Data
+                })
+            }
+        })
+    };
     
     // 点击新填后，表单出现
     ClickedForms(){
@@ -242,22 +175,17 @@ export default class Carousels extends React.Component{
                 <div>
                     <Table columns={this.state.columns} dataSource={this.state.dataSource} />
                 </div>
-                {/* <div className="carousels-show">
+                <div className="carousels-show">
                 <Carousel>
-                    <div>
-                      <a href="" ><img src="../../../public/asset/wenjian.png"/></a>
-                    </div>
-                    <div>
-                      <h3>2</h3>
-                    </div>
-                    <div>
-                      <h3>3</h3>
-                    </div>
-                    <div>
-                      <h3>4</h3>
-                    </div>
+                    {this.state.dataSource.map((item, index)=>{
+                        return(
+                            <div>
+                                {/* <img src={this.state.dataSource.} */}
+                            </div>
+                        )
+                    })}
                 </Carousel>
-                </div> */}
+                </div>
                 <div className={this.state.Show?"carousels-form":"Hidden"} >
                     <Forms handleCancel={this.handleCancel} />
                 </div>
@@ -266,5 +194,84 @@ export default class Carousels extends React.Component{
         )
     }
 }
-// {"Type":{"name":"Type","value":"activity","touched":true,"dirty":false,"validating":false}}
-// {"Activity:":{"name":"Activity:","value":"cdv","touched":true,"dirty":true,"validating":true}}
+// {
+//     states: "当前",
+//     num: "9",
+//     name: "过大年",
+//     ID: "0004",
+//     picture: "",
+//     operate: "下线",
+//     key: '1'
+// },
+// {
+//     states: "当前",
+//     num: "8",
+//     name: "过大年",
+//     ID: "0004",
+//     picture: "",
+//     operate: "下线",
+//     key: '2'
+// },
+// {
+//     states: "当前",
+//     num: "7",
+//     name: "过大年",
+//     ID: "0004",
+//     picture: "",
+//     operate: "下线",
+//     key: '3'
+// },
+// {
+//     states: "当前",
+//     num: "6",
+//     name: "过大年",
+//     ID: "0004",
+//     picture: "",
+//     operate: "下线",
+//     key: '4'
+// },
+// {
+//     states: "历史",
+//     num: "5",
+//     name: "校园美景",
+//     ID: "",
+//     picture: "1.jpg",
+//     operate: "删除",
+//     key: '5'
+// },
+// {
+//     states: "历史",
+//     num: "4",
+//     name: "校园美景",
+//     ID: "",
+//     picture: "1.jpg",
+//     operate: "删除",
+//     key: '6'
+// },
+// {
+//     states: "历史",
+//     num: "3",
+//     name: "校园美景",
+//     ID: "",
+//     picture: "1.jpg",
+//     operate: "删除",
+//     key: '7'
+// },
+// {
+//     states: "历史",
+//     num: "2",
+//     name: "校园美景",
+//     ID: "",
+//     picture: "1.jpg",
+//     operate: "删除",
+//     key: '8'
+// },
+// {
+//     states: "历史",
+//     num: "1",
+//     name: "校园美景",
+//     ID: "",
+//     picture: "1.jpg",
+//     operate: "删除",
+//     key: '9'
+// }
