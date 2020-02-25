@@ -189,13 +189,7 @@ const SecondSort = (props)=> {
         const newData = sortData.filter(item => item.id === option);
         setData(newData[0]&&newData[0].secondList);
     },[option])
-
-    useEffect(()=> {
-        data&&data.sort((item1, item2)=> {return item1.priority>item2.priority})
-    },[data])
-
-
-
+    
     const selectChange = (value)=> {
         setOption(value);
     }
@@ -344,7 +338,6 @@ const AllSort = ()=> {
         <Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
         <TabPane tab="一级分类" key="1">
             <WarpedFirstSort />
-            <div className = "warn">二级分类都没完成</div>
         </TabPane>
         <TabPane tab="二级分类" key="2">
             <WarppedSecondSort />

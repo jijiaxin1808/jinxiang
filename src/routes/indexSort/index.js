@@ -1,19 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
-import { Table, Input, InputNumber, Popconfirm, Form, Button, Modal, Cascader } from "antd";
-import { AlphaPicker } from "react-color";
+import { Table, Input, InputNumber, Popconfirm, Form, Button, Modal, Cascader, Select } from "antd";
+// import { AlphaPicker } from "react-color";
 import * as API from "../../config/api";
 
 
-
-
-
-
-
-
-
-
-
+const { Option } = Select;
 
 const MainSort = (props)=> {
 	const [ data, setData ] = useState([]);
@@ -146,39 +138,101 @@ const LabelSort = (props)=> {
 	const [ visible, setVisible ] = useState(false);
 	const [ confirmLoading, setConfirmLoading ] = useState(false);
 	const [ modalData, setModalData ] = useState({})
-	const [ option, setOption ] = useState([]);
-	const { getFieldDecorator, setFieldsValue } = props.form;
+
+
+	const [ optionData, setOptionData ] = useState([]); //  这个是全部的1, 2级分类的数据
+	const [ secondOptionData, setSecondOptionData ] = useState([]);  //  这个是根据所选的一级分类变化的二级分类
+	const [ option, setOption ] = useState([]); // 当前选择的一级id
+	const [ optionS, setOptionS ] = useState([]) // 当前选择的二级id
+	const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
 
 	useEffect(()=> {
 		API.getAllLabelCategories()
 		.then(res=> {
 			if(res.data.code === 0) {
-				setData(res.data.data)
+				setData(res.data.data);
 			}
 		})
 		API.getALlCategories()
 		.then(res=> {
 			if(res.data.code === 0 ) {
-				const newData = res.data.data.map(item=> ({
-						label:item.name,
-						value: item.name,
-						children: item.secondList.map(item=> ({	
-							label:item.name,
-							value: item.name
-					}))
-				}))
-				setOption(newData);
+				setOptionData(res.data.data);
 			}
 		})
 	}, [])
+	useEffect(()=> {
+		const newData = optionData.filter(item => item.id === option);
+		if(newData[0]&&newData[0].secondList.length) {
+			setSecondOptionData(newData[0].secondList);
+		}
 
-	const handleOk = ()=> {
-		setVisible(false);
-	}
+    },[option])
+
+    const handleOk =async ()=> {
+        setConfirmLoading(true);
+        if(modalData&&modalData.id) {
+            await validateFields((err, values)=> {
+                if(!err) {
+                    // const Qdata = {
+                    //     id: modalData.id,
+                    //     parentId: option,
+                    //     level: 2,
+                    //     name: values.name,
+                    //     priority: values.priority
+                    // }
+                    // API.updateCategories(Qdata)
+                    // .then(res=> {
+                    //     if(res.data.code === 0) {
+                    //         let newData = [...data];
+                    //         const index = data.findIndex(item=>item.id === Qdata.id);
+                    //         newData.splice(index, 1, Qdata);
+                    //         newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
+                    //         setData(newData);
+                    //         setConfirmLoading(false);
+                    //         setVisible(false);
+                    //     }
+                    // })
+                }
+            })
+        }
+        else {
+            await validateFields((err, values)=> {
+                if(!err) {
+					const categoryName = optionS? secondOptionData.filter(item=>item.id==optionS)[0].name:optionData.filter(item=>item.id==optionS)[0].name
+                    const Qdata = {
+                        level: optionS?2:1,
+                        name: values.name,
+						priority: values.priority,
+						categoryName:categoryName,
+						categoryId:optionS?optionS:option
+					}
+					console.log(Qdata);
+                    API.createLabelCategories(Qdata)
+                    .then(res=> {
+                        if(res.data.code === 0) {
+                            let newData = [...data];
+                            newData.push(res.data.data);
+                            newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
+							setData(newData);
+							setVisible(false);
+                            setConfirmLoading(false);
+                        }
+                    })
+                }
+            })
+        }
+    }
 	const handleCancel = ()=> {
 		setVisible(false);
 		setFieldsValue({name:"",sort:"",priority:""});
 	}
+	const selectChange = (value)=> {
+		setOption(value);
+	}
+	const selectChangeS = (value)=> {
+		setOptionS(value);
+	}
+
 
 	const columns = [
 		{
@@ -193,7 +247,7 @@ const LabelSort = (props)=> {
 		},
 		{
 			title: '分类',
-			dataIndex: 'categoryId',
+			dataIndex: 'categoryName',
 			editable: true,
 		},
 		{
@@ -236,11 +290,27 @@ const LabelSort = (props)=> {
 					/>,
 				)}
 				</Form.Item>
-				<Form.Item label = "分类">
-				{getFieldDecorator('sort', {
-					rules: [{ required: true, message: 'Please input your Password!' }],
+				<Form.Item label = "一级分类">
+				{getFieldDecorator('sort1', {
+					rules: [{ required: true, message: '请选择一级分类' }],
 				})(
-					<Cascader options={option}  placeholder="请选择分类" />
+					<Select defaultValue="" style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
+					{
+						optionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+					}
+					</Select>
+				)}
+				</Form.Item>
+				<Form.Item label = "二级分类">
+				{getFieldDecorator('sort2', {
+					// rules: [{ required: true, message: '请选择二级分类'}],
+				})(
+					<Select defaultValue="" style={{ width: 250 }} onChange={(e)=> {selectChangeS(e)}}>
+						<Option value = {""}>{"选择全部二级"}</Option>
+					{
+						secondOptionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+					}
+					</Select>
 				)}
 				</Form.Item>
 				<Form.Item>
@@ -265,7 +335,7 @@ const IndexSort = ()=> {
 	return (
 		<>
 			<div className = "title">首页分类</div> 
-			<div className = "warn">接口有点没懂   此页面互动请求都没写</div>
+			<div className = "warn">标签分类 修改标签分类的接口没有    然后现在选择一级情况有bug</div>
 			<WarppedMainSort />
 			<WarppedLabelSort />
 		</>
