@@ -108,3 +108,11 @@ export function getShowedTopSearch(params) {
     const url = "topSearchs/listByShowed";
     return Axios(spliceUrl(url,params))
 }
+export function updateCategories(data) {
+    const url = "categories/update";
+    return Axios(url, data, "PUT");
+}
+export function createLabelCategories(data) {
+    const url = "labelCategories/create";
+    return Axios(url, data, "POST");
+}

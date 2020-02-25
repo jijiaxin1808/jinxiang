@@ -37,22 +37,9 @@ const Add = (props)=> {
           }
     };
 
-    const infoContent = (values)=> {
-        const data = Object.values(values);
-        console.log(data);
-        return (
-            <List
-            header={<div>Header</div>}
-            footer={<div>Footer</div>}
-            dataSource={data}
-            />
-        )
-    }
-
 
     const handleBlockOk =async ()=> {
 		setBlockModelLoading(true);
-
         await props.form.validateFields((err, values) => {
               if (!err) {
                 API.createActive({...values, imgUrl})
@@ -108,15 +95,18 @@ const Add = (props)=> {
           key: 'status',
           dataIndex: 'status',
           render: (text, R) => {
-                if(text === 0) {
-                    return "未审核"
-                }
-                else if((text === 3||text ===1)&&!R.failReason) {
-                    return "审核未通过"
-                }
-                else if(text === 4) {
-                    return "审核已通过"
-                }
+            if(text === 0) {
+                return "未审核"
+            }
+            else if((text === 3||text ===1)&&!R.failReason) {
+                return "审核中"
+            }
+            else if((text === 3||text ===1)&&R.failReason) {
+                return "审核未通过"
+            }
+            else if(text === 4) {
+                return "审核已通过"
+            }
           }
 		},
 		{
@@ -164,7 +154,7 @@ const Add = (props)=> {
                         </>
                     )
                 }
-                else if((R.status === 3||R.status ===1)&&!R.failReason) {
+                else if(R.status === 3||R.status ===1) {
                     return (
                         <>
                         <Popconfirm
@@ -205,8 +195,9 @@ const Add = (props)=> {
                         content={<><p>名称: {R.name}</p>
                         <p>简介: {R.profile}</p>
                         <p>链接: {R.link}</p>
-                        <p>图片: {R.image}</p>
-                        <p>未通过理由: </p>
+                        <p>关键词: {R.keyword}</p>
+                        {R.image?<p>图片: {R.image}</p>:""}
+                        {R.failReason?<p>图片: {`${R.failReason}请去修改后再次审核`}</p>:""}
                         </>}>
                         <Button>查看</Button>
                         </Popover>
@@ -234,10 +225,7 @@ const Add = (props)=> {
         <p style = {{display: "inline-block"}}>您的活动需符合《近享高校公约》，若有违反，近享团队有权给予不通过，或直接下线您的活动。</p>
         <Button type = "primary" onClick = {()=> {setBlockVisibly(true)}}>新增</Button>
         <Table columns = {columns} dataSource = {data} />
-        <div className = "warn">数据不足 查看功能搁浅</div>
-        <div className = "warn">状态码没懂 新增确认搁浅</div>
-        <div className = "warn">状态码没懂 审核搁浅</div>
-        <div className = "warn">活动被我删没了 但是删除功能是好使的</div>
+        <div className = "warn">因为现在权限管理还不清晰 现在都是A用户 审核搁浅</div>
         <Modal
             title="新增活动"
             visible={blockVisibly}
@@ -286,7 +274,7 @@ const Add = (props)=> {
             </Form>
             <Upload {...Props}>
                 <Button>
-                    <Icon type="upload" /> Click to Upload
+                    <Icon type="upload" /> 上传图片
                 </Button>
             </Upload>
         </Modal>
@@ -328,28 +316,82 @@ const Manage = ()=> {
           title: '当前状态',
           key: 'status',
           dataIndex: 'status',
-          render: text => text
+          render: (text, R) => {
+            if(text === 0) {
+                return "未审核"
+            }
+            else if((text === 3||text ===1)&&!R.failReason) {
+                return "审核中"
+            }
+            else if((text === 3||text ===1)&&R.failReason) {
+                return "审核未通过"
+            }
+            else if(text === 4) {
+                return "审核已通过"
+            }
+      }
 		},
 		{
 			title: '活动id',
 			key: 'activeID',
 			dataIndex: 'id',
 			render: text => "额 还没有"
-		// 	<Popconfirm
-		// 	title="确定永久封禁当前用户?"
-		// 	onConfirm={()=> {apply(text)}}
-		// 	onCancel={()=>{}}
-		// 	okText= "确认"
-		// 	cancelText="取消"
-		//   >
-		// 	<Button >申请</Button>
-		//   </Popconfirm>,
         },
         {
             title: "操作",
-            key: 'status',
+            key: 'aha',
             dataIndex: 'status',
-            render: (text, R) => <Button>查看</Button>
+            render: (text, R) =>{
+                if(R.status === 0) {
+                    return (
+                        <>
+                        <Popover 
+                        content={<><p>名称: {R.name}</p>
+                        <p>简介: {R.profile}</p>
+                        <p>链接: {R.link}</p>
+                        <p>图片: {R.image}</p>
+                        <p>未通过理由: </p>
+                        </>}>
+                        <Button>查看</Button>
+                        </Popover>
+                        <Button>提交审核</Button>
+                        </>
+                    )
+                }
+                else if((R.status === 3||R.status ===1)&&!R.failReason) {
+                    return (
+                        <>
+                        <Popover 
+                        content={<><p>名称: {R.name}</p>
+                        <p>简介: {R.profile}</p>
+                        <p>链接: {R.link}</p>
+                        <p>图片: {R.image}</p>
+                        <p>未通过理由: </p>
+                        </>}>
+                        <Button>查看</Button>
+                        </Popover>
+                        <Button>修改</Button>
+                        </> 
+                    )
+                }
+                else if(R.status === 4) {
+                    return (
+                        <>
+                        <Popover 
+                        content={<><p>名称: {R.name}</p>
+                        <p>简介: {R.profile}</p>
+                        <p>链接: {R.link}</p>
+                        <p>关键词: {R.keyword}</p>
+                        {R.image?<p>图片: {R.image}</p>:""}
+                        {R.failReason?<p>图片: {`${R.failReason}请去修改后再次审核`}</p>:""}
+                        </>}>
+                        <Button>查看</Button>
+                        </Popover>
+                        </> 
+                    )
+                }
+            }
+
           },
     ];
 
