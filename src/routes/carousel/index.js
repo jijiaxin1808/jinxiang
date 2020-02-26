@@ -72,11 +72,10 @@ export default class Carousels extends React.Component{
                 Data.forEach(item=>{
                     item.states = item.showed?"当前":"历史";
                     item.num = item.id;
-                    item.name = "Data.name";
+                    item.name = item.name;
                     item.ID = item.type==="活动"?item.content:"";
                     item.picture = item.type==="图片"?item.content:"";
                     item.operate = item.showedz?"下线":"删除";
-                    item.key = item.id;
                 })
                 console.log(Data)
                 this.setState({
@@ -123,28 +122,28 @@ export default class Carousels extends React.Component{
     }
     ClickedTable(e){
     }
-    handleDelete = key => {
-        const dataSource = [...this.state.dataSource];
-        this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-        API.deleteCarousels(key).then(res=>{
-            if(res.data.code === 0) {
-                const Data = res.data.data;
-                Data.forEach(item=>{
-                    item.states = item.showed?"当前":"历史";
-                    item.num = item.id;
-                    item.name = "Data.name";
-                    item.ID = item.type==="活动"?item.content:"";
-                    item.picture = item.type==="图片"?item.content:"";
-                    item.operate = item.showedz?"下线":"删除";
-                    item.key = item.id;
-                })
-                console.log(Data)
-                this.setState({
-                    dataSource: Data
-                })
-            }
-        })
-    };
+    // handleDelete = key => {
+    //     const dataSource = [...this.state.dataSource];
+    //     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+    //     API.deleteCarousels(key).then(res=>{
+    //         if(res.data.code === 0) {
+    //             const Data = res.data.data;
+    //             Data.forEach(item=>{
+    //                 item.states = item.showed?"当前":"历史";
+    //                 item.num = item.id;
+    //                 item.name = "Data.name";
+    //                 item.ID = item.type==="活动"?item.content:"";
+    //                 item.picture = item.type==="图片"?item.content:"";
+    //                 item.operate = item.showedz?"下线":"删除";
+    //                 item.key = item.id;
+    //             })
+    //             console.log("Data", Data)
+    //             this.setState({
+    //                 dataSource: Data
+    //             })
+    //         }
+    //     })
+    // };
     
     // 点击新填后，表单出现
     ClickedForms(){
