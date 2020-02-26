@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./index.less";
 import * as API from "../../config/api";
 import { Tabs, Divider, Form, Input, Icon, Button, Table, Modal, Radio, message, Popconfirm } from "antd";
-
+import emmiter from "../../utils/events";
 
 const { TabPane } = Tabs;
 
@@ -15,22 +15,22 @@ const UserManage = (props)=> {
 	const [blockId, setBlockid] = useState();
 
     const handleSubmit = e => {
-          e.preventDefault();
-          props.form.validateFields((err, values) => {
-            if (!err) {
-            const params = {
-                page:1,
-                size:10,
-                name:values.username
-            }
-            API.searchUsers(params)
-            .then(res=> {
-                if(res.data.code === 0) {
-                    setData(res.data.data);
-                }
-            })
-            }
-          });
+		e.preventDefault();
+		props.form.validateFields((err, values) => {
+		if (!err) {
+		const params = {
+			page:1,
+			size:10,
+			name:values.username
+		}
+		API.searchUsers(params)
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data);
+			}
+		})
+		}
+		});
 	}
 
 	const apply = async (id)=> {
@@ -38,6 +38,7 @@ const UserManage = (props)=> {
 			userId: id,
 			blockDays: 0
 		}
+
 		await API.blockUser(newdata)
 		.then(res=> {
 			if(res.data.code === 0) {
@@ -75,13 +76,11 @@ const UserManage = (props)=> {
 			onCancel={()=>{}}
 			okText= "确认"
 			cancelText="取消"
-		  >
-			<Button >申请</Button>
-		  </Popconfirm>,
+			>
+				<Button>申请</Button>
+			</Popconfirm>
 		},
     ];
-	
-
     const handleBlockOk =async ()=> {
 		setBlockModelLoading(true);
 
@@ -89,12 +88,14 @@ const UserManage = (props)=> {
 			userId: blockId,
 			blockDays: blockTime
 		}
+
 		await API.blockUser(newdata)
 		.then(res=> {
 			if(res.data.code === 0) {
-
+				emmiter.emit("handleUsers")
 			}
 		})
+
 		setBlockVisibly(false);
 		setBlockModelLoading(false);
 		setBlockid();
@@ -123,7 +124,7 @@ const UserManage = (props)=> {
                     prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="用户名"
                     onChange = {()=>{setData()}}
-                  />,
+                  />
                 )}
               </Form.Item>
               <Form.Item>
@@ -151,25 +152,33 @@ const UserManage = (props)=> {
                 {data?<>{data.length?<Table columns = {columns} dataSource = {data} /> :<div>搜索的用户不存在</div>}</>:<></>}
         </div>
     )
-	
 }
 const WarppedUserManage = Form.create()(UserManage);
 
 const BlcakList = ()=> {
-
+	const Pdata = {
+		page: 1,
+		size: 10
+	}
 	const [data, setData] = useState([]);
-
-	useEffect(()=> {
-		const Pdata = {
-			page: 1,
-			size: 10
-		} 
+	const eventEmmit = emmiter.addListener("handleUsers", ()=> {
 		API.getBlockedList(Pdata)
 		.then(res=> {
 			if(res.data.code === 0) {
 				setData(res.data.data);
 			}
 		})
+	})
+	useEffect( async ()=> {
+		await API.getBlockedList(Pdata)
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data);
+			}
+		})
+		return ()=> {
+			emmiter.removeListener(eventEmmit);
+		}
 	},[])
 
 
@@ -211,7 +220,6 @@ const BlcakList = ()=> {
 			}
 		})
     }
-    
 
     return (
         <div>
@@ -219,24 +227,23 @@ const BlcakList = ()=> {
             <Table columns = {columns} dataSource = {data} />
         </div>
     )
- 
 }
 
 const Users = ()=> {
 
     return (
-        <div>
-            <div className = "title">用户管理</div>
-            <Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
-                <TabPane tab="用户管理" key="1">
-                    <WarppedUserManage />
-					<div className = "warn">还差一个封禁解除接口</div>
-                </TabPane>
-                <TabPane tab="黑名单" key="2">
-                    <BlcakList />
-                </TabPane>
-            </Tabs>
-        </div>
+        <>
+		<div className = "title">用户管理</div>
+		<Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
+			<TabPane tab="用户管理" key="1">
+				<WarppedUserManage />
+				<div className = "warn">还差一个封禁解除接口</div>
+			</TabPane>
+			<TabPane tab="黑名单" key="2">
+				<BlcakList />
+			</TabPane>
+		</Tabs>
+        </>
     )
 }
 

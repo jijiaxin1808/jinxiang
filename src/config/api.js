@@ -116,3 +116,7 @@ export function createLabelCategories(data) {
     const url = "labelCategories/create";
     return Axios(url, data, "POST");
 }
+export function deleteLabelCategories(params) {
+    const url = "labelCategories/delete";
+    return Axios(spliceUrl(url, params), {}, "DELETE");
+}
