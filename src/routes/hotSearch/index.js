@@ -268,12 +268,6 @@ const Manage = ()=> {
     
     const handleColumns = [
         {
-          title: '状态',
-          dataIndex: 'status',
-          key: "status",
-          render: text => text?"当前":"历史",
-        },
-        {
           title: '序号',
 		  dataIndex: 'id',
 		  key:"id",

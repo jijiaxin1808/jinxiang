@@ -258,8 +258,8 @@ const LabelSort = (props)=> {
 		{
 			title: '操作',
 			dataIndex: 'operation',
-			render: (text, record) => <Button onClick = {()=> {setVisible(true); 
-				setFieldsValue(record);
+			render: (text, record) => <Button onClick = {()=> { setFieldsValue(record);setVisible(true); 
+
 			}}>修改</Button>
 		}
 	];

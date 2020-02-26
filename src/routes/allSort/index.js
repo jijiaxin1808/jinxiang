@@ -241,6 +241,7 @@ const SecondSort = (props)=> {
                             newData.push(res.data.data);
                             newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
                             setData(newData);
+                            setVisible(false);
                             setConfirmLoading(false);
                         }
                     })
