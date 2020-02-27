@@ -128,3 +128,11 @@ export function updateMainSort(data) {
     const url = "mainCategories/update";
     return Axios(url,data,"PUT");
 }
+export function createMainCategories(data) {
+    const url = "mainCategories/create";
+    return Axios(url,data,"POST");
+}
+export function deleteMainCategories(params) {
+    const url = "mainCategories/delete";
+    return Axios(spliceUrl(url, params), {}, "DELETE")
+}

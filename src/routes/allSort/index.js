@@ -121,7 +121,7 @@ const FirstSort = (props)=> {
     return (
         <>
         <div className = "title-text" style = {{display: "inline-block", marginRight:600}}>编辑一级分类</div>
-        <Button onClick = {()=> {setVisible(true)}}>新增</Button>
+        <Button onClick = {()=> {setVisible(true)}} type = "primary">新增</Button>
         <Table
         dataSource={data}
         columns={columns}
@@ -291,7 +291,7 @@ const SecondSort = (props)=> {
                 fristOptions.map(item=><Option value = {item.id}>{item.name}</Option>)
             }
         </Select>
-        <Button onClick = {()=> {setVisible(true)}} disabled = {!option}>新增</Button>
+        <Button onClick = {()=> {setVisible(true)}} disabled = {!option} type = "primary">新增</Button>
         <Table
         dataSource={data}
         columns={columns}
