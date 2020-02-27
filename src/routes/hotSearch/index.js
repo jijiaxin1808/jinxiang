@@ -281,7 +281,7 @@ const Manage = ()=> {
         },
         {
           title: '显示范围',
-		  dataIndex: 'Aid',
+		  dataIndex: 'schoolName',
 		  key: "Aid",
           render: text => text
         },

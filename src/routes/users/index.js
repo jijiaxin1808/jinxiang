@@ -237,7 +237,6 @@ const Users = ()=> {
 		<Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
 			<TabPane tab="用户管理" key="1">
 				<WarppedUserManage />
-				<div className = "warn">还差一个封禁解除接口</div>
 			</TabPane>
 			<TabPane tab="黑名单" key="2">
 				<BlcakList />
