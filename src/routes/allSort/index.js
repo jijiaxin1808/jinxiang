@@ -12,7 +12,7 @@ const FirstSort = (props)=> {
     const [ modalData, setModalData ] = useState({})
     const [ option, setOption ] = useState([]);
     const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
-    
+    console.log(option)
     useEffect(()=> {
         API.getCategoriesFirst()
         .then(res=> {
@@ -128,6 +128,7 @@ const FirstSort = (props)=> {
         />
         <Modal
         title= "一级分类"
+        confirmLoading = {confirmLoading}
         visible={visible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -300,6 +301,7 @@ const SecondSort = (props)=> {
         />
         <Modal
         title= "标签分类"
+        confirmLoading = {confirmLoading}
         visible={visible}
         onOk={handleOk}
         onCancel={handleCancel}

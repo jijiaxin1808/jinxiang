@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
-import { Table, Input, InputNumber, Popconfirm, Form, Button, Modal, Cascader, Select, Tabs } from "antd";
+import { Table, Input, InputNumber, Form, Button, Modal, Cascader, Select, Tabs } from "antd";
 // import { AlphaPicker } from "react-color";
 import * as API from "../../config/api";
 
@@ -11,7 +11,7 @@ const MainSort = (props)=> {
 	const [ data, setData ] = useState([]);
 	const [ visible, setVisible ] = useState(false);
 	const [ confirmLoading, setConfirmLoading ] = useState(false);
-	const [ modalData, setModalData ] = useState({})
+	// const [ modalData, setModalData ] = useState({})
 	const [ option, setOption ] = useState([]);
 	const { getFieldDecorator, setFieldsValue } = props.form;
 
@@ -40,6 +40,7 @@ const MainSort = (props)=> {
 
 	const handleOk = ()=> {
 		setVisible(false);
+		setConfirmLoading(false)
 	}
 	const handleCancel = ()=> {
 		setVisible(false);
@@ -92,6 +93,7 @@ const MainSort = (props)=> {
 		/>
 		<Modal
 		title= "标签分类"
+		confirmLoading = {confirmLoading}
 		visible={visible}
 		onOk={handleOk}
 		onCancel={handleCancel}
@@ -170,8 +172,8 @@ const LabelSort = (props)=> {
         setConfirmLoading(true);
 		await validateFields((err, values)=> {
 			if(!err) {
-				const categoryName = optionS?[...secondOptionData].filter(item=>item.id==optionS)[0].name:
-				optionData.filter(item=>item.id==option)[0].name;
+				const categoryName = optionS?[...secondOptionData].filter(item=>item.id===optionS)[0].name:
+				optionData.filter(item=>item.id===option)[0].name;
 				const Qdata = {
 					level: optionS?2:1,
 					name: values.name,

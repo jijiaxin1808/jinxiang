@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Divider, Form, Input, Cascader } from "antd";
+import { Tabs, Divider, Form, Cascader } from "antd";
 
 const { TabPane } = Tabs;
 const Push = (props)=> {

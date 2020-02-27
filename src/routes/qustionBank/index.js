@@ -1,5 +1,5 @@
 import　React, { useEffect, useState } from "react";
-import { Button, Table, message, Modal, Form, Input } from "antd";
+import { Button, Table, Modal, Form, Input } from "antd";
 import * as API from "../../config/api";
 const QustionBank = (props)=> {
 

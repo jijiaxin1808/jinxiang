@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./index.less";
 import { Icon, Button, Tabs, Card, Modal, Form, Upload} from "antd";
 import * as API from "../../config/api";
-import Loading from "../../components/loading";
 import { BlockPicker   } from 'react-color';
 
 const { TabPane } = Tabs;
@@ -11,7 +10,7 @@ const OpenPageContent = (props)=> {
     const [data, setData] = useState([]);
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);      
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [color, setColor] = useState("black")
     const [imgUrl1, setImgUrl1] = useState();
     const [imgUrl2, setImgUrl2] = useState();
@@ -37,7 +36,7 @@ const OpenPageContent = (props)=> {
         .then(async res=> {
             if(res.data.code === 0) {
                 await setData(res.data.data);
-                setLoading(false);
+                // setLoading(false);
             }
         })
     },[])
