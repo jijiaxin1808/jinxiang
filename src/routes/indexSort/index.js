@@ -139,8 +139,8 @@ const LabelSort = (props)=> {
 	const [ confirmLoading, setConfirmLoading ] = useState(false);
 	const [ optionData, setOptionData ] = useState([]); //  这个是全部的1, 2级分类的数据
 	const [ secondOptionData, setSecondOptionData ] = useState([]);  //  这个是根据所选的一级分类变化的二级分类
-	const [ option, setOption ] = useState([]); // 当前选择的一级id
-	const [ optionS, setOptionS ] = useState([]) // 当前选择的二级id
+	const [ option, setOption ] = useState(); // 当前选择的一级id
+	const [ optionS, setOptionS ] = useState() // 当前选择的二级id
 	const { getFieldDecorator, validateFields } = props.form;
 
 	useEffect(()=> {
@@ -159,11 +159,19 @@ const LabelSort = (props)=> {
 		})
 	}, [])
 
+	useEffect(()=> {
+		const newData = optionData.filter(item => item.id === option);
+		if(newData[0]&&newData[0].secondList.length) {
+			setSecondOptionData(newData[0].secondList);
+		}
+	},[option]);
+
     const handleOk =async ()=> {
         setConfirmLoading(true);
 		await validateFields((err, values)=> {
 			if(!err) {
-				const categoryName = optionS? secondOptionData.filter(item=>item.id==optionS)[0].name:optionData.filter(item=>item.id==optionS)[0].name
+				const categoryName = optionS?[...secondOptionData].filter(item=>item.id==optionS)[0].name:
+				optionData.filter(item=>item.id==option)[0].name;
 				const Qdata = {
 					level: optionS?2:1,
 					name: values.name,
@@ -171,6 +179,7 @@ const LabelSort = (props)=> {
 					categoryName:categoryName,
 					categoryId:optionS?optionS:option
 				}
+
 				API.createLabelCategories(Qdata)
 				.then(res=> {
 					if(res.data.code === 0) {
@@ -183,6 +192,7 @@ const LabelSort = (props)=> {
 					}
 				})
 			}
+			else setConfirmLoading(false);
 		})
 		}
 
@@ -238,7 +248,6 @@ const LabelSort = (props)=> {
 	return (
 		<>
 		<div className = "title-text" style = {{display: "inline-block", marginRight:800}} >标签分类</div>
-		<div className = "warn">只选择一级时有错误</div>
 		<Button onClick = {()=> {setVisible(true)}}>新增</Button>
 		<Table
 		dataSource={data}

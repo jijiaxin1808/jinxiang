@@ -337,7 +337,7 @@ const HotSearch = ()=> {
             <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
                     <WarppedAdd />
-                    <div className = 'warn'>自定义的搜索的  配置人 和展示范围  缺少数据</div>
+                    <div className = 'warn'>自定义的搜索的配置人缺少数据</div>
                 </TabPane>
                 <TabPane tab="管理热门搜索" key="2">
                     <Manage />
