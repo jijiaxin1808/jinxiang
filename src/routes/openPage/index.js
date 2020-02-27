@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./index.less";
 import { Icon, Button, Tabs, Card, Modal, Form, Upload} from "antd";
 import * as API from "../../config/api";
-import Loading from "../../components/loading";
 import { BlockPicker   } from 'react-color';
 
 const { TabPane } = Tabs;
@@ -11,10 +10,22 @@ const OpenPageContent = (props)=> {
     const [data, setData] = useState([]);
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);      
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
     const [color, setColor] = useState("black")
     const [imgUrl1, setImgUrl1] = useState();
     const [imgUrl2, setImgUrl2] = useState();
+    const [ deleteAble, setDeleteAble ] = useState(false);
+
+	useEffect(()=> {	
+		if(!deleteAble && data.length && data.filter(item => item.showed === true).length) {
+            setDeleteAble(true);
+            setVisible(false);
+		}
+		else if(deleteAble&&!data.filter(item => item.showed === true).length) {
+            setDeleteAble(false);
+            setVisible(false);
+        }
+	},[data])
 
     useEffect(()=>{
         const params = {
@@ -25,10 +36,41 @@ const OpenPageContent = (props)=> {
         .then(async res=> {
             if(res.data.code === 0) {
                 await setData(res.data.data);
-                setLoading(false);
+                // setLoading(false);
             }
         })
     },[])
+
+    const upLine = (id)=> {
+        const Qdata = {
+            id: id,
+            showed: true
+        }
+        API.updateOpenPage(Qdata)
+        .then(res=> {
+            if(res.data.code === 0) {
+                let index = data.findIndex(item=>item.id===id);
+                const newData = [...data];
+                newData[index].showed = true;
+                setData(newData);
+            }
+        })
+    };
+    const downLine = (id)=> {
+        const Qdata = {
+            id: id,
+            showed: false
+        }
+        API.updateOpenPage(Qdata)
+        .then(res=> {
+            if(res.data.code === 0) {
+                let index = data.findIndex(item=>item.id===id);
+                const newData = [...data];
+                newData[index].showed = false;
+                setData(newData);
+            }
+        })
+    }
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -92,9 +134,11 @@ const OpenPageContent = (props)=> {
             setConfirmLoading(false);
             setVisible(false);
     }
+
     const handleCancel = ()=> {
         setVisible(false);
     }
+
     const handleDelete = (id)=> {
         API.deleteopenPage({id})
         .then(res=> {
@@ -112,8 +156,11 @@ const OpenPageContent = (props)=> {
                 data.map(item=> {
                     return (
                         <div key = {item.id} style = {{marginLeft: 20}}>
-                            <div style = {{backgroundImage:`url(http://blog.csxjh.vip:8000/${item.upperImage})`}} className = "openPage-page"></div>
-                            {item.showed?<Button disabled = {true}>使用中</Button>:<Button>上线</Button>}
+                            <div style = {{background:`url(http://blog.csxjh.vip:8000/${item.upperImage})`}}
+                             className = "openPage-page"></div>
+                            {/* <img src = {`http://blog.csxjh.vip:8000/${item.upperImage}`}/> */}
+                            {item.showed?<Button onClick = {()=>{downLine(item.id)}}>下线</Button>:
+                            <Button disabled = {deleteAble} onClick = {()=>{upLine(item.id)}}>上线</Button>}
                             <Button onClick = {()=>{handleDelete(item.id)}} style = {{marginLeft: 30}}>删除</Button>
                         </div>
                     )
@@ -237,7 +284,6 @@ const OpenPageContent = (props)=> {
         return (
             <>
                 {emptyConent}
-                <Button onClick = {()=>{setData([1])}}>闭嘴</Button>
             </>
         )
     }
@@ -266,11 +312,7 @@ const OpenPage = ()=> {
                     <WarpedInput />
                 </TabPane>
             </Tabs>
-            <div className = "warn">还差一个首屏页的状态更改   还有具体的图片叠加效果(等ui图)</div>
-             <div className="djradio-sort-icon" style={{background:`url(https://img.iplaysoft.com/wp-content/uploads/2019/free-images/free_stock_photo_2x.jpg)`,
-             width:"48px",height:"48px"}} ></div>
-<div className="djradio-sort-icon" style={{background:`url(http://blog.csxjh.vip:8000/images/2020/2/20/13c589d1bfaebe8d2cc239099fff936d.png)`,
-             width:"48px",height:"48px"}} ></div>
+            <div className = "warn">图片展示出错 寻找bug ing</div>
         </div>
     )
 }

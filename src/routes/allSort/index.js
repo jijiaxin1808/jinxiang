@@ -12,7 +12,7 @@ const FirstSort = (props)=> {
     const [ modalData, setModalData ] = useState({})
     const [ option, setOption ] = useState([]);
     const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
-    
+    console.log(option)
     useEffect(()=> {
         API.getCategoriesFirst()
         .then(res=> {
@@ -121,13 +121,14 @@ const FirstSort = (props)=> {
     return (
         <>
         <div className = "title-text" style = {{display: "inline-block", marginRight:600}}>编辑一级分类</div>
-        <Button onClick = {()=> {setVisible(true)}}>新增</Button>
+        <Button onClick = {()=> {setVisible(true)}} type = "primary">新增</Button>
         <Table
         dataSource={data}
         columns={columns}
         />
         <Modal
         title= "一级分类"
+        confirmLoading = {confirmLoading}
         visible={visible}
         onOk={handleOk}
         onCancel={handleCancel}
@@ -194,10 +195,6 @@ const SecondSort = (props)=> {
         setOption(value);
     }
 
-
-
-
-
     const handleOk =async ()=> {
         setConfirmLoading(true);
         if(modalData&&modalData.id) {
@@ -225,6 +222,7 @@ const SecondSort = (props)=> {
                 }
             })
         }
+        
         else {
             await validateFields((err, values)=> {
                 if(!err) {
@@ -241,6 +239,7 @@ const SecondSort = (props)=> {
                             newData.push(res.data.data);
                             newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
                             setData(newData);
+                            setVisible(false);
                             setConfirmLoading(false);
                         }
                     })
@@ -292,13 +291,14 @@ const SecondSort = (props)=> {
                 fristOptions.map(item=><Option value = {item.id}>{item.name}</Option>)
             }
         </Select>
-        <Button onClick = {()=> {setVisible(true)}} disabled = {!option}>新增</Button>
+        <Button onClick = {()=> {setVisible(true)}} disabled = {!option} type = "primary">新增</Button>
         <Table
         dataSource={data}
         columns={columns}
         />
         <Modal
         title= "标签分类"
+        confirmLoading = {confirmLoading}
         visible={visible}
         onOk={handleOk}
         onCancel={handleCancel}

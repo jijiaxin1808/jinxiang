@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Tabs, Form, Divider, Button, Modal, Radio, Input, Upload, message, Table, Popconfirm, Icon, Popover, List} from "antd";
+import { Tabs, Form, Divider, Button, Modal, Input, Upload, Table, Popconfirm, Icon, Popover} from "antd";
 import * as API from "../../config/api";
 
 const { TabPane } = Tabs;
