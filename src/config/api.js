@@ -124,3 +124,7 @@ export function updateOpenPage(data) {
     const url = "bootPages/updateShowed";
     return Axios(url, data, "PUT");
 }
+export function updateMainSort(data) {
+    const url = "mainCategories/update";
+    return Axios(url,data,"PUT");
+}

@@ -195,10 +195,6 @@ const SecondSort = (props)=> {
         setOption(value);
     }
 
-
-
-
-
     const handleOk =async ()=> {
         setConfirmLoading(true);
         if(modalData&&modalData.id) {
@@ -226,6 +222,7 @@ const SecondSort = (props)=> {
                 }
             })
         }
+        
         else {
             await validateFields((err, values)=> {
                 if(!err) {

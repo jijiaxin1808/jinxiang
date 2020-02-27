@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
-import { Table, Input, InputNumber, Form, Button, Modal, Cascader, Select, Tabs } from "antd";
+import { Table, Input, InputNumber, Form, Button, Modal, Cascader, Select, Tabs, Upload, Icon } from "antd";
 // import { AlphaPicker } from "react-color";
 import * as API from "../../config/api";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-const MainSort = (props)=> {
+const MainSort1 = (props)=> {
 	const [ data, setData ] = useState([]);
 	const [ visible, setVisible ] = useState(false);
 	const [ confirmLoading, setConfirmLoading ] = useState(false);
@@ -130,10 +130,124 @@ const MainSort = (props)=> {
 		</>
 	)
 }
+const MainSort = (props)=> {
+	const [ mainSortOption, setMainSortOption ] = useState([]);//  主分类选项
+	const [ selectedMainSort, setSelectedMainSort ] = useState() //  当前选择的主分类信息
+	const [ visible, setVisible ] = useState(false);
+	const [ confirmLoading, setConfirmLoading ] = useState(false);
+	const [ iconUrl, setIconUrl ] = useState();
+	const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
 
+	useEffect(()=> {
+		API.getAllmainCategories()
+		.then(res=> {
+			if(res.data.code === 0) {
+				setMainSortOption(res.data.data)
+			}
+		})
+	}, [])
+	const handleOk =async ()=> {
+        setConfirmLoading(true);
+		await validateFields((err, values)=> {
+			if(!err) {
+				const { name, priority } = values
+				const Qdata = {...selectedMainSort, name, priority, icon:iconUrl}
+				API.updateMainSort(Qdata)
+				.then(res=> {
+					if(res.data.code === 0) {
+						setSelectedMainSort(Qdata);
+						setConfirmLoading(false);
+						setVisible(false);
+					}
+				})
+			}
+			else setConfirmLoading(false);
+		})
+    }
+	const handleCancel = ()=> {
+		setVisible(false);
+	}
+	const handleChange = ()=> {
+		const { name, priority } = selectedMainSort;
+		setFieldsValue({name:name,priority:priority});
+		setVisible(true);
+
+	}
+
+	const selectChange = async(id)=> {
+		if(mainSortOption.find(item=> item.id === id)) {
+			await setSelectedMainSort(mainSortOption.find(item=> item.id === id));
+			console.log(selectedMainSort);
+		}
+	}
+
+	const Props = {
+		name: 'image',
+		action: 'http://blog.csxjh.vip:8000/images/upload',
+		headers: {
+		  token: "86f3705005b940a0a21f4d948eb0d04f",
+		},
+		onChange(info) {
+			if(info.file.status === "done" && info.file.response.code === 0) {
+				setIconUrl(info.file.response.data);
+			}
+		  }
+	  };
+	
+	return (
+		<>
+		<Select defaultValue="请选择主分类" style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
+            {
+                mainSortOption.map(item=><Option value = {item.id}>{item.name}</Option>)
+            }
+        </Select>
+		{
+			selectedMainSort?
+			<><div>
+				icon:<img src = {`http://blog.csxjh.vip:8000${selectedMainSort.icon}`}  alt = {"icon"}/>
+				权重: {selectedMainSort.priority}
+				<Button onClick = {handleChange}>修改</Button>
+			</div></>:""
+		}
+		<Modal
+		title= "修改icon和权重"
+		confirmLoading = {confirmLoading}
+		visible={visible}
+		onOk={handleOk}
+		onCancel={handleCancel}
+		okText = "确认"
+		cancelText = "取消"
+		>
+			<Form>
+				<Form.Item label = "名称">
+				{getFieldDecorator('name', {
+					rules: [{ required: true, message: '请输入名称' }],
+				})(
+					<Input
+					placeholder="请输入标签名称"
+					/>,
+				)}
+				</Form.Item>
+				<Form.Item label = "权重">
+				{getFieldDecorator('priority', {
+					rules: [{ required: true, message: '请输入权重' },
+					{pattern: /^[0-9]\d*$/, message:"请输入数字"}],
+				})(
+					<InputNumber/>
+				)}
+				</Form.Item>
+			</Form>
+			<Upload {...Props}>
+				<Button>
+					<Icon type="upload" />点击上传
+				</Button>
+            </Upload>
+		</Modal>
+		</>
+	)
+}
 		  
 const WarppedMainSort = Form.create()(MainSort);
-
 
 const LabelSort = (props)=> {
 	const [ data, setData ] = useState([]);
@@ -310,7 +424,6 @@ const LabelSort = (props)=> {
 		</>
 	)
 }
-
 			
 const WarppedLabelSort = Form.create()(LabelSort);
 

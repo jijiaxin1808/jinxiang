@@ -313,10 +313,6 @@ const OpenPage = ()=> {
                 </TabPane>
             </Tabs>
             <div className = "warn">图片展示出错 寻找bug ing</div>
-             <div className="djradio-sort-icon" style={{background:`url(https://img.iplaysoft.com/wp-content/uploads/2019/free-images/free_stock_photo_2x.jpg)`,
-             width:"48px",height:"48px"}} ></div>
-<div className="djradio-sort-icon" style={{background:`url(http://blog.csxjh.vip:8000/images/2020/2/20/13c589d1bfaebe8d2cc239099fff936d.png)`,
-             width:"48px",height:"48px"}} ></div>
         </div>
     )
 }
