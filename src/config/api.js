@@ -120,3 +120,7 @@ export function deleteLabelCategories(params) {
     const url = "labelCategories/delete";
     return Axios(spliceUrl(url, params), {}, "DELETE");
 }
+export function updateOpenPage(data) {
+    const url = "bootPages/updateShowed";
+    return Axios(url, data, "PUT");
+}
