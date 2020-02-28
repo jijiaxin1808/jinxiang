@@ -60,13 +60,19 @@ export default class Carousels extends React.Component{
         this.SubmitDate = this.SubmitDate.bind(this);
         this.ClickedForms = this.ClickedForms.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
+        this.Create = this.Create.bind(this);
+    }
+
+    params1 = {
+        page:1,
+        size:10  
     }
     componentDidMount(){
-        const params = {
-            page:1,
-            size:10  
-        }
-        API.ListAllCarousels(params).then(res=>{
+        this.Create();
+    }
+
+    Create(){
+        API.ListAllCarousels(this.params1).then(res=>{
             if(res.data.code === 0) {
                 const Data = res.data.data;
                 Data.forEach(item=>{
@@ -84,7 +90,6 @@ export default class Carousels extends React.Component{
             }
         })
     }
-
 
     ChangeInput(e){
         this.fields.name = e.target.value;
@@ -122,28 +127,28 @@ export default class Carousels extends React.Component{
     }
     ClickedTable(e){
     }
-    // handleDelete = key => {
-    //     const dataSource = [...this.state.dataSource];
-    //     this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-    //     API.deleteCarousels(key).then(res=>{
-    //         if(res.data.code === 0) {
-    //             const Data = res.data.data;
-    //             Data.forEach(item=>{
-    //                 item.states = item.showed?"当前":"历史";
-    //                 item.num = item.id;
-    //                 item.name = "Data.name";
-    //                 item.ID = item.type==="活动"?item.content:"";
-    //                 item.picture = item.type==="图片"?item.content:"";
-    //                 item.operate = item.showedz?"下线":"删除";
-    //                 item.key = item.id;
-    //             })
-    //             console.log("Data", Data)
-    //             this.setState({
-    //                 dataSource: Data
-    //             })
-    //         }
-    //     })
-    // };
+    handleDelete = key => {
+        const dataSource = [...this.state.dataSource];
+        this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
+        API.deleteCarousels(key).then(res=>{
+            if(res.data.code === 0) {
+                const Data = res.data.data;
+                Data.forEach(item=>{
+                    item.states = item.showed?"当前":"历史";
+                    item.num = item.id;
+                    item.name = "Data.name";
+                    item.ID = item.type==="活动"?item.content:"";
+                    item.picture = item.type==="图片"?item.content:"";
+                    item.operate = item.showedz?"下线":"删除";
+                    item.key = item.id;
+                })
+                console.log("Data", Data)
+                this.setState({
+                    dataSource: Data
+                })
+            }
+        })
+    };
     
     // 点击新填后，表单出现
     ClickedForms(){
@@ -186,91 +191,10 @@ export default class Carousels extends React.Component{
                 </Carousel>
                 </div>
                 <div className={this.state.Show?"carousels-form":"Hidden"} >
-                    <Forms handleCancel={this.handleCancel} />
+                    <Forms handleCancel={this.handleCancel} params={this.params1} Create={this.Create}/>
                 </div>
                 
             </div>
         )
     }
 }
-// {
-//     states: "当前",
-//     num: "9",
-//     name: "过大年",
-//     ID: "0004",
-//     picture: "",
-//     operate: "下线",
-//     key: '1'
-// },
-// {
-//     states: "当前",
-//     num: "8",
-//     name: "过大年",
-//     ID: "0004",
-//     picture: "",
-//     operate: "下线",
-//     key: '2'
-// },
-// {
-//     states: "当前",
-//     num: "7",
-//     name: "过大年",
-//     ID: "0004",
-//     picture: "",
-//     operate: "下线",
-//     key: '3'
-// },
-// {
-//     states: "当前",
-//     num: "6",
-//     name: "过大年",
-//     ID: "0004",
-//     picture: "",
-//     operate: "下线",
-//     key: '4'
-// },
-// {
-//     states: "历史",
-//     num: "5",
-//     name: "校园美景",
-//     ID: "",
-//     picture: "1.jpg",
-//     operate: "删除",
-//     key: '5'
-// },
-// {
-//     states: "历史",
-//     num: "4",
-//     name: "校园美景",
-//     ID: "",
-//     picture: "1.jpg",
-//     operate: "删除",
-//     key: '6'
-// },
-// {
-//     states: "历史",
-//     num: "3",
-//     name: "校园美景",
-//     ID: "",
-//     picture: "1.jpg",
-//     operate: "删除",
-//     key: '7'
-// },
-// {
-//     states: "历史",
-//     num: "2",
-//     name: "校园美景",
-//     ID: "",
-//     picture: "1.jpg",
-//     operate: "删除",
-//     key: '8'
-// },
-// {
-//     states: "历史",
-//     num: "1",
-//     name: "校园美景",
-//     ID: "",
-//     picture: "1.jpg",
-//     operate: "删除",
-//     key: '9'
-// }

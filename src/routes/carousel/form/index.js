@@ -65,9 +65,14 @@ import * as API from '../../../config/api';
         } 
       }
       if(standard){
-        API.createCarousels(Message).then().catch(()=>{
-            console.log("错误")
-        });
+        // console.log(Message);
+        API.createCarousels({
+          "type": "图片",
+          "name": "过大年",
+          "content": "124.png"
+      }).then(()=>{
+          this.props.Create(this.props.params);
+        })
       }
       
       this.props.form.validateFieldsAndScroll((err, values) => {
