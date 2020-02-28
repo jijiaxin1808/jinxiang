@@ -39,10 +39,10 @@ export default class Carousels extends React.Component{
                     title: "操作",
                     key: "operate",
                     dataIndex:  "operate",
-                    render:(text, record ) =>{
+                    render:(text, record, index) =>{
                     return (
                         <Button onClick={()=>this.ClickedTable(text)}>
-                            <Popconfirm title={`你确定要${text}`} onConfirm={() => this.handleDelete(record.key)}>
+                            <Popconfirm title={`你确定要${text}`} onConfirm={() => this.handleDelete(record.id)}>
                             <a>{text}</a>
                             </Popconfirm>
                         </Button>
@@ -127,10 +127,10 @@ export default class Carousels extends React.Component{
     }
     ClickedTable(e){
     }
-    handleDelete = key => {
-        const dataSource = [...this.state.dataSource];
-        this.setState({ dataSource: dataSource.filter(item => item.key !== key) });
-        API.deleteCarousels(key).then(res=>{
+    handleDelete = (id) => {
+        API.deleteCarousels({
+            id: id
+        }).then(res=>{
             if(res.data.code === 0) {
                 const Data = res.data.data;
                 Data.forEach(item=>{

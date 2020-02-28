@@ -23,55 +23,36 @@ import * as API from '../../../config/api';
     handleSubmit = e => {
       e.preventDefault();
       let standard = true;
-      let Message = {};
       if(this.state.Name === ''){
           alert("请填写名称");
           standard = false;
-      }else{
-        Message = {
-          ...Message,
-          "name": this.state.Name
-        }
       }
       if(this.state.types === ''){
           alert("请选择类型");
           standard = false;
-      }else{
-          Message = {
-            ...Message,
-            "type": this.state.types==="activity"?"活动":"图片"
-          }
       }
       if(this.state.types === "activity"){
         if(this.state.Activity === ''){
             alert("请填写活动ID");
             standard = false;
-        }else{
-            Message = {
-                ...Message,
-                "content": this.state.Activity
-            }
-        } 
+        }
       }
       if(this.state.types === "picture"){
         if(this.state.Picture === ''){
             alert("请上传图片");
             standard = false;
-        }else{
-            Message = {
-                ...Message,
-                "content": this.state.Picture.file.name
-            }
         } 
       }
       if(standard){
-        // console.log(Message);
-        API.createCarousels({
-          "type": "图片",
-          "name": "过大年",
-          "content": "124.png"
-      }).then(()=>{
+        const Message = {
+          name: this.state.Name,
+          type: this.state.types==="activity"?"活动":"图片",
+          content: this.state.types==="activity"? this.state.Activity: this.state.Picture.file.name
+        }
+        console.log("Message", Message);
+        API.createCarousels(Message).then(()=>{
           this.props.Create(this.props.params);
+          this.handleReset();
         })
       }
       
@@ -113,6 +94,7 @@ import * as API from '../../../config/api';
     }
 
     validateServicePicture = (rule, value, callback) =>{
+      console.log(value);
       this.setState({
         Picture: value
       })
@@ -170,7 +152,7 @@ import * as API from '../../../config/api';
                   validator: this.validateServicePicture
               }
               ],
-            })(<Upload {...this.state.Pic}>
+            })(<Upload>
                   <Button>
                     <Icon type="upload" />上传图片
                   </Button>

@@ -73,9 +73,9 @@ export function deleteActive(params) {
     const url = "activities/delete";
     return Axios(spliceUrl(url, params),{},"DELETE");
 }
-export function createCarousels(params) {
+export function createCarousels(data) {
     const url = "carousels/create";
-    return Axios(url, params,"POST");
+    return Axios(url, data,"POST");
 }
 export function updateCarousels(params) {
     const url = "carousels/update";
