@@ -3,6 +3,7 @@ import "./index.less";
 import { Table, Input, InputNumber, Form, Button, Modal, Cascader, Select, Tabs, Upload, Icon } from "antd";
 // import { AlphaPicker } from "react-color";
 import * as API from "../../config/api";
+import emmit from "../../utils/events";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -22,8 +23,25 @@ const MainSort = (props)=> {
 			if(res.data.code === 0) {
 				setMainSortOption(res.data.data)
 			}
+		})	
+		const eventEmmit = emmit.addListener("IndexTableSort", ()=> {
+			console.log("收到了一个emmit")
+			API.getAllmainCategories()
+			.then(res=> {
+				if(res.data.code === 0) {
+					setMainSortOption(res.data.data)
+				}
+			})
 		})
+		return ()=> {
+			emmit.removeListener(eventEmmit);
+		}
 	}, [])
+
+
+	useEffect(()=> {
+		setIconUrl(selectedMainSort&&selectedMainSort.icon);
+	},[selectedMainSort])
 
 	const handleOk =async ()=> {
         setConfirmLoading(true);
@@ -136,6 +154,7 @@ const MainSort = (props)=> {
 		</>
 	)
 }
+
 const MainSortTable = (props)=> {
 
 
@@ -146,8 +165,8 @@ const MainSortTable = (props)=> {
 	const [ secondOptionData, setSecondOptionData ] = useState([]);  //  这个是根据所选的一级分类变化的二级分类
 	const [ option, setOption ] = useState(); // 当前选择的一级id
 	const [ optionS, setOptionS ] = useState() // 当前选择的二级id
-	const { getFieldDecorator, validateFields } = props.form;
-
+	const { getFieldDecorator, validateFields, setFieldsValue} = props.form;
+	
 	useEffect(()=> {
 		API.getALlCategories()
 		.then(res=> {
@@ -156,12 +175,32 @@ const MainSortTable = (props)=> {
 			}
 		})
 	}, [])
+	function debounce(fn, time) {
+		        let timer = null;
+		        return function (...args) {
+		          clearTimeout(timer);
+		          timer = setTimeout(() => {
+		            fn.apply(this, args);
+		          }, time);
+		        };
+		      }
+	useEffect(()=> {
+        if(option) {
+			const E = ()=>{emmit.emit("IndexTableSort");console.log("发送了一个emmit")}
+			console.log("更新一次")
+			debounce(E(),1000)
+        }
+    },[data])
 
+	useEffect(()=>{
+		setData(props.data);
+	},[props.data])
 	useEffect(()=> {
 		const newData = optionData.filter(item => item.id === option);
 		if(newData[0]&&newData[0].secondList.length) {
 			setSecondOptionData(newData[0].secondList);
 		}
+		setFieldsValue({sort2:""})
 	},[option]);
 
     const handleOk =async ()=> {
@@ -296,7 +335,7 @@ const LabelSort = (props)=> {
 	const [ secondOptionData, setSecondOptionData ] = useState([]);  //  这个是根据所选的一级分类变化的二级分类
 	const [ option, setOption ] = useState(); // 当前选择的一级id
 	const [ optionS, setOptionS ] = useState() // 当前选择的二级id
-	const { getFieldDecorator, validateFields } = props.form;
+	const { getFieldDecorator, validateFields, setFieldsValue } = props.form;
 
 	useEffect(()=> {
 		API.getAllLabelCategories()
@@ -319,6 +358,7 @@ const LabelSort = (props)=> {
 		if(newData[0]&&newData[0].secondList.length) {
 			setSecondOptionData(newData[0].secondList);
 		}
+		setFieldsValue({sort2:""})
 	},[option]);
 
     const handleOk =async ()=> {

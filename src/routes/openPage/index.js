@@ -15,7 +15,6 @@ const OpenPageContent = (props)=> {
     const [imgUrl1, setImgUrl1] = useState();
     const [imgUrl2, setImgUrl2] = useState();
     const [ deleteAble, setDeleteAble ] = useState(false);
-
 	useEffect(()=> {	
 		if(!deleteAble && data.length && data.filter(item => item.showed === true).length) {
             setDeleteAble(true);
@@ -88,7 +87,7 @@ const OpenPageContent = (props)=> {
         return e && e.fileList;
     };  
 
-    const { getFieldDecorator } = props.form;
+    const { getFieldDecorator, setFieldsValue } = props.form;
 
     const Props = {
       name: 'image',
@@ -126,17 +125,21 @@ const OpenPageContent = (props)=> {
         .then(res=> {
             if(res.data.code === 0) {
                 const newData = [...data];
-                newData.unshift(openPageData);
+                newData.unshift(res.data.data);
                 setData(newData);
             }
         })
         setColor("black")
-            setConfirmLoading(false);
-            setVisible(false);
+        setImgUrl1("");
+        setImgUrl2("");
+        setFieldsValue({img1:"",img2:""})
+        setConfirmLoading(false);
+        setVisible(false);
     }
 
     const handleCancel = ()=> {
         setVisible(false);
+        setFieldsValue({img1:"",img2:""})
     }
 
     const handleDelete = (id)=> {
@@ -156,7 +159,10 @@ const OpenPageContent = (props)=> {
                 data.map(item=> {
                     return (
                         <div key = {item.id} style = {{marginLeft: 20}}>
-                            <div style = {{background:`url(http://blog.csxjh.vip:8000/${item.upperImage})`}}
+                            <div style = {{    backgroundColor: `${item.bgColor}`  ,backgroundImage:`
+                            url(http://blog.csxjh.vip:8000/${item.upperImage}),
+                            url(http://blog.csxjh.vip:8000/${item.bgImage})
+                            `,backgroundRepeat:"no-repeat",backgroundSize:"contain"}} 
                              className = "openPage-page"></div>
                             {/* <img src = {`http://blog.csxjh.vip:8000/${item.upperImage}`}/> */}
                             {item.showed?<Button onClick = {()=>{downLine(item.id)}}>下线</Button>:
@@ -191,7 +197,7 @@ const OpenPageContent = (props)=> {
                     })(
                         <Upload {...Props}>
                         <Button>
-                          <Icon type="upload" />点击上传
+                          <Icon type="upload"  showUploadList = {false}/>点击上传
                         </Button>
                       </Upload>,
                     )}
@@ -212,7 +218,7 @@ const OpenPageContent = (props)=> {
                     {getFieldDecorator('color', {
                         valuePropName: 'color',
                     })(
-                        <BlockPicker defaultValue = "black"   onChange = {(values)=>{setColor(values.hex)}}  />
+                        <BlockPicker color  = {color} onChange = {(values)=>{setColor(values.hex)}}  />
                     )}
                     </Form.Item>
                 </Form>
@@ -270,7 +276,7 @@ const OpenPageContent = (props)=> {
                     {getFieldDecorator('color', {
                         valuePropName: 'color',
                     })(
-                        <BlockPicker    onChange = {(values)=>{setColor(values.hex)}}  />
+                        <BlockPicker  color = {color}  onChange = {(values)=>{setColor(values.hex)}}  />
                     )}
                     </Form.Item>
                 </Form>
@@ -312,7 +318,6 @@ const OpenPage = ()=> {
                     <WarpedInput />
                 </TabPane>
             </Tabs>
-            <div className = "warn">图片展示出错 寻找bug ing</div>
         </div>
     )
 }

@@ -162,12 +162,12 @@ const WarpedFirstSort = Form.create()(FirstSort);
 
 const SecondSort = (props)=> {
     const [ data, setData ] = useState([]);
-    const [ sortData, setSortData ] = useState([]);
+    const [ sortData, setSortData ] = useState([]);  // 所有的一二级信息
     const [ fristOptions, setFirstOptions] = useState([]);
     const [ visible, setVisible ] = useState(false);
     const [ confirmLoading, setConfirmLoading ] = useState(false);
     const [ modalData, setModalData ] = useState({})
-    const [ option, setOption ] = useState();
+    const [ option, setOption ] = useState();  // 当前选择的一级分类
     const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
     
     useEffect(()=> {
@@ -185,6 +185,15 @@ const SecondSort = (props)=> {
             }
         })
     }, [])
+
+    useEffect(()=> {
+        if(option) {
+            const index = [...sortData].findIndex(item=>item.id===option);
+            const newData = [...sortData];
+            newData[index].secondList = [...data];
+            setSortData(newData);
+        }
+    },[data])
 
     useEffect(()=> {
         const newData = sortData.filter(item => item.id === option);
