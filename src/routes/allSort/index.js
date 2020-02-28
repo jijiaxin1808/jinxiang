@@ -88,6 +88,7 @@ const FirstSort = (props)=> {
         }
     }
     const handleCancel = ()=> {
+        setConfirmLoading(false);
         setVisible(false);
         setFieldsValue({name:"",sort:"",priority:""});
         setModalData("");
@@ -258,6 +259,7 @@ const SecondSort = (props)=> {
         setConfirmLoading(false);
     }
     const handleCancel = ()=> {
+        setConfirmLoading(false);
         setVisible(false);
         setFieldsValue({name:"",sort:"",priority:""});
         setModalData("");

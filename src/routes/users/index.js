@@ -177,7 +177,7 @@ const BlcakList = ()=> {
 			}
 		})
 		return ()=> {
-			emmiter.removeListener(eventEmmit);
+			// emmiter.removeListener(eventEmmit);
 		}
 	},[])
 

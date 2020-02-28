@@ -34,7 +34,7 @@ const MainSort = (props)=> {
 			})
 		})
 		return ()=> {
-			emmit.removeListener(eventEmmit);
+			// emmit.removeListener(eventEmmit);
 		}
 	}, [])
 
@@ -73,7 +73,9 @@ const MainSort = (props)=> {
 	}
 	
 	const handleCancel = ()=> {
+		setConfirmLoading(false);
 		setVisible(false);
+
 	}
 	const handleChange = ()=> {
 		const { name, priority } = selectedMainSort;
@@ -234,6 +236,7 @@ const MainSortTable = (props)=> {
 
 	const handleCancel = ()=> {
 		setVisible(false);
+		setConfirmLoading(false);
 	}
 	const selectChange = (value)=> {
 		setOption(value);
@@ -393,6 +396,7 @@ const LabelSort = (props)=> {
 
 	const handleCancel = ()=> {
 		setVisible(false);
+		setConfirmLoading(false);
 	}
 	const selectChange = (value)=> {
 		setOption(value);

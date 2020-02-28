@@ -35,6 +35,7 @@ const QustionBank = (props)=> {
     }
     const handleCancel = ()=> {
         setMoadlVisible(false);
+        setModalLoading(false);
     }
 
 

@@ -139,6 +139,7 @@ const OpenPageContent = (props)=> {
 
     const handleCancel = ()=> {
         setVisible(false);
+        setConfirmLoading(false);
         setFieldsValue({img1:"",img2:""})
     }
 
