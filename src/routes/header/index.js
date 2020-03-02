@@ -18,10 +18,9 @@ const MainHeader = ()=> {
     return (
         <Header className = "header">
             <div className = "header-logo">
-                <img alt = "logo"/>
-                <div>
+                <div className = "i"></div>
+                <div className = "flex-center">
                     <h2>近享公众平台</h2>
-                    <p>近??, 享生活</p>
                 </div>
             </div>
             <div className = "header-user">
