@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Icon, Button, Tabs, Card, Modal, Form, Upload} from "antd";
+import { Icon, Button, Tabs, Card, Modal, Form, Upload, message} from "antd";
 import * as API from "../../config/api";
 import { BlockPicker   } from 'react-color';
 
@@ -121,20 +121,28 @@ const OpenPageContent = (props)=> {
             bgColor: color,
             bgImage: imgUrl2
         }
-        await API.createopenPage(openPageData)
-        .then(res=> {
-            if(res.data.code === 0) {
-                const newData = [...data];
-                newData.unshift(res.data.data);
-                setData(newData);
-            }
-        })
+        if(!(imgUrl1&&imgUrl2)) {
+            message.error("请上传两张对应的图片");
+            setConfirmLoading(false);
+        }
+        else {
+            await API.createopenPage(openPageData)
+            .then(res=> {
+                if(res.data.code === 0) {
+                    const newData = [...data];
+                    newData.unshift(res.data.data);
+                    setData(newData);
+                    setConfirmLoading(false);
+                    setVisible(false);
+                }
+            })
+        }
         setColor("black")
         setImgUrl1("");
         setImgUrl2("");
         setFieldsValue({img1:"",img2:""})
-        setConfirmLoading(false);
-        setVisible(false);
+        // setConfirmLoading(false);
+        // setVisible(false);
     }
 
     const handleCancel = ()=> {
