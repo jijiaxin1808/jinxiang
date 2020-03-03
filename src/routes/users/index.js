@@ -1,20 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
 import * as API from "../../config/api";
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import {
-    Tabs,
-    Divider,
-    Input,
-    Icon,
-    Button,
-    Table,
-    Modal,
-    Radio,
-    message,
-    Popconfirm,
-} from "antd";
+import { Tabs, Divider, Input, Button, Table, Modal, Radio, message, Popconfirm } from "antd";
 import emmiter from "../../utils/events";
 
 const { TabPane } = Tabs;
@@ -134,7 +123,7 @@ const UserManage = (props)=> {
                   rules: [{ required: true, message: '请输入用户名' }],
                 })(
                   <Input
-                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    prefix={<LegacyIcon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                     placeholder="用户名"
                     onChange = {()=>{setData()}}
                   />
@@ -164,7 +153,7 @@ const UserManage = (props)=> {
 				</Modal>
                 {data?<>{data.length?<Table columns = {columns} dataSource = {data} /> :<div>搜索的用户不存在</div>}</>:<></>}
         </div>
-    )
+    );
 }
 const WarppedUserManage = Form.create()(UserManage);
 

@@ -1,18 +1,7 @@
 import React, {useState, useEffect} from "react";
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import {
-    Tabs,
-    Divider,
-    Button,
-    Modal,
-    Input,
-    Upload,
-    Table,
-    Popconfirm,
-    Icon,
-    Popover,
-} from "antd";
+import { Tabs, Divider, Button, Modal, Input, Upload, Table, Popconfirm, Popover } from "antd";
 import * as API from "../../config/api";
 
 const { TabPane } = Tabs;
@@ -228,71 +217,69 @@ const Add = (props)=> {
 
 
     const {getFieldDecorator} = props.form;
-    return (
-        <>
-        <div className = "title-text">活动</div>
-        <p>近享官方团队和高校管理员均通过“活动”的方式，使用户打开外部链接。</p>
-        <p>活动过审后将获取一个活动ID，将此活动ID插入热门搜索或轮播图中，本校用户即可通过点击来打开外部链接。</p>
-        <Divider />
-        <div className = "title-text">自定义活动</div>
-        <p style = {{display: "inline-block"}}>您的活动需符合《近享高校公约》，若有违反，近享团队有权给予不通过，或直接下线您的活动。</p>
-        <Button type = "primary" onClick = {()=> {setBlockVisibly(true)}}>新增</Button>
-        <Table columns = {columns} dataSource = {data} />
-        <div className = "warn">因为现在权限管理还不清晰 现在都是A用户 审核搁浅</div>
-        <Modal
-            title="新增活动"
-            visible={blockVisibly}
-            confirmLoading={blockModelLoading}
-            onOk={handleBlockOk}
-            onCancel={handleBlockCancel}
-            className = "openPage-modal"
-            okText = "确认"
-            cancelText = "取消"
-        >
-            <Form>
-                <Form.Item >
-                {getFieldDecorator('name', {
-                    rules: [{ required: true, message: '请输入活动名称' }],
+    return <>
+    <div className = "title-text">活动</div>
+    <p>近享官方团队和高校管理员均通过“活动”的方式，使用户打开外部链接。</p>
+    <p>活动过审后将获取一个活动ID，将此活动ID插入热门搜索或轮播图中，本校用户即可通过点击来打开外部链接。</p>
+    <Divider />
+    <div className = "title-text">自定义活动</div>
+    <p style = {{display: "inline-block"}}>您的活动需符合《近享高校公约》，若有违反，近享团队有权给予不通过，或直接下线您的活动。</p>
+    <Button type = "primary" onClick = {()=> {setBlockVisibly(true)}}>新增</Button>
+    <Table columns = {columns} dataSource = {data} />
+    <div className = "warn">因为现在权限管理还不清晰 现在都是A用户 审核搁浅</div>
+    <Modal
+        title="新增活动"
+        visible={blockVisibly}
+        confirmLoading={blockModelLoading}
+        onOk={handleBlockOk}
+        onCancel={handleBlockCancel}
+        className = "openPage-modal"
+        okText = "确认"
+        cancelText = "取消"
+    >
+        <Form>
+            <Form.Item >
+            {getFieldDecorator('name', {
+                rules: [{ required: true, message: '请输入活动名称' }],
+            })(
+                <Input
+                placeholder="活动名称"
+                />,
+            )}
+            </Form.Item>
+            <Form.Item>
+            {getFieldDecorator('profile', {
+                rules: [{ required: true, message: '请输入理由', },{max:40, message: "不超过40字"}],
+            })(
+                <TextArea  placeholder = "请输入理由" autoSize = {true}/>
+            )}
+            </Form.Item>
+            <Form.Item>
+            {getFieldDecorator('link', {
+                rules: [{ required: true, message: '请输入页面链接' }],
+            })(
+                <Input
+                placeholder="页面链接"
+                />,
+            )}
+            </Form.Item>       
+            <Form.Item>
+                {getFieldDecorator('keyword', {
+                    rules: [{ required: true, message: '请输入关键词' }],
                 })(
                     <Input
-                    placeholder="活动名称"
+                    placeholder="关键词"
                     />,
                 )}
-                </Form.Item>
-                <Form.Item>
-                {getFieldDecorator('profile', {
-                    rules: [{ required: true, message: '请输入理由', },{max:40, message: "不超过40字"}],
-                })(
-                    <TextArea  placeholder = "请输入理由" autoSize = {true}/>
-                )}
-                </Form.Item>
-                <Form.Item>
-                {getFieldDecorator('link', {
-                    rules: [{ required: true, message: '请输入页面链接' }],
-                })(
-                    <Input
-                    placeholder="页面链接"
-                    />,
-                )}
-                </Form.Item>       
-                <Form.Item>
-                    {getFieldDecorator('keyword', {
-                        rules: [{ required: true, message: '请输入关键词' }],
-                    })(
-                        <Input
-                        placeholder="关键词"
-                        />,
-                    )}
-                </Form.Item>
-            </Form>
-            <Upload {...Props}>
-                <Button>
-                    <Icon type="upload" /> 上传图片
-                </Button>
-            </Upload>
-        </Modal>
-        </>
-    )
+            </Form.Item>
+        </Form>
+        <Upload {...Props}>
+            <Button>
+                <LegacyIcon type="upload" /> 上传图片
+            </Button>
+        </Upload>
+    </Modal>
+    </>;
 }
 
 

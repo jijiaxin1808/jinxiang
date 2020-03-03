@@ -1,4 +1,6 @@
-import { Layout, Menu, Icon } from 'antd';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+// import Icon, { CodeFilled, SmileOutlined, SmileTwoTone } from '@ant-design/icons';
+import { Layout, Menu } from 'antd';
 import React, { useState } from "react";
 import { connect } from "dva";
 import menuConfig from "../utils/menuConfig";
@@ -32,21 +34,21 @@ const MainMenu = ()=> {
             menuConfig.map((item, index)=> {
               if(item.children&&item.children.length) {
                 return (
-                  <SubMenu key={index} title={<span><Icon type={item.icon} /><span>{item.title}</span></span>}>
+                  <SubMenu key={index} title={<span><LegacyIcon type={item.icon} /><span>{item.title}</span></span>}>
                   {item.children.map((item, index) => (
                     <Menu.Item key={item.title}><Link style = {{textDecoration:"none"}} to={item.url}>{item.title}</Link></Menu.Item>
                   ))}
                 </SubMenu>
-                )
+                );
               }
               return (
                 <Menu.Item key={index}>
                   <Link to = {item.url} style = {{textDecoration:"none"}}>
-                  <Icon type = {item.icon} />
+                  <LegacyIcon type = {item.icon} />
                   <span>{item.title}</span>
                   </Link>
                 </Menu.Item>
-              )
+              );
             })
           }
         </Menu>
@@ -57,7 +59,7 @@ const MainMenu = ()=> {
         <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
       </Layout>
     </Layout>
-    )
+    );
 }
 
 export default connect()(MainMenu);

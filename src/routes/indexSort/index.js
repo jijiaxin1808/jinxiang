@@ -1,19 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import {
-    Table,
-    Input,
-    InputNumber,
-    Button,
-    Modal,
-    Cascader,
-    Select,
-    Tabs,
-    Upload,
-    Icon,
-} from "antd";
+import { Table, Input, InputNumber, Button, Modal, Cascader, Select, Tabs, Upload } from "antd";
 // import { AlphaPicker } from "react-color";
 import * as API from "../../config/api";
 import emmit from "../../utils/events";
@@ -161,7 +150,7 @@ const MainSort = (props)=> {
         </Form>
         <Upload {...Props}>
             <Button>
-                <Icon type="upload" />点击上传
+                <LegacyIcon type="upload" />点击上传
             </Button>
         </Upload>
     </Modal>

@@ -1,6 +1,6 @@
-import { Form } from '@ant-design/compatible';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Icon, Input, Button, message } from 'antd';
+import { Input, Button, message } from 'antd';
 import React, {useState} from "react";
 import "./index.less";
 import * as API from "../../config/api";
@@ -44,7 +44,7 @@ const Login = (props)=> {
               rules: [{ required: true, message: '请输入你的用户名' }],
             })(
               <Input
-                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={<LegacyIcon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="用户名"
               />,
             )}
@@ -54,7 +54,7 @@ const Login = (props)=> {
               rules: [{ required: true, message: '请输入你的密码' }],
             })(
               <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={<LegacyIcon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 type="password"
                 placeholder="密码"
               />,

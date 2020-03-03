@@ -1,4 +1,5 @@
 import React from "react";
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Layout } from "antd";
 import "./index.less";
 import { Menu, Dropdown,Badge, Avatar } from 'antd';
@@ -26,12 +27,12 @@ const MainHeader = ()=> {
             <div className = "header-user">
                 <Dropdown overlay={menu} placement = "bottomCenter" className = "">
                     <Badge count={5}>
-                        <Avatar shape="square" size="large" icon="user" />  
+                        <Avatar shape="square" size="large" icon={<LegacyIcon type="user" />} />  
                     </Badge>
                 </Dropdown>
             </div>
         </Header>
-    )
+    );
 }
 
 export default MainHeader;
