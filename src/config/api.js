@@ -136,3 +136,7 @@ export function deleteMainCategories(params) {
     const url = "mainCategories/delete";
     return Axios(spliceUrl(url, params), {}, "DELETE")
 }
+export function sendUsersSms(params) {
+    const url = "users/smsSend";
+    return Axios(spliceUrl(url, params));
+}

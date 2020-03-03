@@ -14,7 +14,7 @@ const Add = (props)=> {
 	const [addDisable, setAddDisbale] = useState(false);
     const [inputType, setInputType] = useState();
 
-	const { getFieldDecorator, getFieldsValue } = props.form;
+	const { getFieldDecorator, getFieldsValue, validateFields } = props.form;
 
     useEffect(()=>{
         const params = {
@@ -77,18 +77,22 @@ const Add = (props)=> {
 	}
 
     const handleOk =async ()=> {
-		setConfirmLoading(true);
-		const {name, type, content} = getFieldsValue();
-		const newdata = {name, type, content}
-		await API.topSearchCreate(newdata).then(res=> {
-			if(res.data.code === 0) {
-				let newData = [...data]
-				newData.unshift(res.data.data);
-				setData(newData);
-				setVisible(false);
-				setConfirmLoading(false);
-			}
-		})
+        validateFields(async (err, value)=> {
+            if(!err) {
+                setConfirmLoading(true);
+                const {name, type, content} = getFieldsValue();
+                const newdata = {name, type, content}
+                await API.topSearchCreate(newdata).then(res=> {
+                    if(res.data.code === 0) {
+                        let newData = [...data]
+                        newData.unshift(res.data.data);
+                        setData(newData);
+                        setVisible(false);
+                        setConfirmLoading(false);
+                    }
+                })
+            }
+        })
     }
     const handleCancel = ()=> {
         setVisible(false);
@@ -181,13 +185,13 @@ const Add = (props)=> {
 						</Radio.Group>
                     )}
                     </Form.Item>
-                    <Form.Item  >
+                    <Form.Item label = {inputType?"活动id":"关键词"} >
                     {getFieldDecorator('content', {
 						valuePropName: 'inut',
                         rules: [{ required: true, message: '请输入内容'}, 
                         {pattern: inputType, message:"请输入数字ID"}]
                     })(
-                       <Input placeholder = "请输入内容" />
+                       <Input placeholder = {inputType?"活动id":"关键词"} />
                     )}
                     </Form.Item>
                 </Form>
@@ -272,12 +276,6 @@ const Manage = ()=> {
           title: '序号',
 		  dataIndex: 'id',
 		  key:"id",
-          render: text => text
-        },
-        {
-          title: '配置人',
-		  dataIndex: 'w',
-		  key: "name",
           render: text => text
         },
         {
