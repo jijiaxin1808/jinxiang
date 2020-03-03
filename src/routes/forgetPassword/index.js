@@ -56,16 +56,17 @@ const FpassWord = (props)=> {
               />,
             )}
           </Form.Item>
-          <Form.Item>
+          <Form.Item >
             {getFieldDecorator('validate', {
               rules: [{ required: true, message: '请输入收到的验证码' }],
             })(
             <>
             <Input
-            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            prefix={<Icon type="flag" />}
+            style = {{width:120,display: "inline-block",marginRight: 20}}
             placeholder="验证码"
             /> 
-            <Button type ="primary" style = {{width: 100}} disabled = {validating}
+            <Button type ="primary" style = {{width: 60,display: "inline-block"}} disabled = {validating}
             onClick = {()=>handleValidate()}>{validating?time:"获取"}</Button>
             </>
             )}
@@ -75,20 +76,20 @@ const FpassWord = (props)=> {
               rules: [{ required: true, message: '请输入新密码' }],
             })(
             <Input
-            prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+            prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
             placeholder="新密码"
+            type = "password"
             /> 
             )}
           </Form.Item>
           <Form.Item>
-            {getFieldDecorator('newPassword', {
-              rules: [{ required: true, message: '请输入新密码' }],
+            {getFieldDecorator('ok', {
             })(
-                <Button onClick = {handleOk}>完成 去登录</Button>
+                <Button onClick = {handleOk} type = "primary">完成 去登录</Button>
             )}
           </Form.Item>
         </Form>
-        <div className = "warn">接口逻辑有问题 待续</div>
+        <div className = "warn">修改密码接口逻辑有问题</div>
       </div>
       </div>
       </div>

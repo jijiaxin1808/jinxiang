@@ -14,15 +14,16 @@ const FirstSort = (props)=> {
     const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
     console.log(option)
     useEffect(()=> {
-        API.getCategoriesFirst()
-        .then(res=> {
-            if(res.data.code === 0) {
-                setData(res.data.data)
-            }
-        })
+        // API.getCategoriesFirst()
+        // .then(res=> {
+        //     if(res.data.code === 0) {
+        //         setData(res.data.data)
+        //     }
+        // })
         API.getALlCategories()
         .then(res=> {
             if(res.data.code === 0 ) {
+                setData(res.data.data);
                 const newData = res.data.data.map(item=> ({
                         label:item.name,
                         value: item.name,
@@ -172,16 +173,10 @@ const SecondSort = (props)=> {
     const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
     
     useEffect(()=> {
-        API.getCategoriesFirst()
-        .then(res=> {
-            if(res.data.code === 0) {
-                setFirstOptions(res.data.data);
-            }
-        })
-
         API.getALlCategories()
         .then(res=> {
             if(res.data.code === 0 ) {
+                setFirstOptions(res.data.data);
                 setSortData(res.data.data);
             }
         })

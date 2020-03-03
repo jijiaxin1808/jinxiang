@@ -240,7 +240,20 @@ const Manage = ()=> {
 				setGoodsData(newData);
 			}
 		})
+    }
+
+    const deleteSearch = (id)=> {
+		API.deletetopSearch({id})
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...handleData].filter(item=> {
+					return item.id!==id;
+				})
+				setHandleData(newData);
+			}
+		})
 	}
+
 
     const userColumns = [
         {
@@ -298,16 +311,11 @@ const Manage = ()=> {
         },
         {
             title: '操作',
-            dataIndex: 'status',
+            dataIndex: 'id',
             key: "handle",
-            render: text => <Button>下线</Button>
+            render: text => <Button onClick = {()=>deleteSearch(text)}>下线</Button>
           },
       ];
-      
-
-
-
-
     return (
         <div>
             <p className = "title-text">用户热门搜索</p>
@@ -336,6 +344,7 @@ const HotSearch = ()=> {
             <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
                     <WarppedAdd />
+                    <div className = "warn">用户热门搜索删除后更新莫得</div>
                 </TabPane>
                 <TabPane tab="管理热门搜索" key="2">
                     <Manage />

@@ -2,6 +2,7 @@ import { Form, Icon, Input, Button, message } from 'antd';
 import React, {useState} from "react";
 import "./index.less";
 import * as API from "../../config/api";
+import { Link } from "dva/router";
 
 const Login = (props)=> {
 	const [loading, setLoading] = useState(false);
@@ -17,7 +18,8 @@ const Login = (props)=> {
 			await API.loginByPwd(data)
 			.then( async res=> {
 				if(res.data.code === 0) {
-					localStorage.setItem("token",res.data.data.token)
+          localStorage.setItem("token",res.data.data.token)
+          localStorage.setItem("schoolId",res.data.data.user.schoolId);
 					await message.success("登录成功");
 					props.history.push("/manage");
 				}
@@ -56,6 +58,7 @@ const Login = (props)=> {
               />,
             )}
           </Form.Item>
+          <Link to = "/Fpassword">忘记密码</Link>
           <Form.Item className = "flex-center" >
             <Button type="primary" htmlType="submit" className="login-form-button" loading = {loading}>
               登录

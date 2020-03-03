@@ -42,7 +42,8 @@ const QustionBank = (props)=> {
     useEffect(()=> {
         const params = {
             page: 1,
-            size:10
+            size:10,
+            schoolId:localStorage.getItem("schoolId")
         }
         API.questionBySchool(params)
         .then(res => {
