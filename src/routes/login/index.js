@@ -1,4 +1,6 @@
-import { Form, Icon, Input, Button, message } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Icon, Input, Button, message } from 'antd';
 import React, {useState} from "react";
 import "./index.less";
 import * as API from "../../config/api";

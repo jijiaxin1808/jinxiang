@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from "react";
-import { Table, Input,  Form, Button, Modal, Tabs, Select } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Table, Input, Button, Modal, Tabs, Select } from "antd";
 import * as API from "../../config/api";
 
 const { TabPane } = Tabs;
@@ -120,45 +122,43 @@ const FirstSort = (props)=> {
         }
     ];
         
-    return (
-        <>
-        <div className = "title-text" style = {{display: "inline-block", marginRight:600}}>编辑一级分类</div>
-        <Button onClick = {()=> {setVisible(true)}} type = "primary">新增</Button>
-        <Table
-        dataSource={data}
-        columns={columns}
-        />
-        <Modal
-        title= "一级分类"
-        confirmLoading = {confirmLoading}
-        visible={visible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText = "确认"
-        cancelText = "取消"
-        >
-            <Form>
-                <Form.Item label = "名称">
-                {getFieldDecorator('name', {
-                    rules: [{ required: true, message: '请输入分类名称' }],
-                })(
-                    <Input
-                    placeholder="请输入分类名称"
-                    />,
-                )}
-                </Form.Item>
-                <Form.Item label = "权重">
-                {getFieldDecorator('priority', {
-                    rules: [{ required: true, message: '请输入权重' },
-                     {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-                })(
-                    <Input/>
-                )}
-                </Form.Item>
-            </Form>
-        </Modal>
-        </>
-    )
+    return <>
+    <div className = "title-text" style = {{display: "inline-block", marginRight:600}}>编辑一级分类</div>
+    <Button onClick = {()=> {setVisible(true)}} type = "primary">新增</Button>
+    <Table
+    dataSource={data}
+    columns={columns}
+    />
+    <Modal
+    title= "一级分类"
+    confirmLoading = {confirmLoading}
+    visible={visible}
+    onOk={handleOk}
+    onCancel={handleCancel}
+    okText = "确认"
+    cancelText = "取消"
+    >
+        <Form>
+            <Form.Item label = "名称">
+            {getFieldDecorator('name', {
+                rules: [{ required: true, message: '请输入分类名称' }],
+            })(
+                <Input
+                placeholder="请输入分类名称"
+                />,
+            )}
+            </Form.Item>
+            <Form.Item label = "权重">
+            {getFieldDecorator('priority', {
+                rules: [{ required: true, message: '请输入权重' },
+                 {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
+            })(
+                <Input/>
+            )}
+            </Form.Item>
+        </Form>
+    </Modal>
+    </>;
 }
 const WarpedFirstSort = Form.create()(FirstSort);
 
@@ -289,50 +289,48 @@ const SecondSort = (props)=> {
         }
     ];
         
-    return (
-        <>
-        <div className = "title-text" style = {{display: "inline-block", marginRight:600}}>二级分类</div>
-        <Select defaultValue="请选择一级分类" style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
-            {
-                fristOptions.map(item=><Option value = {item.id}>{item.name}</Option>)
-            }
-        </Select>
-        <Button onClick = {()=> {setVisible(true)}} disabled = {!option} type = "primary">新增</Button>
-        <Table
-        dataSource={data}
-        columns={columns}
-        />
-        <Modal
-        title= "标签分类"
-        confirmLoading = {confirmLoading}
-        visible={visible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText = "确认"
-        cancelText = "取消"
-        >
-            <Form>
-                <Form.Item label = "名称">
-                {getFieldDecorator('name', {
-                    rules: [{ required: true, message: '请输入分类名称' }],
-                })(
-                    <Input
-                    placeholder="请输入分类名称"
-                    />,
-                )}
-                </Form.Item>
-                <Form.Item label = "权重">
-                {getFieldDecorator('priority', {
-                    rules: [{ required: true, message: '请输入权重' },
-                     {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-                })(
-                    <Input/>
-                )}
-                </Form.Item>
-            </Form>
-        </Modal>
-        </>
-    )
+    return <>
+    <div className = "title-text" style = {{display: "inline-block", marginRight:600}}>二级分类</div>
+    <Select defaultValue="请选择一级分类" style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
+        {
+            fristOptions.map(item=><Option value = {item.id}>{item.name}</Option>)
+        }
+    </Select>
+    <Button onClick = {()=> {setVisible(true)}} disabled = {!option} type = "primary">新增</Button>
+    <Table
+    dataSource={data}
+    columns={columns}
+    />
+    <Modal
+    title= "标签分类"
+    confirmLoading = {confirmLoading}
+    visible={visible}
+    onOk={handleOk}
+    onCancel={handleCancel}
+    okText = "确认"
+    cancelText = "取消"
+    >
+        <Form>
+            <Form.Item label = "名称">
+            {getFieldDecorator('name', {
+                rules: [{ required: true, message: '请输入分类名称' }],
+            })(
+                <Input
+                placeholder="请输入分类名称"
+                />,
+            )}
+            </Form.Item>
+            <Form.Item label = "权重">
+            {getFieldDecorator('priority', {
+                rules: [{ required: true, message: '请输入权重' },
+                 {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
+            })(
+                <Input/>
+            )}
+            </Form.Item>
+        </Form>
+    </Modal>
+    </>;
 }
 const WarppedSecondSort = Form.create()(SecondSort);
 

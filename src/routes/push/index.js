@@ -1,5 +1,7 @@
 import React from "react";
-import { Tabs, Divider, Form, Cascader } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Tabs, Divider, Cascader } from "antd";
 
 const { TabPane } = Tabs;
 const Push = (props)=> {

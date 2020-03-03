@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Button, Tabs, Modal, Form, Input, Table, Divider, Radio} from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Tabs, Modal, Input, Table, Divider, Radio } from "antd";
 import * as API from "../../config/api";
 
 
@@ -200,7 +202,7 @@ const Add = (props)=> {
 			
             <Table columns={columns} dataSource={data} className = "hotSearch-table-add" />
         </div>
-    )
+    );
 }
 
 

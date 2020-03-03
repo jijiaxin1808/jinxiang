@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
 import * as API from "../../config/api";
-import { Tabs, Divider, Form, Input, Icon, Button, Table, Modal, Radio, message, Popconfirm } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+    Tabs,
+    Divider,
+    Input,
+    Icon,
+    Button,
+    Table,
+    Modal,
+    Radio,
+    message,
+    Popconfirm,
+} from "antd";
 import emmiter from "../../utils/events";
 
 const { TabPane } = Tabs;

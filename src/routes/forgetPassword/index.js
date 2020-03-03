@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Icon, Button, message } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Icon, Button, message } from "antd";
 import  Reg from "../../utils/reg";
 import * as API from "../../config/api";
 

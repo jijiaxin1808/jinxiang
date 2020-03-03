@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
-import { Table, Input, InputNumber, Form, Button, Modal, Cascader, Select, Tabs, Upload, Icon } from "antd";
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import {
+    Table,
+    Input,
+    InputNumber,
+    Button,
+    Modal,
+    Cascader,
+    Select,
+    Tabs,
+    Upload,
+    Icon,
+} from "antd";
 // import { AlphaPicker } from "react-color";
 import * as API from "../../config/api";
 import emmit from "../../utils/events";
@@ -102,59 +115,57 @@ const MainSort = (props)=> {
 			}
 		  }
 	  };	
-	return (
-		<>
-		<Select defaultValue="请选择主分类" style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
-            {
-                mainSortOption.map(item=><Option value = {item.id}>{item.name}</Option>)
-            }
-        </Select>
-		{
-			selectedMainSort?
-			<><div>
-				icon:<img src = {`http://blog.csxjh.vip:8000/${selectedMainSort.icon}` } width = "50px" height = "50px" alt = {"icon"}/><br/>
-				权重: {selectedMainSort.priority}<br/>
-				<Button onClick = {handleChange}>修改</Button>
-			</div>
-			<WarppedSortTable data = {selectedMainSort.categoryList}  main = {mainSortOption} nowFirst = {selectedMainSort}/>
-			</>:""
-		}
-		<Modal
-		title= "修改icon和权重"
-		confirmLoading = {confirmLoading}
-		visible={visible}
-		onOk={handleOk}
-		onCancel={handleCancel}
-		okText = "确认"
-		cancelText = "取消"
-		>
-			<Form>
-				<Form.Item label = "名称">
-				{getFieldDecorator('name', {
-					rules: [{ required: true, message: '请输入名称' }],
-				})(
-					<Input
-					placeholder="请输入标签名称"
-					/>,
-				)}
-				</Form.Item>
-				<Form.Item label = "权重">
-				{getFieldDecorator('priority', {
-					rules: [{ required: true, message: '请输入权重' },
-					{pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-				})(
-					<InputNumber/>
-				)}
-				</Form.Item>
-			</Form>
-			<Upload {...Props}>
-				<Button>
-					<Icon type="upload" />点击上传
-				</Button>
-            </Upload>
-		</Modal>
-		</>
-	)
+	return <>
+    <Select defaultValue="请选择主分类" style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
+        {
+            mainSortOption.map(item=><Option value = {item.id}>{item.name}</Option>)
+        }
+    </Select>
+    {
+        selectedMainSort?
+        <><div>
+            icon:<img src = {`http://blog.csxjh.vip:8000/${selectedMainSort.icon}` } width = "50px" height = "50px" alt = {"icon"}/><br/>
+            权重: {selectedMainSort.priority}<br/>
+            <Button onClick = {handleChange}>修改</Button>
+        </div>
+        <WarppedSortTable data = {selectedMainSort.categoryList}  main = {mainSortOption} nowFirst = {selectedMainSort}/>
+        </>:""
+    }
+    <Modal
+    title= "修改icon和权重"
+    confirmLoading = {confirmLoading}
+    visible={visible}
+    onOk={handleOk}
+    onCancel={handleCancel}
+    okText = "确认"
+    cancelText = "取消"
+    >
+        <Form>
+            <Form.Item label = "名称">
+            {getFieldDecorator('name', {
+                rules: [{ required: true, message: '请输入名称' }],
+            })(
+                <Input
+                placeholder="请输入标签名称"
+                />,
+            )}
+            </Form.Item>
+            <Form.Item label = "权重">
+            {getFieldDecorator('priority', {
+                rules: [{ required: true, message: '请输入权重' },
+                {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
+            })(
+                <InputNumber/>
+            )}
+            </Form.Item>
+        </Form>
+        <Upload {...Props}>
+            <Button>
+                <Icon type="upload" />点击上传
+            </Button>
+        </Upload>
+    </Modal>
+    </>;
 }
 
 const MainSortTable = (props)=> {
@@ -444,70 +455,68 @@ const LabelSort = (props)=> {
 		}
 	];
 		
-	return (
-		<>
-		<div className = "title-text" style = {{display: "inline-block", marginRight:800}} >标签分类</div>
-		<Button onClick = {()=> {setVisible(true)}} type = "primary">新增</Button>
-		<Table
-		dataSource={data}
-		columns={columns}
-		/>
-		<Modal
-		title= "标签分类"
-		visible={visible}
-		confirmLoading = {confirmLoading}
-		onOk={handleOk}
-		onCancel={handleCancel}
-		okText = "确认"
-		cancelText = "取消"
-		>
-			<Form>
-				<Form.Item label = "名称">
-					{getFieldDecorator('name', {
-						rules: [{ required: true, message: '请输入名称' }],
-					})(
-						<Input
-						placeholder="请输入标签名称"
-						/>
-					)}
-				</Form.Item>
-				<Form.Item label = "一级分类">
-					{getFieldDecorator('sort1', {
-						rules: [{ required: true, message: '请选择一级分类' }],
-					})(
-						<Select placeholder = "请选择一级分类"  style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
-						{
-							optionData.map(item=><Option value = {item.id}>{item.name}</Option>)
-						}
-						</Select>
-					)}
-				</Form.Item>
-				<Form.Item label = "二级分类">
-					{getFieldDecorator('sort2', {
-						// rules: [{ required: true, message: '请选择二级分类'}],
-					})(
-						<Select placeholder = "请选择二级分类" style={{ width: 250 }} onChange={(e)=> {selectChangeS(e)}}>
-							<Option value = {""}>{"选择全部二级"}</Option>
-						{
-							secondOptionData.map(item=><Option value = {item.id}>{item.name}</Option>)
-						}
-						</Select>
-					)}
-				</Form.Item>
-				<Form.Item label = "请输入权重">
-					{getFieldDecorator('priority', {
-						rules: [{ required: true, message: '请输入权重' },
-						{pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-					})(
-						<InputNumber/>
-					)}
-				</Form.Item>
-			</Form>
-		</Modal>
-		</>
-	)
+	return <>
+    <div className = "title-text" style = {{display: "inline-block", marginRight:800}} >标签分类</div>
+    <Button onClick = {()=> {setVisible(true)}} type = "primary">新增</Button>
+    <Table
+    dataSource={data}
+    columns={columns}
+    />
+    <Modal
+    title= "标签分类"
+    visible={visible}
+    confirmLoading = {confirmLoading}
+    onOk={handleOk}
+    onCancel={handleCancel}
+    okText = "确认"
+    cancelText = "取消"
+    >
+        <Form>
+            <Form.Item label = "名称">
+                {getFieldDecorator('name', {
+                    rules: [{ required: true, message: '请输入名称' }],
+                })(
+                    <Input
+                    placeholder="请输入标签名称"
+                    />
+                )}
+            </Form.Item>
+            <Form.Item label = "一级分类">
+                {getFieldDecorator('sort1', {
+                    rules: [{ required: true, message: '请选择一级分类' }],
+                })(
+                    <Select placeholder = "请选择一级分类"  style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
+                    {
+                        optionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+                    }
+                    </Select>
+                )}
+            </Form.Item>
+            <Form.Item label = "二级分类">
+                {getFieldDecorator('sort2', {
+                    // rules: [{ required: true, message: '请选择二级分类'}],
+                })(
+                    <Select placeholder = "请选择二级分类" style={{ width: 250 }} onChange={(e)=> {selectChangeS(e)}}>
+                        <Option value = {""}>{"选择全部二级"}</Option>
+                    {
+                        secondOptionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+                    }
+                    </Select>
+                )}
+            </Form.Item>
+            <Form.Item label = "请输入权重">
+                {getFieldDecorator('priority', {
+                    rules: [{ required: true, message: '请输入权重' },
+                    {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
+                })(
+                    <InputNumber/>
+                )}
+            </Form.Item>
+        </Form>
+    </Modal>
+    </>;
 }
-			
+
 const WarppedLabelSort = Form.create()(LabelSort);
 
 const IndexSort = ()=> {
