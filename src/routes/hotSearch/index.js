@@ -26,7 +26,7 @@ const Add = (props)=> {
         API.getAlltopSearch(params)
         .then(async res=> {
             if(res.data.code === 0) {
-            setData(res.data.data);
+                setData(res.data.data);
             }
         })
     },[])
@@ -40,11 +40,6 @@ const Add = (props)=> {
             setAddDisbale(false);
             setVisible(false);
         }
-        
-
-// 1. 如果是可用状态 检测管不管
-// 2. 如果是不可用状态 检查开不开
-
 	},[data])
 
 
