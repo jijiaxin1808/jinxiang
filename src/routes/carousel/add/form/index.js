@@ -1,7 +1,7 @@
 import React from 'react';
-import { Form, Input, Select, Button, Icon, Upload } from 'antd';
+import { Form, Input, Select, Button, Icon, Upload,message } from 'antd';
 import './index.less';
-import * as API from '../../../config/api';
+import * as API from '../../../../config/api';
   
   const { Option } = Select;
 
@@ -13,33 +13,49 @@ import * as API from '../../../config/api';
             types: '',
             Name: "",
             Activity: "",
-            Picture: "",
-            Pic:{
-                
-            }
+            Picture: ""
           };
     }
+
+    Pic = {
+      name: 'image',
+      action: 'http://blog.csxjh.vip:8000/images/upload',
+      headers: {
+        token: "86f3705005b940a0a21f4d948eb0d04f",
+      },
+      onChange(info) {
+          if(info.file.status === "done" && info.file.response.code === 0) {
+            this.data.MakePicture(info.file.response.data)      
+          }
+        }
+    }
     
+    MakePicture = (Pic) =>{
+      this.setState({
+        Picture: Pic
+      })
+    }
+
     handleSubmit = e => {
       e.preventDefault();
       let standard = true;
       if(this.state.Name === ''){
-          alert("请填写名称");
+          message.error("请填写名称");
           standard = false;
       }
       if(this.state.types === ''){
-          alert("请选择类型");
+        message.error("请选择类型");
           standard = false;
       }
       if(this.state.types === "activity"){
         if(this.state.Activity === ''){
-            alert("请填写活动ID");
+          message.error("请填写活动ID");
             standard = false;
         }
       }
       if(this.state.types === "picture"){
         if(this.state.Picture === ''){
-            alert("请上传图片");
+            message.error("请上传图片", 3);
             standard = false;
         } 
       }
@@ -47,13 +63,15 @@ import * as API from '../../../config/api';
         const Message = {
           name: this.state.Name,
           type: this.state.types==="activity"?"活动":"图片",
-          content: this.state.types==="activity"? this.state.Activity: this.state.Picture.file.name
+          content: this.state.types==="activity"? this.state.Activity: this.state.Picture
         }
-        console.log("Message", Message);
-        API.createCarousels(Message).then(()=>{
-          this.props.Create(this.props.params);
-          this.handleReset();
-        })
+        API.createCarousels(Message).then((res)=>{
+          if(res.data.code === 0){
+            this.props.Add(Message, res.data.data);
+          }
+          
+        });
+        this.handleReset();
       }
       
       this.props.form.validateFieldsAndScroll((err, values) => {
@@ -93,12 +111,6 @@ import * as API from '../../../config/api';
         })
     }
 
-    validateServicePicture = (rule, value, callback) =>{
-      console.log(value);
-      this.setState({
-        Picture: value
-      })
-    }
 
     render() {
       const { getFieldDecorator } = this.props.form;
@@ -115,8 +127,7 @@ import * as API from '../../../config/api';
                     validator: this.validateServiceName 
                 }
               ],
-            })
-            (<Input placeholder="请填写名称"/>)}
+            })(<Input placeholder="请填写名称"/>)}
           </Form.Item>
 
           <Form.Item label="类型">
@@ -148,11 +159,9 @@ import * as API from '../../../config/api';
                 {
                   required: this.state.types==="picture"?true:false,
                   message: '请输入图片:',
-                },{
-                  validator: this.validateServicePicture
-              }
+                }
               ],
-            })(<Upload>
+            })(<Upload {...this.Pic} data={ {MakePicture: this.MakePicture}}>
                   <Button>
                     <Icon type="upload" />上传图片
                   </Button>

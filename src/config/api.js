@@ -77,12 +77,16 @@ export function createCarousels(data) {
     const url = "carousels/create";
     return Axios(url, data,"POST");
 }
-export function updateCarousels(params) {
-    const url = "carousels/update";
-    return Axios(url, params,{},"POST");
+export function updateShowedCarousels(params) {
+    const url = "carousels/updateShowed";
+    return Axios(url, params,"PUT");
 }
 
-export function ListAllCarousels(params) {
+export function ListSchoolCarousels(params) {
+    const url = "carousels/listBySchoolId";
+    return Axios(spliceUrl(url, params));
+}
+export function ListShowedCarousels(params) {
     const url = "carousels/listByShowed";
     return Axios(spliceUrl(url, params));
 }
@@ -90,4 +94,8 @@ export function ListAllCarousels(params) {
 export function deleteCarousels(params) {
     const url = "carousels/delete";
     return Axios(spliceUrl(url, params),{},"DELETE");
+}
+export function listFgCarousels(params) {
+    const url = "carousels/listFg";
+    return Axios(spliceUrl(url, params));
 }
