@@ -10,9 +10,9 @@ const { TabPane } = Tabs;
 
 const Add = (props)=> {
 
-	const [visible, setVisible] = useState(false);
-	const [confirmLoading, setConfirmLoading] = useState(false);  
-	const [data, setData] = useState([]);
+	const [visible, setVisible] = useState(false); // modal是否可见
+	const [confirmLoading, setConfirmLoading] = useState(false);   //  modal确认按钮是否loading
+	const [data, setData] = useState([]);  //  表格使用的数据
 	const [addDisable, setAddDisbale] = useState(false);
     const [inputType, setInputType] = useState();
 
