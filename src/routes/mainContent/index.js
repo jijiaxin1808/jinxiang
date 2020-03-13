@@ -39,8 +39,8 @@ function Loading({ error }) {
 const { Content } = Layout;
 const MainContent = ()=> {
 	return (
-		<Content className="content">
-			<Suspense fallback={<Loading />}>
+		<Suspense fallback={<Loading />}>
+		<Content className = "mainContent">
 			<Route path="/manage/home" component={Home} />
 			<Route path="/manage/openPage" component={OpenPage} />
 			<Route path="/manage/trending" component={HotSearch} />
@@ -59,8 +59,8 @@ const MainContent = ()=> {
 			<Route path="/manage/Activity" component={Activity} />
 			<Route path="/manage/allSort" component={AllSort} />
 			{/* <Route path="/manage/fpassWord" component={FpassWord} /> */}
-			</Suspense>
 		</Content>
+		</Suspense>
 	);
 }
 export default MainContent;
