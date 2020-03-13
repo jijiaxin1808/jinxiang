@@ -6,6 +6,7 @@ const User = ()=> {
             <div className = "title">通知中心</div>
             <div className = "warn">莫得原型</div>
             <div className = "warn">柴海来做</div>
+            <div>hash测试111</div>
         </div>
     )
 }

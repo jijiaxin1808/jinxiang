@@ -9,26 +9,28 @@ import { Link } from "dva/router";
 const Login = (props)=> {
 	const [loading, setLoading] = useState(false);
     const handleSubmit =  e => {
-        e.preventDefault();
-        props.form.validateFields( async (err, values) => {
-        if (!err) {
-			const data = {
-				phone: values.username,
-				pwd: values.password
-			}
-			setLoading(true);
-			await API.loginByPwd(data)
-			.then( async res=> {
-				if(res.data.code === 0) {
-          localStorage.setItem("token",res.data.data.token)
-          localStorage.setItem("schoolId",res.data.data.user.schoolId);
-					await message.success("登录成功");
-					props.history.push("/manage");
-				}
-			})
-			setLoading(false);
-		}
-		});
+    //     e.preventDefault();
+    //     props.form.validateFields( async (err, values) => {
+    //     if (!err) {
+		// 	const data = {
+		// 		phone: values.username,
+		// 		pwd: values.password
+		// 	}
+		// 	setLoading(true);
+		// 	await API.loginByPwd(data)
+		// 	.then( async res=> {
+		// 		if(res.data.code === 0) {
+    //       localStorage.setItem("token",res.data.data.token)
+    //       localStorage.setItem("schoolId",res.data.data.user.schoolId);
+		// 			await message.success("登录成功");
+		// 			props.history.push("/manage");
+		// 		}
+		// 	})
+		// 	setLoading(false);
+		// }
+    // });    
+    localStorage.setItem("token","token");
+    props.history.push("/manage");
     };
 
     const { getFieldDecorator } = props.form;
@@ -70,8 +72,7 @@ const Login = (props)=> {
       </div>
       </div>
       </div>
-    );
-  
+    ); 
 }
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(Login);
