@@ -31,3 +31,7 @@ export default function isAuthenticated () {
 export function setCookie (token) {
 	localStorage.setItem("token",token);
 }
+export function getLevel() {
+    return localStorage.getItem("level")
+
+}

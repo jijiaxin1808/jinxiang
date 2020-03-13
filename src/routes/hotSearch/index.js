@@ -4,7 +4,7 @@ import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Button, Tabs, Modal, Input, Table, Divider, Radio } from "antd";
 import * as API from "../../config/api";
-
+import * as session from "../../utils/session";
 
 const { TabPane } = Tabs;
 
@@ -15,7 +15,6 @@ const Add = (props)=> {
 	const [data, setData] = useState([]);
 	const [addDisable, setAddDisbale] = useState(false);
     const [inputType, setInputType] = useState();
-
 	const { getFieldDecorator, getFieldsValue, validateFields } = props.form;
 
     useEffect(()=>{
@@ -29,7 +28,7 @@ const Add = (props)=> {
                 setData(res.data.data);
             }
         })
-    },[])
+    },[]) // 初始化
 	
 	useEffect(()=> {	
 		if(!addDisable && data.length && data.filter(item => item.showed === true).length) {
@@ -40,7 +39,7 @@ const Add = (props)=> {
             setAddDisbale(false);
             setVisible(false);
         }
-	},[data])
+	},[data]) //  控制上线按钮的状态
 
 
 	const deleteSearch = (id)=> {
@@ -53,7 +52,8 @@ const Add = (props)=> {
 				setData(newData);
 			}
 		})
-	}
+    }//  删除搜索
+    
 	const cancel = (id)=> {
 		const params = {
 			id: id,
@@ -91,6 +91,7 @@ const Add = (props)=> {
             }
         })
     }
+
     const handleCancel = ()=> {
         setVisible(false);
         setConfirmLoading(false);
@@ -194,7 +195,6 @@ const Add = (props)=> {
                 </Form>
                 </div>
             </Modal>
-			
             <Table columns={columns} dataSource={data} className = "hotSearch-table-add" />
         </div>
     );
@@ -330,22 +330,20 @@ const Manage = ()=> {
 
 
 const HotSearch = ()=> {
-
-    const callback = (key)=> {
-        console.log(key);
-    }
-
     return (
         <div>
             <div className = "title">热门搜索</div>
-            <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
+            <Tabs defaultActiveKey="1"  style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
                     <WarppedAdd />
                     <div className = "warn">用户热门搜索删除后更新莫得</div>
                 </TabPane>
-                <TabPane tab="管理热门搜索" key="2">
-                    <Manage />
-                </TabPane>
+                {
+                    session.getLevel()==="B"?"":
+                    <TabPane tab="管理热门搜索" key="2">
+                        <Manage />
+                    </TabPane>
+                }
             </Tabs>
         </div>
     )
