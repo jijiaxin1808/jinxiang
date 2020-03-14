@@ -1,11 +1,12 @@
 import React from "react";
 import { Spin } from "antd";
-export default () => (
-	<Spin
-		size='large'
+const Loading = ()=> {
+	return (
+		<Spin size='large'
 		style={{
-			width: "100%",
-			margin: "60px auto"
-		}}
-	/>
-);
+		minHeight: 600,
+		background: "#fff"
+		}}/>
+	)
+}// React.lazy的Loading
+export default Loading;

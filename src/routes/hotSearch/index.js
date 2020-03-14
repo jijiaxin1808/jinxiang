@@ -339,10 +339,10 @@ const HotSearch = ()=> {
                     <div className = "warn">用户热门搜索删除后更新莫得</div>
                 </TabPane>
                 {
-                    session.getLevel()==="B"?"":
+                    session.getLevelA()?
                     <TabPane tab="管理热门搜索" key="2">
                         <Manage />
-                    </TabPane>
+                    </TabPane>:""
                 }
             </Tabs>
         </div>
