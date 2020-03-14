@@ -88,8 +88,6 @@ const menuConfig = [
         icon: "user",
         url: "/manage/user"
     },
-
-
 ]
 
 export default menuConfig;

@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Button, Tabs, Modal, Input, Table, Divider, Radio } from "antd";
+import { Button, Tabs, Modal, Input, Table, Divider, Radio, Form } from "antd";
 import * as API from "../../config/api";
-
+import * as session from "../../utils/session";
 
 const { TabPane } = Tabs;
 
-const Add = (props)=> {
+const Add = ()=> {
 
 	const [visible, setVisible] = useState(false); // modal是否可见
 	const [confirmLoading, setConfirmLoading] = useState(false);   //  modal确认按钮是否loading
 	const [data, setData] = useState([]);  //  表格使用的数据
 	const [addDisable, setAddDisbale] = useState(false);
     const [inputType, setInputType] = useState();
-
-	const { getFieldDecorator, getFieldsValue, validateFields } = props.form;
+    const [form] = Form.useForm();
 
     useEffect(()=>{
         const params = {
@@ -29,7 +26,7 @@ const Add = (props)=> {
                 setData(res.data.data);
             }
         })
-    },[])
+    },[]) // 初始化
 	
 	useEffect(()=> {	
 		if(!addDisable && data.length && data.filter(item => item.showed === true).length) {
@@ -40,7 +37,7 @@ const Add = (props)=> {
             setAddDisbale(false);
             setVisible(false);
         }
-	},[data])
+	},[data]) //  控制上线按钮的状态
 
 
 	const deleteSearch = (id)=> {
@@ -53,7 +50,8 @@ const Add = (props)=> {
 				setData(newData);
 			}
 		})
-	}
+    }//  删除搜索
+    
 	const cancel = (id)=> {
 		const params = {
 			id: id,
@@ -74,23 +72,24 @@ const Add = (props)=> {
 	}
 
     const handleOk =async ()=> {
-        validateFields(async (err, value)=> {
-            if(!err) {
-                setConfirmLoading(true);
-                const {name, type, content} = getFieldsValue();
-                const newdata = {name, type, content}
-                await API.topSearchCreate(newdata).then(res=> {
-                    if(res.data.code === 0) {
-                        let newData = [...data]
-                        newData.unshift(res.data.data);
-                        setData(newData);
-                        setVisible(false);
-                        setConfirmLoading(false);
-                    }
-                })
-            }
+        form.validateFields()
+        .then(values => {
+            setConfirmLoading(true);
+            const {name, type, content} = values;
+            const newdata = {name, type, content}
+            API.topSearchCreate(newdata)
+            .then(res=> {
+                if(res.data.code === 0) {
+                    let newData = [...data]
+                    newData.unshift({id:res.data.data,...newdata,showed:true});
+                    setData(newData);
+                    setVisible(false);
+                    setConfirmLoading(false);
+                }
+            })
         })
     }
+
     const handleCancel = ()=> {
         setVisible(false);
         setConfirmLoading(false);
@@ -160,41 +159,26 @@ const Add = (props)=> {
             cancelText = "取消"
             >
                 <div>
-                <Form  >
-                    <Form.Item label="名称" >
-                    {getFieldDecorator('name', {
-						valuePropName: 'input',
-						rules: [{ required: true, message: '请输入热门搜索名称' }]
-                    })(
+                <Form form = {form}>
+                    <Form.Item label = "名称" name = "name" rules = {[{ required: true, message: '请输入热门搜索名称' }]} >
                        <Input placeholder = "请输入热门搜索名称" />
-                    )}
                     </Form.Item>
-					<Form.Item label="类型" >
-                    {getFieldDecorator('type', {
-						valuePropName: 'radio-button',
-						defaultValue: "keyWord"
-                    })(
+					<Form.Item label="类型" name = "type">
                         <Radio.Group  buttonStyle="solid" 
                         onChange = {(e)=> {e.target.value==="活动"?setInputType(/^[0-9]\d*$/):setInputType("")}}
                         >
 							<Radio.Button value="关键词" key = {1}>关键词</Radio.Button>
 							<Radio.Button value="活动" key = {2}>活动</Radio.Button>
 						</Radio.Group>
-                    )}
                     </Form.Item>
-                    <Form.Item label = {inputType?"活动id":"关键词"} >
-                    {getFieldDecorator('content', {
-						valuePropName: 'inut',
-                        rules: [{ required: true, message: '请输入内容'}, 
-                        {pattern: inputType, message:"请输入数字ID"}]
-                    })(
+                    <Form.Item label = {inputType?"活动id":"关键词"} name = "content"
+                    rules = {[{ required: true, message: '请输入内容'}, 
+                    {pattern: inputType, message:"请输入数字ID"}]}>
                        <Input placeholder = {inputType?"活动id":"关键词"} />
-                    )}
                     </Form.Item>
                 </Form>
                 </div>
             </Modal>
-			
             <Table columns={columns} dataSource={data} className = "hotSearch-table-add" />
         </div>
     );
@@ -203,12 +187,11 @@ const Add = (props)=> {
 
 
 
-const WarppedAdd = Form.create()(Add);
-
 const Manage = ()=> {
 
 	const [goodsData, setGoodsData] = useState([]);
     const [handleData, setHandleData] = useState([]);
+
 	useEffect(()=> {
         const params = {
             page: 1,
@@ -226,7 +209,6 @@ const Manage = ()=> {
                 setHandleData(res.data.data);
             }
         })
-        
 	},[])
 
 	const userDelete = (id)=> {
@@ -250,7 +232,6 @@ const Manage = ()=> {
 			}
 		})
 	}
-
 
     const userColumns = [
         {
@@ -279,8 +260,7 @@ const Manage = ()=> {
         },
     ];
       
-
-    
+  
     const handleColumns = [
         {
           title: '序号',
@@ -317,8 +297,7 @@ const Manage = ()=> {
         <div>
             <p className = "title-text">用户热门搜索</p>
             <div className = "hotSearch-div-userSearch">
-                <Table columns={userColumns} dataSource={goodsData.slice(0,5)} className = "hotSearch-table-userSearch" pagination = {false} />
-                <Table columns={userColumns} dataSource={goodsData.slice(5)} className = "hotSearch-table-userSearch" pagination = {false}/>
+                <Table columns={userColumns} dataSource = {goodsData}  pagination = {false} />
             </div>
             <p className = "title-text">配置热门搜索</p>
             <Table columns={handleColumns} dataSource={handleData}/>
@@ -330,22 +309,20 @@ const Manage = ()=> {
 
 
 const HotSearch = ()=> {
-
-    const callback = (key)=> {
-        console.log(key);
-    }
-
     return (
         <div>
             <div className = "title">热门搜索</div>
-            <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
+            <Tabs defaultActiveKey="1"  style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
-                    <WarppedAdd />
+                    <Add />
                     <div className = "warn">用户热门搜索删除后更新莫得</div>
                 </TabPane>
-                <TabPane tab="管理热门搜索" key="2">
-                    <Manage />
-                </TabPane>
+                {
+                    session.getLevelA()?
+                    <TabPane tab="管理热门搜索" key="2">
+                        <Manage />
+                    </TabPane>:""
+                }
             </Tabs>
         </div>
     )
