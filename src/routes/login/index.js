@@ -30,6 +30,7 @@ const Login = (props)=> {
 		// }
     // });    
     localStorage.setItem("token","token");
+    localStorage.setItem("level",true);
     props.history.push("/manage");
     };
 
