@@ -1,4 +1,4 @@
-import React, {lazy, Suspense} from "react";
+import React, {lazy, Suspense, Component} from "react";
 import { Route } from "dva/router";
 import { Spin } from "antd";
 import { Layout } from "antd";
@@ -21,19 +21,20 @@ const Activity = lazy(()=> import("../activity"));
 const AllSort = lazy(()=> import("../allSort"));
 const FpassWord = lazy(()=> import("../forgetPassword"));
 
-function Loading({ error }) {
-	if (error) {
-	  return 'Opps Error!!';
-	} else {
-	  return (
-		<Spin size='large'
-		  style={{
-			width: '100%',
-			margin: '60px auto'
-		  }} />)
-	}
-  }
+const sleep =  () => new Promise((resolve) => setTimeout(resolve, 100000));
 
+const Loading =()=> {
+	// await sleep();
+	return (
+		<Spin size='large'
+		style={{
+		//   width: '100%',
+		//   margin: '60px auto',
+		minHeight: 600,
+		  background: "#fff"
+		}} />
+	);
+}
 
 
 const { Content } = Layout;
@@ -58,7 +59,7 @@ const MainContent = ()=> {
 			<Route path="/manage/carousel" component={Carousel} />
 			<Route path="/manage/Activity" component={Activity} />
 			<Route path="/manage/allSort" component={AllSort} />
-			{/* <Route path="/manage/fpassWord" component={FpassWord} /> */}
+			<Route path="/manage/fpassWord" component={FpassWord} />
 		</Content>
 		</Suspense>
 	);
