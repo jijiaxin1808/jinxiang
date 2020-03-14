@@ -29,6 +29,7 @@ const Login = (props)=> {
 		// 	setLoading(false);
 		// }
     // });    
+    localStorage.setItem("schoolId",1);
     localStorage.setItem("token","token");
     localStorage.setItem("level",true);
     props.history.push("/manage");
