@@ -5,13 +5,13 @@
 * 配置app的开屏页、轮播图、主题等app配置
 * app的热门搜索管理、推送(富文本编辑器)、以及账号管理等
 * 数据分析、使用图表展示app使用数据
-### bug
-* 使用react.lazy后出现闪屏(因为异步加载速度很快)**使用async实现了一个sleep函数 在Loading中先sleep一波**
-* antd中tabs初始化时请求了数据, 但是相同tabs下的页面修改了这个数据, 也不会触发更新数据**使用eventemmit解决**
-* 因为用了antd?所以说感觉没什么可以拆的组件**觉得可以优化一波**
+### bug 
+* 使用react.lazy后出现闪屏(因为异步加载速度很快)  **使用async实现了一个sleep函数 在Loading中先sleep一波**
+* antd中tabs初始化时请求了数据, 但是相同tabs下的页面修改了这个数据, 也不会触发更新数据  **使用eventemmit解决**
+* 因为用了antd?所以说感觉没什么可以拆的组件  **觉得可以优化一波**
 * 上线后可能会有未知bug
-* 富文本编辑器无法复制从word中复制内容发布,不支持emoji**未解决**
-* 使用useEffect卸载事件监听时出现组件卸载出错**未解决**
+* 富文本编辑器无法复制从word中复制内容发布,不支持emoji  **未解决**
+* 使用useEffect卸载事件监听时出现组件卸载出错  **在使用useEffect时的回调函数不可以使用async如果想要在effect中使用async需要在回调函数里套一个async函数**
 
 ### 依赖
 * ui框架: dvajs & React:antd 4.0
