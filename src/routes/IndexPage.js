@@ -1,6 +1,6 @@
 import { Icon as LegacyIcon } from '@ant-design/compatible';
-import { Layout, Menu, Button } from 'antd';
-import React, { useState } from "react";
+import { Layout, Menu } from 'antd';
+import React from "react";
 import menuConfigA from "../config/menuConfigA";
 import menuConfigB from "../config/menuConfigB";
 import { Link } from "dva/router";

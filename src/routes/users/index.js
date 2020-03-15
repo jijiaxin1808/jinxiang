@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
 import * as API from "../../config/api";
-import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import { Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Tabs, Divider, Input, Button, Table, Modal, Radio, message, Popconfirm } from "antd";
+import { Tabs, Divider, Input, Button, Table, Modal, Radio, message, Popconfirm, Form } from "antd";
 import emmiter from "../../utils/events";
 
 const { TabPane } = Tabs;
@@ -15,24 +15,19 @@ const UserManage = (props)=> {
 	const [blockVisibly, setBlockVisibly] = useState(false);
 	const [blockTime, setBlockTime] = useState(0);
 	const [blockId, setBlockid] = useState();
-
-    const handleSubmit = e => {
-		e.preventDefault();
-		props.form.validateFields((err, values) => {
-		if (!err) {
-		const params = {
-			page:1,
-			size:10,
-			name:values.username
-		}
-		API.searchUsers(params)
-		.then(res=> {
-			if(res.data.code === 0) {
-				setData(res.data.data);
+	const [ form ] = Form.useForm();
+    const handleSubmit = values => {
+			const params = {
+				page:1,
+				size:10,
+				name:values.username
 			}
-		})
-		}
-		});
+			API.searchUsers(params)
+			.then(res=> {
+				if(res.data.code === 0) {
+					setData(res.data.data);
+				}
+			})
 	}
 
 	const apply = async (id)=> {
@@ -82,7 +77,8 @@ const UserManage = (props)=> {
 				<Button>申请</Button>
 			</Popconfirm>
 		},
-    ];
+	];
+	
     const handleBlockOk =async ()=> {
 		setBlockModelLoading(true);
 
@@ -101,15 +97,13 @@ const UserManage = (props)=> {
 		setBlockVisibly(false);
 		setBlockModelLoading(false);
 		setBlockid();
-    }
+	}
+	
     const handleBlockCancel = ()=> {
 		setBlockVisibly(false);
 		setBlockid();
     }
 
-
-
-    const { getFieldDecorator } = props.form
     return (
         <div>
             <div className = "title-text">用户管理</div>
@@ -117,23 +111,18 @@ const UserManage = (props)=> {
             <Divider />
             <div className = "title-text">操作</div>
             <p>查找用户，然后对该用户进行操作。</p>
-            <Form layout="inline" onSubmit={handleSubmit}>
-              <Form.Item >
-                {getFieldDecorator('username', {
-                  rules: [{ required: true, message: '请输入用户名' }],
-                })(
-                  <Input
-                    prefix={<LegacyIcon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    placeholder="用户名"
-                    onChange = {()=>{setData()}}
-                  />
-                )}
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                    查找
-                </Button>
-              </Form.Item>
+            <Form layout="inline" onFinish ={handleSubmit} form = {form}>
+              	<Form.Item name = "username"
+			  		rules =  {[{ required: true, message: '请输入用户名'}]} >
+                  	<Input
+						prefix={<LegacyIcon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+						placeholder="用户名"
+						onChange = {()=>{setData()}}
+                  	/>
+              	</Form.Item>
+              	<Form.Item>
+                	<Button type="primary" htmlType="submit">查找</Button>
+              	</Form.Item>
             </Form>
 				<Modal
 					title="请选择封禁时长"
@@ -145,17 +134,16 @@ const UserManage = (props)=> {
 					okText = "确认"
 					cancelText = "取消"
 				>
-				 <Radio.Group defaultValue={3} size="large" onChange = {(value)=>{setBlockTime(value); message.success(value)}}>
-					<Radio.Button value={3}>3天</Radio.Button>
-					<Radio.Button value={7}>7天</Radio.Button>
-					<Radio.Button value={30}>30天</Radio.Button>
-				</Radio.Group>
-				</Modal>
+					<Radio.Group defaultValue={3} size="large" onChange = {(value)=>{setBlockTime(value); message.success(value)}}>
+						<Radio.Button value={3}>3天</Radio.Button>
+						<Radio.Button value={7}>7天</Radio.Button>
+						<Radio.Button value={30}>30天</Radio.Button>
+					</Radio.Group>
+					</Modal>
                 {data?<>{data.length?<Table columns = {columns} dataSource = {data} /> :<div>搜索的用户不存在</div>}</>:<></>}
         </div>
     );
 }
-const WarppedUserManage = Form.create()(UserManage);
 
 const BlcakList = ()=> {
 	const Pdata = {
@@ -163,26 +151,28 @@ const BlcakList = ()=> {
 		size: 10
 	}
 	const [data, setData] = useState([]);
-	const eventEmmit = emmiter.addListener("handleUsers", ()=> {
+
+	useEffect(()=> {
+		emmiter.addListener("handleUsers", Listen)
 		API.getBlockedList(Pdata)
 		.then(res=> {
 			if(res.data.code === 0) {
 				setData(res.data.data);
 			}
 		})
-	})
-	useEffect( async ()=> {
-		await API.getBlockedList(Pdata)
+		return function cleanUp(){
+			emmiter.removeListener("handleUsers", Listen);
+		}
+	},[])
+	
+	const Listen = ()=> {
+		API.getBlockedList(Pdata)
 		.then(res=> {
 			if(res.data.code === 0) {
 				setData(res.data.data);
 			}
 		})
-		return ()=> {
-			// emmiter.removeListener(eventEmmit);
-		}
-	},[])
-
+	}
 
     const columns = [
         {
@@ -238,7 +228,7 @@ const Users = ()=> {
 		<div className = "title">用户管理</div>
 		<Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
 			<TabPane tab="用户管理" key="1">
-				<WarppedUserManage />
+				<UserManage />
 			</TabPane>
 			<TabPane tab="黑名单" key="2">
 				<BlcakList />
