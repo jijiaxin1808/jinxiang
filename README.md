@@ -11,7 +11,7 @@
 * 因为用了antd?所以说感觉没什么可以拆的组件  **觉得可以优化一波**
 * 上线后可能会有未知bug
 * 富文本编辑器无法复制从word中复制内容发布,不支持emoji  **未解决**
-* 使用useEffect卸载事件监听时出现组件卸载出错  **在使用useEffect时的回调函数不可以使用async如果想要在effect中使用async需要在回调函数里套一个async函数**
+* 使用useEffect卸载事件监听(clean)时出现组件卸载出错  **在使用useEffect clean时的回调函数不可以使用async如果想要在effect中使用async需要在回调函数里套一个async函数**
 
 ### 依赖
 * ui框架: dvajs & React:antd 4.0
