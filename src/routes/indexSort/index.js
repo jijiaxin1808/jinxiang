@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from "react";
 import "./index.less";
-import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Table, Input, InputNumber, Button, Modal, Cascader, Select, Tabs, Upload } from "antd";
-// import { AlphaPicker } from "react-color";
+import { UploadOutlined } from '@ant-design/icons';
+import { Table, Input, InputNumber, Button, Modal, Select, Tabs, Upload, Form } from "antd";
 import * as API from "../../config/api";
 import emmit from "../../utils/events";
 
 const { TabPane } = Tabs;
 const { Option } = Select;
 
-
-const MainSort = (props)=> {
+const MainSort = ()=> {
 	const [ mainSortOption, setMainSortOption ] = useState([]);//  主分类选项
 	const [ selectedMainSort, setSelectedMainSort ] = useState() //  当前选择的主分类信息
 	const [ visible, setVisible ] = useState(false);
 	const [ confirmLoading, setConfirmLoading ] = useState(false);
 	const [ iconUrl, setIconUrl ] = useState();
-	const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
+	const [ form ] = Form.useForm();
 
 	useEffect(()=> {
 		API.getAllmainCategories()
@@ -26,8 +23,7 @@ const MainSort = (props)=> {
 				setMainSortOption(res.data.data)
 			}
 		})	
-		const eventEmmit = emmit.addListener("IndexTableSort", ()=> {
-			console.log("收到了一个emmit")
+		emmit.addListener("IndexTableSort", ()=> {
 			API.getAllmainCategories()
 			.then(res=> {
 				if(res.data.code === 0) {
@@ -36,10 +32,9 @@ const MainSort = (props)=> {
 			})
 		})
 		return ()=> {
-			// emmit.removeListener(eventEmmit);
+			emmit.removeListener("IndexTableSort");
 		}
 	}, [])
-
 
 	useEffect(()=> {
 		setIconUrl(selectedMainSort&&selectedMainSort.icon);
@@ -47,30 +42,31 @@ const MainSort = (props)=> {
 
 	const handleOk =async ()=> {
         setConfirmLoading(true);
-		await validateFields((err, values)=> {
-			if(!err) {
-				const { name, priority } = values
-				const Qdata = {
-					id:selectedMainSort.id,
-					categoryName:"",
-					name:name, 
-					level:priority,
-					icon:iconUrl,
-					parentId:0
-				}
-				API.updateMainSort(Qdata)
-				.then(res=> {
-					if(res.data.code === 0) {
-						const index = mainSortOption.findIndex(item=>item.id===selectedMainSort.id);
-						const newData = [...mainSortOption];
-						newData.splice(index, 1, res.data.data);
-						setMainSortOption(newData);
-						setConfirmLoading(false);
-						setVisible(false);
-					}
-				})
+		form.validateFields()
+		.then(values => {
+			const { name, priority } = values
+			const Qdata = {
+				id:selectedMainSort.id,
+				categoryName:"",
+				name:name, 
+				level:priority,
+				icon:iconUrl,
+				parentId:0
 			}
-			else setConfirmLoading(false);
+			API.updateMainSort(Qdata)
+			.then(res=> {
+				if(res.data.code === 0) {
+					const index = mainSortOption.findIndex(item=>item.id===selectedMainSort.id);
+					const newData = [...mainSortOption];
+					newData.splice(index, 1, res.data.data);
+					setMainSortOption(newData);
+					setConfirmLoading(false);
+					setVisible(false);
+				}
+			})
+		})
+		.catch(err=> {
+			setConfirmLoading(false);
 		})
 	}
 	
@@ -81,7 +77,7 @@ const MainSort = (props)=> {
 	}
 	const handleChange = ()=> {
 		const { name, priority } = selectedMainSort;
-		setFieldsValue({name:name,priority:priority});
+		form.setFieldsValue({name:name,priority:priority});
 		setVisible(true);
 	}
 
@@ -104,6 +100,7 @@ const MainSort = (props)=> {
 			}
 		  }
 	  };	
+
 	return <>
     <Select defaultValue="请选择主分类" style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
         {
@@ -117,7 +114,7 @@ const MainSort = (props)=> {
             权重: {selectedMainSort.priority}<br/>
             <Button onClick = {handleChange}>修改</Button>
         </div>
-        <WarppedSortTable data = {selectedMainSort.categoryList}  main = {mainSortOption} nowFirst = {selectedMainSort}/>
+        <MainSortTable data = {selectedMainSort.categoryList}  main = {mainSortOption} nowFirst = {selectedMainSort}/>
         </>:""
     }
     <Modal
@@ -129,28 +126,22 @@ const MainSort = (props)=> {
     okText = "确认"
     cancelText = "取消"
     >
-        <Form>
-            <Form.Item label = "名称">
-            {getFieldDecorator('name', {
-                rules: [{ required: true, message: '请输入名称' }],
-            })(
+        <Form form = { form }>
+            <Form.Item label = "名称" name = "name"
+			rules = {[{ required: true, message: '请输入名称' }]}>
                 <Input
                 placeholder="请输入标签名称"
-                />,
-            )}
+                />
             </Form.Item>
-            <Form.Item label = "权重">
-            {getFieldDecorator('priority', {
-                rules: [{ required: true, message: '请输入权重' },
-                {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-            })(
+            <Form.Item label = "权重" name = "priority"
+			 rules = {[{ required: true, message: '请输入权重' },
+			 {pattern: /^[0-9]\d*$/, message:"请输入数字"}]}>
                 <InputNumber/>
-            )}
             </Form.Item>
         </Form>
         <Upload {...Props}>
             <Button>
-                <LegacyIcon type="upload" />点击上传
+				<UploadOutlined />点击上传
             </Button>
         </Upload>
     </Modal>
@@ -159,7 +150,6 @@ const MainSort = (props)=> {
 
 const MainSortTable = (props)=> {
 
-
 	const [ data, setData ] = useState(props.data) // 用于table的数据
 	const [ visible, setVisible ] = useState(false);
 	const [ confirmLoading, setConfirmLoading ] = useState(false);
@@ -167,8 +157,8 @@ const MainSortTable = (props)=> {
 	const [ secondOptionData, setSecondOptionData ] = useState([]);  //  这个是根据所选的一级分类变化的二级分类
 	const [ option, setOption ] = useState(); // 当前选择的一级id
 	const [ optionS, setOptionS ] = useState() // 当前选择的二级id
-	const { getFieldDecorator, validateFields, setFieldsValue} = props.form;
-	
+	const [ form ] = Form.useForm();
+
 	useEffect(()=> {
 		API.getALlCategories()
 		.then(res=> {
@@ -177,15 +167,17 @@ const MainSortTable = (props)=> {
 			}
 		})
 	}, [])
+
 	function debounce(fn, time) {
-		        let timer = null;
-		        return function (...args) {
-		          clearTimeout(timer);
-		          timer = setTimeout(() => {
-		            fn.apply(this, args);
-		          }, time);
-		        };
-		      }
+        let timer = null;
+        return function (...args) {
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            fn.apply(this, args);
+          }, time);
+        };
+	}
+
 	useEffect(()=> {
         if(option) {
 			const E = ()=>{emmit.emit("IndexTableSort");console.log("发送了一个emmit")}
@@ -197,42 +189,43 @@ const MainSortTable = (props)=> {
 	useEffect(()=>{
 		setData(props.data);
 	},[props.data])
+
 	useEffect(()=> {
 		const newData = optionData.filter(item => item.id === option);
 		if(newData[0]&&newData[0].secondList.length) {
 			setSecondOptionData(newData[0].secondList);
 		}
-		setFieldsValue({sort2:""})
+		form.setFieldsValue({sort2:""})
 	},[option]);
 
-    const handleOk =async ()=> {
+    const handleOk =()=> {
         setConfirmLoading(true);
-		await validateFields((err, values)=> {
-			if(!err) {
-				const categoryName = optionS?[...secondOptionData].filter(item=>item.id===optionS)[0].name:
-				optionData.filter(item=>item.id===option)[0].name;
-				const Qdata = {
-					parentId:props.nowFirst.id,
-					name: optionS?optionS:option,
-					categoryName:categoryName,
-					icon:" ",
-					level: optionS?2:1,
-				}
-				API.createMainCategories(Qdata)
-				.then(res=> {
-					if(res.data.code === 0) {
-						let newData = [...data];
-						newData.push({...res.data.data, name:res.data.data.categoryName});
-						// newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
-						setData(newData);
-						setVisible(false);
-						setConfirmLoading(false);
-					}
-				})
+		form.validateFields()
+		.then(values => {
+			const categoryName = optionS?[...secondOptionData].filter(item=>item.id===optionS)[0].name:
+			optionData.filter(item=>item.id===option)[0].name;
+			const Qdata = {
+				parentId:props.nowFirst.id,
+				name: optionS?optionS:option,
+				categoryName:categoryName,
+				icon:" ",
+				level: optionS?2:1,
 			}
-			else setConfirmLoading(false);
+			API.createMainCategories(Qdata)
+			.then(res=> {
+				if(res.data.code === 0) {
+					let newData = [...data];
+					newData.push({...res.data.data, name:res.data.data.categoryName});
+					setData(newData);
+					setVisible(false);
+					setConfirmLoading(false);
+				}
+			})
 		})
-		}
+		.catch(_ => {
+			setConfirmLoading(false);
+		})
+	}
 
 	const handleCancel = ()=> {
 		setVisible(false);
@@ -285,60 +278,50 @@ const MainSortTable = (props)=> {
 		<div className = "title-text" style = {{display: "inline-block", marginRight:800}} >子分类</div>
 		<Button onClick = {()=> {setVisible(true)}} type = "primary">新增</Button>
 		<Table
-		dataSource={data}
-		columns={columns}
+			dataSource={data}
+			columns={columns}
 		/>
 		<Modal
-		title= "添加主分类下子分类"
-		visible={visible}
-		confirmLoading = {confirmLoading}
-		onOk={handleOk}
-		onCancel={handleCancel}
-		okText = "确认"
-		cancelText = "取消"
+			title= "添加主分类下子分类"
+			visible={visible}
+			confirmLoading = {confirmLoading}
+			onOk={handleOk}
+			onCancel={handleCancel}
+			okText = "确认"
+			cancelText = "取消"
 		>
-			<Form>
-				<Form.Item label = "一级分类">
-					{getFieldDecorator('sort1', {
-						rules: [{ required: true, message: '请选择一级分类' }],
-					})(
-						<Select placeholder = "请选择一级分类"  style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
-						{
-							optionData.map(item=><Option value = {item.id}>{item.name}</Option>)
-						}
-						</Select>
-					)}
+			<Form form = { form }>
+				<Form.Item label = "一级分类" name = "sort1"
+				rules = {[{ required: true, message: '请选择一级分类' }]}>
+					<Select placeholder = "请选择一级分类"  style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
+					{
+						optionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+					}
+					</Select>
 				</Form.Item>
-				<Form.Item label = "二级分类">
-					{getFieldDecorator('sort2', {
-						// rules: [{ required: true, message: '请选择二级分类'}],
-					})(
-						<Select placeholder = "请选择二级分类" style={{ width: 250 }} onChange={(e)=> {selectChangeS(e)}}>
-							<Option value = {""}>{"选择全部二级"}</Option>
-						{
-							secondOptionData.map(item=><Option value = {item.id}>{item.name}</Option>)
-						}
-						</Select>
-					)}
+				<Form.Item label = "二级分类" name = "sort2">
+					<Select placeholder = "请选择二级分类" style={{ width: 250 }} onChange={(e)=> {selectChangeS(e)}}>
+						<Option value = {""}>{"选择全部二级"}</Option>
+					{
+						secondOptionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+					}
+					</Select>
 				</Form.Item>
 			</Form>
 		</Modal>
 		</>
 	)
-
 }
-const WarppedSortTable = Form.create()(MainSortTable);
-const WarppedMainSort = Form.create()(MainSort);
 
-const LabelSort = (props)=> {
+const LabelSort = ()=> {
 	const [ data, setData ] = useState([]); // 用于table的数据
-	const [ visible, setVisible ] = useState(false);
-	const [ confirmLoading, setConfirmLoading ] = useState(false);
+	const [ visible, setVisible ] = useState(false); // form 是否可见
+	const [ confirmLoading, setConfirmLoading ] = useState(false); //  loading
 	const [ optionData, setOptionData ] = useState([]); //  这个是全部的1, 2级分类的数据
 	const [ secondOptionData, setSecondOptionData ] = useState([]);  //  这个是根据所选的一级分类变化的二级分类
 	const [ option, setOption ] = useState(); // 当前选择的一级id
 	const [ optionS, setOptionS ] = useState() // 当前选择的二级id
-	const { getFieldDecorator, validateFields, setFieldsValue } = props.form;
+	const [ form ] = Form.useForm();
 
 	useEffect(()=> {
 		API.getAllLabelCategories()
@@ -361,38 +344,38 @@ const LabelSort = (props)=> {
 		if(newData[0]&&newData[0].secondList.length) {
 			setSecondOptionData(newData[0].secondList);
 		}
-		setFieldsValue({sort2:""})
+		form.setFieldsValue({sort2:""})
 	},[option]);
 
     const handleOk =async ()=> {
         setConfirmLoading(true);
-		await validateFields((err, values)=> {
-			if(!err) {
-				const categoryName = optionS?[...secondOptionData].filter(item=>item.id===optionS)[0].name:
-				optionData.filter(item=>item.id===option)[0].name;
-				const Qdata = {
-					level: optionS?2:1,
-					name: values.name,
-					priority: values.priority,
-					categoryName:categoryName,
-					categoryId:optionS?optionS:option
-				}
-
-				API.createLabelCategories(Qdata)
-				.then(res=> {
-					if(res.data.code === 0) {
-						let newData = [...data];
-						newData.push(res.data.data);
-						newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
-						setData(newData);
-						setVisible(false);
-						setConfirmLoading(false);
-					}
-				})
+		form.validateFields()
+		.then(values => {
+			const categoryName = optionS?[...secondOptionData].filter(item=>item.id===optionS)[0].name:
+			optionData.filter(item=>item.id===option)[0].name;
+			const Qdata = {
+				level: optionS?2:1,
+				name: values.name,
+				priority: values.priority,
+				categoryName:categoryName,
+				categoryId:optionS?optionS:option
 			}
-			else setConfirmLoading(false);
+
+			API.createLabelCategories(Qdata)
+			.then(res=> {
+				if(res.data.code === 0) {
+					let newData = [...data];
+					newData.push({...Qdata, id: res.data.data});
+					newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
+					setData(newData);
+					setVisible(false);
+					setConfirmLoading(false);
+					form.setFieldsValue({})
+				}
+			})
 		})
-		}
+		.catch(_ => setConfirmLoading(false))
+	}
 
 	const handleCancel = ()=> {
 		setVisible(false);
@@ -460,53 +443,38 @@ const LabelSort = (props)=> {
     okText = "确认"
     cancelText = "取消"
     >
-        <Form>
-            <Form.Item label = "名称">
-                {getFieldDecorator('name', {
-                    rules: [{ required: true, message: '请输入名称' }],
-                })(
+        <Form form = { form }>
+            <Form.Item label = "名称" name = "name"
+			rules = {[{ required: true, message: '请输入名称' }]}>
                     <Input
                     placeholder="请输入标签名称"
                     />
-                )}
             </Form.Item>
-            <Form.Item label = "一级分类">
-                {getFieldDecorator('sort1', {
-                    rules: [{ required: true, message: '请选择一级分类' }],
-                })(
-                    <Select placeholder = "请选择一级分类"  style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
-                    {
-                        optionData.map(item=><Option value = {item.id}>{item.name}</Option>)
-                    }
-                    </Select>
-                )}
+            <Form.Item label = "一级分类" name = "sort1"
+			rules = {[{ required: true, message: '请选择一级分类' }]}>
+				<Select placeholder = "请选择一级分类"  style={{ width: 250 }} onChange={(e)=> {selectChange(e)}}>
+				{
+					optionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+				}
+				</Select>
             </Form.Item>
-            <Form.Item label = "二级分类">
-                {getFieldDecorator('sort2', {
-                    // rules: [{ required: true, message: '请选择二级分类'}],
-                })(
-                    <Select placeholder = "请选择二级分类" style={{ width: 250 }} onChange={(e)=> {selectChangeS(e)}}>
-                        <Option value = {""}>{"选择全部二级"}</Option>
-                    {
-                        secondOptionData.map(item=><Option value = {item.id}>{item.name}</Option>)
-                    }
-                    </Select>
-                )}
+            <Form.Item label = "二级分类" name = "sort2">
+				<Select placeholder = "请选择二级分类" style={{ width: 250 }} onChange={(e)=> {selectChangeS(e)}}>
+					<Option value = {""}>{"选择全部二级"}</Option>
+				{
+					secondOptionData.map(item=><Option value = {item.id}>{item.name}</Option>)
+				}
+				</Select>
             </Form.Item>
-            <Form.Item label = "请输入权重">
-                {getFieldDecorator('priority', {
-                    rules: [{ required: true, message: '请输入权重' },
-                    {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-                })(
-                    <InputNumber/>
-                )}
+            <Form.Item label = "请输入权重" name = "priority"
+			rules = {[{ required: true, message: '请输入权重' },
+			{pattern: /^[0-9]\d*$/, message:"请输入数字"}]}>
+                <InputNumber/>
             </Form.Item>
         </Form>
     </Modal>
     </>;
 }
-
-const WarppedLabelSort = Form.create()(LabelSort);
 
 const IndexSort = ()=> {
 	return (
@@ -514,16 +482,14 @@ const IndexSort = ()=> {
 			<div className = "title">首页分类</div>
 			<Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
         		<TabPane tab="主分类" key="1">
-					<WarppedMainSort />
+					<MainSort />
 				</TabPane>
 				<TabPane tab="标签分类" key="2">
-					<WarppedLabelSort />
+					<LabelSort />
 				</TabPane>
 			</Tabs>
 		</>
 	)
 }
-
-
 
 export default IndexSort;
