@@ -23,6 +23,7 @@ import * as API from '../../../../config/api';
       headers: {
         token: "86f3705005b940a0a21f4d948eb0d04f",
       },
+      showUploadList : true,
       onChange(info) {
           if(info.file.status === "done" && info.file.response.code === 0) {
             this.data.MakePicture(info.file.response.data)      
@@ -47,6 +48,7 @@ import * as API from '../../../../config/api';
         message.error("请选择类型");
           standard = false;
       }
+      
       if(this.state.types === "activity"){
         if(this.state.Activity === ''){
           message.error("请填写活动ID");
@@ -162,9 +164,9 @@ import * as API from '../../../../config/api';
                 }
               ],
             })(<Upload {...this.Pic} data={ {MakePicture: this.MakePicture}}>
-                  <Button>
-                    <Icon type="upload" />上传图片
-                  </Button>
+                    <Button>
+                      <Icon type="upload" />上传图片
+                    </Button>
                 </Upload>)}
           </Form.Item>
 
