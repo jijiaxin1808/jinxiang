@@ -23,18 +23,21 @@ const MainSort = ()=> {
 				setMainSortOption(res.data.data)
 			}
 		})	
-		emmit.addListener("IndexTableSort", ()=> {
-			API.getAllmainCategories()
-			.then(res=> {
-				if(res.data.code === 0) {
-					setMainSortOption(res.data.data)
-				}
-			})
-		})
-		return ()=> {
-			emmit.removeListener("IndexTableSort");
-		}
 	}, [])
+	useEffect(()=> {
+		emmit.addListener("IndexTableSort", Listen)
+		return function cleanUp() {
+			emmit.removeListener("IndexTableSort",Listen);
+		}
+	},[])
+	const Listen = ()=> {
+		API.getAllmainCategories()
+		.then(res=> {
+			if(res.data.code === 0) {
+				setMainSortOption(res.data.data)
+			}
+		})
+	}
 
 	useEffect(()=> {
 		setIconUrl(selectedMainSort&&selectedMainSort.icon);
@@ -215,7 +218,7 @@ const MainSortTable = (props)=> {
 			.then(res=> {
 				if(res.data.code === 0) {
 					let newData = [...data];
-					newData.push({...res.data.data, name:res.data.data.categoryName});
+					newData.push({...Qdata, id: res.data.data,name: Qdata.categoryName});
 					setData(newData);
 					setVisible(false);
 					setConfirmLoading(false);

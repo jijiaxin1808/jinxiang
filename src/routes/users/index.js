@@ -17,17 +17,17 @@ const UserManage = (props)=> {
 	const [blockId, setBlockid] = useState();
 	const [ form ] = Form.useForm();
     const handleSubmit = values => {
-			const params = {
-				page:1,
-				size:10,
-				name:values.username
+		const params = {
+			page:1,
+			size:10,
+			name:values.username
+		}
+		API.searchUsers(params)
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data);
 			}
-			API.searchUsers(params)
-			.then(res=> {
-				if(res.data.code === 0) {
-					setData(res.data.data);
-				}
-			})
+		})
 	}
 
 	const apply = async (id)=> {

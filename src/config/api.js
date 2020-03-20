@@ -140,3 +140,7 @@ export function sendUsersSms(params) {
     const url = "users/smsSend";
     return Axios(spliceUrl(url, params));
 }
+export function updatePwd(data) {
+    const url = "admins/updatePwd";
+    return Axios(url, data, "PUT");
+}

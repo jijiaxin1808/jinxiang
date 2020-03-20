@@ -1,7 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Table, Input, Button, Modal, Tabs, Select } from "antd";
+import { Table, Input, Button, Modal, Tabs, Select, Form } from "antd";
 import * as API from "../../config/api";
 
 const { TabPane } = Tabs;
@@ -13,15 +11,9 @@ const FirstSort = (props)=> {
     const [ confirmLoading, setConfirmLoading ] = useState(false);
     const [ modalData, setModalData ] = useState({})
     const [ option, setOption ] = useState([]);
-    const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
-    console.log(option)
+    const [form] = Form.useForm()
+
     useEffect(()=> {
-        // API.getCategoriesFirst()
-        // .then(res=> {
-        //     if(res.data.code === 0) {
-        //         setData(res.data.data)
-        //     }
-        // })
         API.getALlCategories()
         .then(res=> {
             if(res.data.code === 0 ) {
@@ -42,58 +34,58 @@ const FirstSort = (props)=> {
     const handleOk =async ()=> {
         setConfirmLoading(true);
         if(modalData&&modalData.id) {
-            await validateFields((err, values)=> {
-                if(!err) {
-                    const Qdata = {
-                        id: modalData.id,
-                        parentId: 0,
-                        level: 1,
-                        name: values.name,
-                        priority:  Number.parseInt(values.priority,10)
-                    }
-                    API.updateCategories(Qdata)
-                    .then(res=> {
-                        if(res.data.code === 0) {
-                            let newData = [...data];
-                            const index = data.findIndex(item=>item.id === Qdata.id);
-                            newData.splice(index, 1, Qdata);
-                            newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
-                            setData(newData);
-                            setConfirmLoading(false);
-                            setVisible(false);
-                        }
-                    })
+            form.validateFields()
+            .then(values=>{
+                const Qdata = {
+                    id: modalData.id,
+                    parentId: 0,
+                    level: 1,
+                    name: values.name,
+                    priority:  Number.parseInt(values.priority,10)
                 }
+                API.updateCategories(Qdata)
+                .then(res=> {
+                    if(res.data.code === 0) {
+                        let newData = [...data];
+                        const index = data.findIndex(item=>item.id === Qdata.id);
+                        newData.splice(index, 1, Qdata);
+                        newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
+                        setData(newData);
+                        setConfirmLoading(false);
+                        setVisible(false);
+                    }
+                })
             })
         }
-        else {
-            await validateFields((err, values)=> {
-                if(!err) {
-                    const Qdata = {
-                        parentId: 0,
-                        level: 1,
-                        name: values.name,
-                        priority: Number.parseInt(values.priority,10)
-                    }
-                    API.createCategories(Qdata)
-                    .then(res=> {
-                        if(res.data.code === 0) {
-                            let newData = [...data];
-                            newData.push(res.data.data);
-                            newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
-                            setData(newData);
-                            setConfirmLoading(false);
-                            setVisible(false);
-                        }
-                    })
+        else {//  增加
+            form.validateFields()
+            .then(values=> {
+                const Qdata = {
+                    parentId: 0,
+                    level: 1,
+                    name: values.name,
+                    priority: Number.parseInt(values.priority,10)
                 }
+                API.createCategories(Qdata)
+                .then(res=> {
+                    if(res.data.code === 0) {
+                        let newData = [...data];
+                        newData.push({...Qdata, id: res.data.data});
+                        newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
+                        setData(newData);
+                        setConfirmLoading(false);
+                        setVisible(false);
+                    }
+                })
             })
+
         }
     }
+
     const handleCancel = ()=> {
         setConfirmLoading(false);
         setVisible(false);
-        setFieldsValue({name:"",sort:"",priority:""});
+        form.setFieldsValue({name:"",sort:"",priority:""});
         setModalData("");
     }
 
@@ -117,7 +109,7 @@ const FirstSort = (props)=> {
             title: '操作',
             dataIndex: 'operation',
             render: (text, record) => <Button onClick = {()=> {setVisible(true); 
-                setFieldsValue(record); setModalData(record);
+                form.setFieldsValue(record); setModalData(record);
             }}>修改</Button>
         }
     ];
@@ -138,29 +130,21 @@ const FirstSort = (props)=> {
     okText = "确认"
     cancelText = "取消"
     >
-        <Form>
-            <Form.Item label = "名称">
-            {getFieldDecorator('name', {
-                rules: [{ required: true, message: '请输入分类名称' }],
-            })(
+        <Form form = {form}>
+            <Form.Item label = "名称" name = "name"
+            rules = {[{ required: true, message: '请输入分类名称' }]}>
                 <Input
-                placeholder="请输入分类名称"
-                />,
-            )}
+                placeholder="请输入分类名称"/>
             </Form.Item>
-            <Form.Item label = "权重">
-            {getFieldDecorator('priority', {
-                rules: [{ required: true, message: '请输入权重' },
-                 {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-            })(
+            <Form.Item label = "权重" name = "priority"
+            rules = {[{ required: true, message: '请输入权重' },
+            {pattern: /^[0-9]\d*$/, message:"请输入数字"}]}>
                 <Input/>
-            )}
             </Form.Item>
         </Form>
     </Modal>
     </>;
 }
-const WarpedFirstSort = Form.create()(FirstSort);
 
 const SecondSort = (props)=> {
     const [ data, setData ] = useState([]);
@@ -170,7 +154,7 @@ const SecondSort = (props)=> {
     const [ confirmLoading, setConfirmLoading ] = useState(false);
     const [ modalData, setModalData ] = useState({})
     const [ option, setOption ] = useState();  // 当前选择的一级分类
-    const { getFieldDecorator, setFieldsValue, validateFields } = props.form;
+    const [form] = Form.useForm();
     
     useEffect(()=> {
         API.getALlCategories()
@@ -203,52 +187,50 @@ const SecondSort = (props)=> {
     const handleOk =async ()=> {
         setConfirmLoading(true);
         if(modalData&&modalData.id) {
-            await validateFields((err, values)=> {
-                if(!err) {
-                    const Qdata = {
-                        id: modalData.id,
-                        parentId: option,
-                        level: 2,
-                        name: values.name,
-                        priority: values.priority
-                    }
-                    API.updateCategories(Qdata)
-                    .then(res=> {
-                        if(res.data.code === 0) {
-                            let newData = [...data];
-                            const index = data.findIndex(item=>item.id === Qdata.id);
-                            newData.splice(index, 1, Qdata);
-                            newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
-                            setData(newData);
-                            setConfirmLoading(false);
-                            setVisible(false);
-                        }
-                    })
+            form.validateFields()
+            .then(values => {
+                const Qdata = {
+                    id: modalData.id,
+                    parentId: option,
+                    level: 2,
+                    name: values.name,
+                    priority: values.priority
                 }
+                API.updateCategories(Qdata)
+                .then(res=> {
+                    if(res.data.code === 0) {
+                        let newData = [...data];
+                        const index = data.findIndex(item=>item.id === Qdata.id);
+                        newData.splice(index, 1, Qdata);
+                        newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
+                        setData(newData);
+                        setConfirmLoading(false);
+                        setVisible(false);
+                    }
+                })
             })
         }
         
         else {
-            await validateFields((err, values)=> {
-                if(!err) {
-                    const Qdata = {
-                        parentId: option,
-                        level: 2,
-                        name: values.name,
-                        priority: values.priority
-                    }
-                    API.createCategories(Qdata)
-                    .then(res=> {
-                        if(res.data.code === 0) {
-                            let newData = [...data];
-                            newData.push(res.data.data);
-                            newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
-                            setData(newData);
-                            setVisible(false);
-                            setConfirmLoading(false);
-                        }
-                    })
+            form.validateFields()
+            .then(values=> {
+                const Qdata = {
+                    parentId: option,
+                    level: 2,
+                    name: values.name,
+                    priority: values.priority
                 }
+                API.createCategories(Qdata)
+                .then(res=> {
+                    if(res.data.code === 0) {
+                        let newData = [...data];
+                        newData.push({...Qdata, id: res.data.data});
+                        newData.sort((item1,item2)=>{return item1["priority"]-item2["priority"]})
+                        setData(newData);
+                        setVisible(false);
+                        setConfirmLoading(false);
+                    }
+                })
             })
         }
         setConfirmLoading(false);
@@ -256,7 +238,7 @@ const SecondSort = (props)=> {
     const handleCancel = ()=> {
         setConfirmLoading(false);
         setVisible(false);
-        setFieldsValue({name:"",sort:"",priority:""});
+        form.setFieldsValue({name:"",sort:"",priority:""});
         setModalData("");
     }
 
@@ -284,7 +266,7 @@ const SecondSort = (props)=> {
             dataIndex: 'operation',
             key: "operation",
             render: (text, record) => <Button onClick = {()=> {setVisible(true); 
-                setFieldsValue(record); setModalData(record);
+                form.setFieldsValue(record); setModalData(record);
             }}>修改</Button>
         }
     ];
@@ -310,30 +292,22 @@ const SecondSort = (props)=> {
     okText = "确认"
     cancelText = "取消"
     >
-        <Form>
-            <Form.Item label = "名称">
-            {getFieldDecorator('name', {
-                rules: [{ required: true, message: '请输入分类名称' }],
-            })(
+        <Form form = {form}>
+            <Form.Item label = "名称" name = "name"
+            rules = {[{ required: true, message: '请输入分类名称' }]}>
                 <Input
                 placeholder="请输入分类名称"
-                />,
-            )}
+                />
             </Form.Item>
-            <Form.Item label = "权重">
-            {getFieldDecorator('priority', {
-                rules: [{ required: true, message: '请输入权重' },
-                 {pattern: /^[0-9]\d*$/, message:"请输入数字"}],
-            })(
+            <Form.Item label = "权重" name = "priority"
+            rules = {[{ required: true, message: '请输入权重' },
+            {pattern: /^[0-9]\d*$/, message:"请输入数字"}]}>
                 <Input/>
-            )}
             </Form.Item>
         </Form>
     </Modal>
     </>;
 }
-const WarppedSecondSort = Form.create()(SecondSort);
-
 
 const AllSort = ()=> {
     return (
@@ -341,10 +315,10 @@ const AllSort = ()=> {
         <div className = "title">全部分类</div>
         <Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
         <TabPane tab="一级分类" key="1">
-            <WarpedFirstSort />
+            <FirstSort />
         </TabPane>
         <TabPane tab="二级分类" key="2">
-            <WarppedSecondSort />
+            <SecondSort />
         </TabPane>
         </Tabs>
         </>
