@@ -1,5 +1,5 @@
 import { Icon as LegacyIcon } from '@ant-design/compatible';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import React from "react";
 import menuConfigA from "../config/menuConfigA";
 import menuConfigB from "../config/menuConfigB";
@@ -41,8 +41,13 @@ const Menus = (props)=> {
 }
 
 const MainMenu = ()=> {
+	const change = ()=> {
+		localStorage.setItem("level", !localStorage.getItem("level"));
+	}
+
     return (
 		<>
+		<Button onClick = {change}>切换权限</Button>
 		<Layout>
 			<Sider>
 				<div className="logo" />

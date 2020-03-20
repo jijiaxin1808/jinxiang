@@ -144,3 +144,7 @@ export function updatePwd(data) {
     const url = "admins/updatePwd";
     return Axios(url, data, "PUT");
 }
+export function getAllOffical(params) {
+    const url = "admins/listOfficial";
+    return Axios(spliceUrl(url, params))
+}
