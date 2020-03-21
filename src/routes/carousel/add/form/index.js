@@ -118,7 +118,7 @@ import * as API from '../../../../config/api';
       const { getFieldDecorator } = this.props.form;
   
       return (
-        <Form onSubmit={this.handleSubmit}>
+        <Form onFinish={this.handleSubmit}>
           <Form.Item label="名称">
             {getFieldDecorator('Name', {
               rules: [
@@ -183,28 +183,28 @@ import * as API from '../../../../config/api';
     }
   }
   
-  const WrappedRegistrationForm = Form.create({ 
-      name: 'register',
+  // const WrappedRegistrationForm = Form.create({ 
+  //     name: 'register',
       
-      mapPropsToFields(props) {
-        return {
-          Name: Form.createFormField({
-            ...props.Name,
-            Name: props.Name,
-          }),
-          Type: Form.createFormField({
+  //     mapPropsToFields(props) {
+  //       return {
+  //         Name: Form.createFormField({
+  //           ...props.Name,
+  //           Name: props.Name,
+  //         }),
+  //         Type: Form.createFormField({
             
-          }),
-          Activity: Form.createFormField({
-            ...props.Activity,
-            Type: props.Activity,
-          }),
-          Picture: Form.createFormField({
-            ...props.Picture,
-            Type: props.Picture,
-          }),
-      }}
-    })(RegistrationForm);
+  //         }),
+  //         Activity: Form.createFormField({
+  //           ...props.Activity,
+  //           Type: props.Activity,
+  //         }),
+  //         Picture: Form.createFormField({
+  //           ...props.Picture,
+  //           Type: props.Picture,
+  //         }),
+  //     }}
+  //   })(RegistrationForm);
 
-  export default WrappedRegistrationForm;
+  export default RegistrationForm;
 
