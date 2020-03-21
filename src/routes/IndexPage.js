@@ -1,6 +1,6 @@
 import { Icon as LegacyIcon } from '@ant-design/compatible';
 import { Layout, Menu, Button } from 'antd';
-import React, { useState } from "react";
+import React from "react";
 import menuConfigA from "../config/menuConfigA";
 import menuConfigB from "../config/menuConfigB";
 import { Link } from "dva/router";
@@ -41,12 +41,23 @@ const Menus = (props)=> {
 }
 
 const MainMenu = ()=> {
+	const changeA = ()=> {
+		localStorage.setItem("level",true);
+		console.log(session.getLevelA());
+	}
+	const changeB = ()=> {
+		localStorage.setItem("level","");
+		console.log(session.getLevelA());
+	}
+
     return (
 		<>
+		<Button onClick = {changeA}>A级权限</Button>
+		<Button onClick = {changeB}>B级权限</Button>
 		<Layout>
 			<Sider>
 				<div className="logo" />
-				<Menus config = {session.getLevelA()?menuConfigA:menuConfigB}/>
+				<Menus config = {localStorage.getItem("level")?menuConfigA:menuConfigB}/>
 			</Sider>
 			<Layout >
 				<Hedaer />

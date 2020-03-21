@@ -27,7 +27,7 @@ const { Content } = Layout;
 
 const MainContent = ()=> {
 	return (
-		<Suspense fallback={<Loading />}>
+		<Suspense fallback={<Loading />} maxDuration={500}>
 			<Content className = "mainContent">
 				<Route path="/manage/home" component={Home} />
 				<Route path="/manage/openPage" component={OpenPage} />

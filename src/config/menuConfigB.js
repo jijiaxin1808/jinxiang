@@ -9,10 +9,6 @@ const menuConfig = [
         icon:"tool",
         children: [
             {
-                title: "开屏页",
-                url:"/manage/openPage"
-            },
-            {
                 title: "热门搜索",
                 url:"/manage/trending"
             },

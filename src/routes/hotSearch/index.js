@@ -315,7 +315,7 @@ const HotSearch = ()=> {
             <Tabs defaultActiveKey="1"  style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
                     <Add />
-                    <div className = "warn">用户热门搜索删除后更新莫得</div>
+                    {/* <div className = "warn">用户热门搜索删除后更新莫得</div> */}
                 </TabPane>
                 {
                     session.getLevelA()?
