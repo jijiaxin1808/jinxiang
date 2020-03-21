@@ -41,17 +41,23 @@ const Menus = (props)=> {
 }
 
 const MainMenu = ()=> {
-	const change = ()=> {
-		localStorage.setItem("level", !localStorage.getItem("level"));
+	const changeA = ()=> {
+		localStorage.setItem("level",true);
+		console.log(session.getLevelA());
+	}
+	const changeB = ()=> {
+		localStorage.setItem("level","");
+		console.log(session.getLevelA());
 	}
 
     return (
 		<>
-		<Button onClick = {change}>切换权限</Button>
+		<Button onClick = {changeA}>A级权限</Button>
+		<Button onClick = {changeB}>B级权限</Button>
 		<Layout>
 			<Sider>
 				<div className="logo" />
-				<Menus config = {session.getLevelA()?menuConfigA:menuConfigB}/>
+				<Menus config = {localStorage.getItem("level")?menuConfigA:menuConfigB}/>
 			</Sider>
 			<Layout >
 				<Hedaer />

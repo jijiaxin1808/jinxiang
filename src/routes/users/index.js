@@ -5,6 +5,7 @@ import { Icon as LegacyIcon } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Tabs, Divider, Input, Button, Table, Modal, Radio, message, Popconfirm, Form } from "antd";
 import emmiter from "../../utils/events";
+import * as session from "../../utils/session";
 
 const { TabPane } = Tabs;
 
@@ -230,9 +231,13 @@ const Users = ()=> {
 			<TabPane tab="用户管理" key="1">
 				<UserManage />
 			</TabPane>
-			<TabPane tab="黑名单" key="2">
-				<BlcakList />
-			</TabPane>
+
+			{
+                    session.getLevelA()?
+					<TabPane tab="黑名单" key="2">
+					<BlcakList />
+					</TabPane>: ""
+                }
 		</Tabs>
         </>
     )
