@@ -1,20 +1,30 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Icon, Button, Tabs, Card, Modal, Form, Upload} from "antd";
+import {  Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Button, Card, Modal, Upload, message, Form } from "antd";
 import * as API from "../../config/api";
-import Loading from "../../components/loading";
 import { BlockPicker   } from 'react-color';
 
-const { TabPane } = Tabs;
+const OpenPage = (props)=> {
+    const [data, setData] = useState([]);   //  启动页总数据
+    const [visible, setVisible] = useState(false);  //  modal页是否可见
+    const [confirmLoading, setConfirmLoading] = useState(false); //  modal页确认按钮loading
+    const [color, setColor] = useState("black")   //  选择的颜色
+    const [imgUrl, setImgUrl] = useState(["",""]);  //  上传的照片url数组
+    const [ handleAble, setHandleAble ] = useState(false);  //  该图片是否可以上线
+    const [form] = Form.useForm();  //  控制modal里的form
 
-const OpenPageContent = (props)=> {
-    const [data, setData] = useState([]);
-    const [visible, setVisible] = useState(false);
-    const [confirmLoading, setConfirmLoading] = useState(false);      
-    const [loading, setLoading] = useState(true);
-    const [color, setColor] = useState("black")
-    const [imgUrl1, setImgUrl1] = useState();
-    const [imgUrl2, setImgUrl2] = useState();
+	useEffect(()=> {	
+		if(!handleAble && data.length && data.filter(item => item.showed === true).length) {
+            setHandleAble(true);
+            setVisible(false);
+		}
+		else if(handleAble&&!data.filter(item => item.showed === true).length) {
+            setHandleAble(false);
+            setVisible(false);
+        }
+	},[data])  //  监听上线状态的变化
 
     useEffect(()=>{
         const params = {
@@ -22,31 +32,44 @@ const OpenPageContent = (props)=> {
             size:10  
         }
         API.getAllbootPages(params)
-        .then(async res=> {
+        .then(res=> {
             if(res.data.code === 0) {
-                await setData(res.data.data);
-                setLoading(false);
+                setData(res.data.data);
             }
         })
-    },[])
+    },[])  // 初始化数据
 
-    const handleSubmit = e => {
-        e.preventDefault();
-        props.form.validateFields((err, values) => {
-        if (!err) {
-            console.log('Received values of form: ', values);
+    const upLine = (id)=> {
+        const Qdata = {
+            id: id,
+            showed: true
         }
-        });
-    };
-    const normFile = e => {
-        console.log('Upload event:', e);
-        if (Array.isArray(e)) {
-          return e;
-        }
-        return e && e.fileList;
-    };  
+        API.updateOpenPage(Qdata)
+        .then(res=> {
+            if(res.data.code === 0) {
+                let index = data.findIndex(item=>item.id===id);
+                const newData = [...data];
+                newData[index].showed = true;
+                setData(newData);
+            }
+        })
+    };  //  上线函数  让启动页上线
 
-    const { getFieldDecorator } = props.form;
+    const downLine = (id)=> {
+        const Qdata = {
+            id: id,
+            showed: false
+        }
+        API.updateOpenPage(Qdata)
+        .then(res=> {
+            if(res.data.code === 0) {
+                let index = data.findIndex(item=>item.id===id);
+                const newData = [...data];
+                newData[index].showed = false;
+                setData(newData);
+            }
+        })
+    }; // 下线函数 让启动页下线
 
     const Props = {
       name: 'image',
@@ -56,10 +79,11 @@ const OpenPageContent = (props)=> {
       },
       onChange(info) {
           if(info.file.status === "done" && info.file.response.code === 0) {
-              setImgUrl1(info.file.response.data);
+            setImgUrl([info.file.response.data, imgUrl[1]])
           }
         }
-    };
+    };  // upload参数1
+
     const Props2 = {
         name: 'image',
         action: 'http://blog.csxjh.vip:8000/images/upload',
@@ -68,206 +92,119 @@ const OpenPageContent = (props)=> {
         },
         onChange(info) {
             if(info.file.status === "done" && info.file.response.code === 0) {
-                setImgUrl2(info.file.response.data);
+                setImgUrl([imgUrl[0], info.file.response.data])
             }
           }
-      };
+      }; // upload参数2
 
     const handleOk =async()=> {
         setConfirmLoading(true);
+        console.log(imgUrl)
         const openPageData = {
-            upperImage: imgUrl1,
+            upperImage: imgUrl[0],
             bgColor: color,
-            bgImage: imgUrl2
+            bgImage: imgUrl[1]
         }
-        await API.createopenPage(openPageData)
-        .then(res=> {
-            if(res.data.code === 0) {
-                const newData = [...data];
-                newData.unshift(openPageData);
-                setData(newData);
-            }
-        })
-        setColor("black")
+        if(!(imgUrl[0]&&imgUrl[1])) {
+            message.error("请上传两张对应的图片");
             setConfirmLoading(false);
-            setVisible(false);
-    }
+        }
+        else {
+            await API.createopenPage(openPageData)
+            .then(res=> {
+                if(res.data.code === 0) {
+                    const newData = [...data];
+                    newData.unshift(res.data.data);
+                    setData(newData);
+                    setConfirmLoading(false);
+                    setVisible(false);
+                }
+            })
+        }
+        setColor("black");
+        setImgUrl(["",""]);
+        form.setFieldsValue({img1:"",img2:""})
+    }  //  点击modal确认按钮
+
     const handleCancel = ()=> {
         setVisible(false);
-    }
+        setConfirmLoading(false);
+        setImgUrl(["", ""])
+        form.setFieldsValue({img1:"",img2:""})
+    }  // 点击modal取消按钮
+
     const handleDelete = (id)=> {
         API.deleteopenPage({id})
         .then(res=> {
             if(res.data.code === 0) {
-                const newData = [...data].filter(item=>{
-                    return item.id!==id
-                });
+                const newData = [...data].filter(item=> item.id!==id);
                 setData(newData);
             }
         })
-    }
-    const Content = 
-        <div className = "openPage-pages">
+    } // 点击删除按钮
+
+    return (
+        <>
+            <div className = "title">开屏页</div>
+            <div className = "title-text">设置开屏页</div>
+            <Modal
+            title="新增开屏页"
+            visible={visible}
+            confirmLoading={confirmLoading}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            className = "openPage-modal"
+            okText = "确认"
+            cancelText = "取消"
+            >
+                <div style = {{display: "flex"}}>
+                <Form className="openPage-form" form = {form}>
+                    <Form.Item label="悬浮图片" name = "img1"  >
+                        <Upload {...Props}>
+                            <Button>
+                                <LegacyIcon type="upload"  showUploadList = {false}/>点击上传
+                            </Button>
+                        </Upload>
+                    </Form.Item>
+                    <Form.Item label="背景填充" name = "img2">
+                        <Upload {...Props2}>
+                            <Button>
+                            <LegacyIcon type="upload" />点击上传
+                            </Button>
+                        </Upload>
+                    </Form.Item>
+                    <Form.Item label="选择颜色" name = "color">
+                        <BlockPicker color  = {color} onChange = {(values)=>{setColor(values.hex)}}  />
+                    </Form.Item>
+                </Form>
+                <div className = "openPage-preview" style = {{backgroundColor:`${color}`}}></div>
+                </div>
+            </Modal>
+            <div className = "openPage-pages">
             {
-                data.map(item=> {
+                data.length?data.map(item=> {
                     return (
                         <div key = {item.id} style = {{marginLeft: 20}}>
-                            <div style = {{background:`url(${item.upperImage}),url(${item.bgImage}),${item.bgColor}`}} className = "openPage-page"></div>
-                            {item.showed?<Button disabled = {true}>使用中</Button>:<Button>上线</Button>}
+                            <div style = {{    backgroundColor: `${item.bgColor}`  ,backgroundImage:`
+                            url(http://blog.csxjh.vip:8000/${item.upperImage}),
+                            url(http://blog.csxjh.vip:8000/${item.bgImage})
+                            `,backgroundRepeat:"no-repeat",backgroundSize:"contain"}} 
+                             className = "openPage-page"></div>
+                            {item.showed?<Button onClick = {()=>{downLine(item.id)}}>下线</Button>:
+                            <Button disabled = {handleAble} onClick = {()=>{upLine(item.id)}}>上线</Button>}
                             <Button onClick = {()=>{handleDelete(item.id)}} style = {{marginLeft: 30}}>删除</Button>
                         </div>
                     )
-                })
+                }):""
             }
             <Card onClick={()=> {setVisible(true)}} hoverable style={{ width: 180, height: 335, marginLeft: 20 }} className = "flex-center">
                 <div>
-                <p>继续添加图片</p>
-                <Button className = "margin-center"><Icon type = "plus"/>添加图片</Button>
+                <p>{data.length?"继续添加开屏页":"您尚未添加任何图片"}</p>
+                <Button className = "margin-center"><LegacyIcon type = "plus"/>添加图片</Button>
                 </div>
             </Card>
-            <Modal
-            title="新增开屏页"
-            visible={visible}
-            confirmLoading={confirmLoading}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            className = "openPage-modal"
-            okText = "确认"
-            cancelText = "取消"
-            >
-                <div style = {{display: "flex"}}>
-                <Form onSubmit={handleSubmit} className="openPage-form">
-                    <Form.Item label="悬浮图片" >
-                    {getFieldDecorator('img1', {
-                        valuePropName: 'fileList',
-                        getValueFromEvent: normFile,
-                    })(
-                        <Upload {...Props}>
-                        <Button>
-                          <Icon type="upload" />点击上传
-                        </Button>
-                      </Upload>,
-                    )}
-                    </Form.Item>
-                    <Form.Item label="背景填充" >
-                    {getFieldDecorator('img2', {
-                        valuePropName: 'fileList',
-                        getValueFromEvent: normFile,
-                    })(
-                        <Upload {...Props2}>
-                        <Button>
-                          <Icon type="upload" />点击上传
-                        </Button>
-                      </Upload>,
-                    )}
-                    </Form.Item>
-                    <Form.Item label="选择颜色" >
-                    {getFieldDecorator('color', {
-                        valuePropName: 'color',
-                    })(
-                        <BlockPicker defaultValue = "black"   onChange = {(values)=>{setColor(values.hex)}}  />
-                    )}
-                    </Form.Item>
-                </Form>
-                
-                <div className = "openPage-preview" style = {{backgroundColor:`${color}`}}></div>
-                </div>
-            </Modal>
-        </div>
-
-    const emptyConent = 
-        <div>
-            <Card onClick={()=> {setVisible(true)}} hoverable style={{ width: 180, height: 335 }} className = "flex-center">
-                <div>
-                    <p>您尚未添加任何图片</p>
-                    <Button className = "margin-center"><Icon type = "plus"/>添加图片</Button>
-                </div>
-            </Card>
-            <Modal
-            title="新增开屏页"
-            visible={visible}
-            confirmLoading={confirmLoading}
-            onOk={handleOk}
-            onCancel={handleCancel}
-            className = "openPage-modal"
-            okText = "确认"
-            cancelText = "取消"
-            >
-                <div style = {{display: "flex"}}>
-                <Form onSubmit={handleSubmit} className="openPage-form">
-                    <Form.Item label="悬浮图片" >
-                    {getFieldDecorator('img1', {
-                        valuePropName: 'fileList',
-                        getValueFromEvent: normFile,
-                    })(
-                        <Upload {...Props}>
-                        <Button>
-                          <Icon type="upload" />点击上传
-                        </Button>
-                      </Upload>,
-                    )}
-                    </Form.Item>
-                    <Form.Item label="背景填充" >
-                    {getFieldDecorator('img2', {
-                        valuePropName: 'fileList',
-                        getValueFromEvent: normFile,
-                    })(
-                        <Upload {...Props2}>
-                        <Button>
-                          <Icon type="upload" />点击上传
-                        </Button>
-                      </Upload>,
-                    )}
-                    </Form.Item>
-                    <Form.Item label="选择颜色" >
-                    {getFieldDecorator('color', {
-                        valuePropName: 'color',
-                    })(
-                        <BlockPicker    onChange = {(values)=>{setColor(values.hex)}}  />
-                    )}
-                    </Form.Item>
-                </Form>
-                
-                <div className = "openPage-preview" style = {{backgroundColor:`${color}`}}></div>
-                </div>
-            </Modal>
-        </div>
-
-    if(!data.length) {
-        return (
-            <>
-                {emptyConent}
-                <Button onClick = {()=>{setData([1])}}>闭嘴</Button>
-            </>
-        )
-    }
-    else {
-        if(data&&data.length) {
-            return (<>{Content}</>) 
-        }
-        else  return (<>{emptyConent}</>) 
-
-    }
-}
-const WarpedInput = Form.create({ name: 'openPageInput' })(OpenPageContent);
-
-const OpenPage = ()=> {
-
-    const callback = (key)=> {
-        console.log(key);
-    }
-
-    return (
-        <div>
-            <div className = "title">开屏页</div>
-            <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
-                <TabPane tab="设置开屏页" key="1">
-                    {/* <OpenPageContent /> */}
-                    <WarpedInput />
-                </TabPane>
-            </Tabs>
-            <div className = "warn">还差一个首屏页的状态更改   还有具体的图片叠加效果(等ui图)</div>
-        </div>
+            </div>
+        </>
     )
 }
 

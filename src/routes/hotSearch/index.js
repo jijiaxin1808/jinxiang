@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
-import { Button, Tabs, Modal, Form, Input, Table, Divider, Radio} from "antd";
+import { Button, Tabs, Modal, Input, Table, Divider, Radio, Form } from "antd";
 import * as API from "../../config/api";
-
+import * as session from "../../utils/session";
 
 const { TabPane } = Tabs;
 
-const Add = (props)=> {
+const Add = ()=> {
 
-	const [visible, setVisible] = useState(false);
-	const [confirmLoading, setConfirmLoading] = useState(false);  
-	const [data, setData] = useState([]);
+	const [visible, setVisible] = useState(false); // modal是否可见
+	const [confirmLoading, setConfirmLoading] = useState(false);   //  modal确认按钮是否loading
+	const [data, setData] = useState([]);  //  表格使用的数据
 	const [addDisable, setAddDisbale] = useState(false);
-
-	const { getFieldDecorator, getFieldsValue } = props.form;
+    const [inputType, setInputType] = useState();
+    const [form] = Form.useForm();
 
     useEffect(()=>{
         const params = {
@@ -23,24 +23,21 @@ const Add = (props)=> {
         API.getAlltopSearch(params)
         .then(async res=> {
             if(res.data.code === 0) {
-            setData(res.data.data);
+                setData(res.data.data);
             }
         })
-    },[])
+    },[]) // 初始化
 	
 	useEffect(()=> {	
-		if(addDisable && data.length && data.filter(item => item.showed === true)) {
-			setAddDisbale(true);
+		if(!addDisable && data.length && data.filter(item => item.showed === true).length) {
+            setAddDisbale(true);
+            setVisible(false);
 		}
-		else if(!addDisable&&!data.filter(item => item.showed === true)) {
-		setAddDisbale(false);
+		else if(addDisable&&!data.filter(item => item.showed === true).length) {
+            setAddDisbale(false);
+            setVisible(false);
         }
-        
-
-// 1. 如果是可用状态 检测管不管
-// 2. 如果是不可用状态 检查开不开
-
-	},[data])
+	},[data]) //  控制上线按钮的状态
 
 
 	const deleteSearch = (id)=> {
@@ -53,7 +50,8 @@ const Add = (props)=> {
 				setData(newData);
 			}
 		})
-	}
+    }//  删除搜索
+    
 	const cancel = (id)=> {
 		const params = {
 			id: id,
@@ -74,21 +72,27 @@ const Add = (props)=> {
 	}
 
     const handleOk =async ()=> {
-		setConfirmLoading(true);
-		const {name, type} = getFieldsValue();
-		const newdata = {name, type, content:"书"}
-		await API.topSearchCreate(newdata).then(res=> {
-			if(res.data.code === 0) {
-				let newData = [...data]
-				newData.unshift(res.data.data);
-				setData(newData);
-				setVisible(false);
-				setConfirmLoading(false);
-			}
-		})
+        form.validateFields()
+        .then(values => {
+            setConfirmLoading(true);
+            const {name, type, content} = values;
+            const newdata = {name, type, content}
+            API.topSearchCreate(newdata)
+            .then(res=> {
+                if(res.data.code === 0) {
+                    let newData = [...data]
+                    newData.unshift({id:res.data.data,...newdata,showed:true});
+                    setData(newData);
+                    setVisible(false);
+                    setConfirmLoading(false);
+                }
+            })
+        })
     }
+
     const handleCancel = ()=> {
         setVisible(false);
+        setConfirmLoading(false);
     }
 
 	const columns = [
@@ -115,7 +119,6 @@ const Add = (props)=> {
 			dataIndex: 'type',
 			key:"e",
             render: (text, R) => text==="活动"?"":R.content
-
 		},
 		{
             title: '活动',
@@ -156,64 +159,79 @@ const Add = (props)=> {
             cancelText = "取消"
             >
                 <div>
-                <Form  >
-                    <Form.Item label="名称" >
-                    {getFieldDecorator('name', {
-						valuePropName: 'input',
-						rules: [{ required: true, message: '请输入热门搜索名称' }]
-                    })(
+                <Form form = {form}>
+                    <Form.Item label = "名称" name = "name" rules = {[{ required: true, message: '请输入热门搜索名称' }]} >
                        <Input placeholder = "请输入热门搜索名称" />
-                    )}
                     </Form.Item>
-					<Form.Item label="类型" >
-                    {getFieldDecorator('type', {
-						valuePropName: 'radio-button',
-						defaultValue: "keyWord"
-                    })(
-						<Radio.Group  buttonStyle="solid">
+					<Form.Item label="类型" name = "type">
+                        <Radio.Group  buttonStyle="solid" 
+                        onChange = {(e)=> {e.target.value==="活动"?setInputType(/^[0-9]\d*$/):setInputType("")}}
+                        >
 							<Radio.Button value="关键词" key = {1}>关键词</Radio.Button>
 							<Radio.Button value="活动" key = {2}>活动</Radio.Button>
 						</Radio.Group>
-                    )}
+                    </Form.Item>
+                    <Form.Item label = {inputType?"活动id":"关键词"} name = "content"
+                    rules = {[{ required: true, message: '请输入内容'}, 
+                    {pattern: inputType, message:"请输入数字ID"}]}>
+                       <Input placeholder = {inputType?"活动id":"关键词"} />
                     </Form.Item>
                 </Form>
                 </div>
             </Modal>
-			
             <Table columns={columns} dataSource={data} className = "hotSearch-table-add" />
         </div>
-    )
+    );
 }
 
 
 
 
-const WarppedAdd = Form.create()(Add);
-
 const Manage = ()=> {
 
 	const [goodsData, setGoodsData] = useState([]);
+    const [handleData, setHandleData] = useState([]);
 
 	useEffect(()=> {
+        const params = {
+            page: 1,
+            size: 10
+        }
 		API.getGooodstopSearch()
 		.then(res=> {
 			if(res.data.code === 0) {
 				setGoodsData(res.data.data);
 			}
-		})
+        })
+        API.getShowedTopSearch(params)
+        .then(res=> {
+            if(res.data.code === 0) {
+                setHandleData(res.data.data);
+            }
+        })
 	},[])
 
 	const userDelete = (id)=> {
 		API.deleteGoodsTopSearch({id})
 		.then(res=> {
 			if(res.data.code === 0) {
-				const newData = [...goodsData];
-				newData.filter(item=>item.id!==id);
+				const newData = [...goodsData].filter(item=>item.id!==id);
 				setGoodsData(newData);
 			}
 		})
-	}
+    }
 
+    const deleteSearch = (id)=> {
+		API.deletetopSearch({id})
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...handleData].filter(item=> {
+					return item.id!==id;
+				})
+				setHandleData(newData);
+			}
+		})
+	}
 
     const userColumns = [
         {
@@ -238,19 +256,12 @@ const Manage = ()=> {
             title: '操作',
             dataIndex: 'status',
             key: "handle",
-            render: text => <Button onClick = {()=>{userDelete(text)}}>下线</Button>,
+            render: (text, R) => <Button onClick = {()=>{userDelete(R.id)}}>下线</Button>,
         },
     ];
       
-
-    
+  
     const handleColumns = [
-        {
-          title: '状态',
-          dataIndex: 'status',
-          key: "status",
-          render: text => text?"当前":"历史",
-        },
         {
           title: '序号',
 		  dataIndex: 'id',
@@ -258,70 +269,35 @@ const Manage = ()=> {
           render: text => text
         },
         {
-          title: '配置人',
-		  dataIndex: 'name',
-		  key: "name",
-          render: text => text
-        },
-        {
           title: '显示范围',
-		  dataIndex: 'Aid',
+		  dataIndex: 'schoolName',
 		  key: "Aid",
           render: text => text
         },
         {
             title: '类型',
-			dataIndex: 'keyWord',
-			key: "keyWord",
+			dataIndex: 'type',
+			key: "type",
             render: text => text
         },
         {
             title: '活动id/关键词',
-			dataIndex: 'keyWord',
+			dataIndex: 'content',
 			key:"e",
             render: text => text
         },
         {
             title: '操作',
-            dataIndex: 'status',
+            dataIndex: 'id',
             key: "handle",
-            render: text => <Button>下线</Button>
+            render: text => <Button onClick = {()=>deleteSearch(text)}>下线</Button>
           },
       ];
-      
-      const handleData = [
-        {
-          id: '1',
-          status: true,
-          name: 32,
-          Aid: 'New York No. 1 Lake Park',
-          keyWord: 'nice'
-        },
-        {
-          id: '2',
-          status: false,
-          name: 42,
-          Aid: 'London No. 1 Lake Park',
-          keyWord: 'loser'
-        },
-        {
-          id: '3',
-          status: true,
-          name: 32,
-          Aid: 'Sidney No. 1 Lake Park',
-          keyWord: 'cool'
-        },
-      ];
-
-
-
-
     return (
         <div>
             <p className = "title-text">用户热门搜索</p>
             <div className = "hotSearch-div-userSearch">
-                <Table columns={userColumns} dataSource={goodsData} className = "hotSearch-table-userSearch" pagination = {false} />
-                <Table columns={userColumns} dataSource={goodsData} className = "hotSearch-table-userSearch" pagination = {false}/>
+                <Table columns={userColumns} dataSource = {goodsData}  pagination = {false} />
             </div>
             <p className = "title-text">配置热门搜索</p>
             <Table columns={handleColumns} dataSource={handleData}/>
@@ -333,26 +309,20 @@ const Manage = ()=> {
 
 
 const HotSearch = ()=> {
-
-    const callback = (key)=> {
-        console.log(key);
-    }
-
     return (
         <div>
             <div className = "title">热门搜索</div>
-            <Tabs defaultActiveKey="1" onChange={callback} style = {{minHeight:"400px"}}>
+            <Tabs defaultActiveKey="1"  style = {{minHeight:"400px"}}>
                 <TabPane tab="添加热门搜索" key="1">
-                    <WarppedAdd />
-					<div className = 'warn'>下线商品热搜接口有问题</div>
-					<div className = 'warn'>新增热搜的实时查询确认没有写</div>
-					<div className = 'warn'>商品热门搜索的数量不够</div>
-					<div className = 'warn'>全部热门搜索的接口</div>
-                    <div className = 'warn'>热门搜索的添加热门搜索  新增的默认状态为展示</div>
+                    <Add />
+                    {/* <div className = "warn">用户热门搜索删除后更新莫得</div> */}
                 </TabPane>
-                <TabPane tab="管理热门搜索" key="2">
-                    <Manage />
-                </TabPane>
+                {
+                    session.getLevelA()?
+                    <TabPane tab="管理热门搜索" key="2">
+                        <Manage />
+                    </TabPane>:""
+                }
             </Tabs>
         </div>
     )

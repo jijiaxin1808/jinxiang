@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./index.less";
 import * as API from "../../config/api";
-import { Tabs, Divider, Form, Input, Icon, Button, Table, Modal, Radio, message, Popconfirm } from "antd";
-
+import { Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Tabs, Divider, Input, Button, Table, Modal, Radio, message, Popconfirm, Form } from "antd";
+import emmiter from "../../utils/events";
+import * as session from "../../utils/session";
 
 const { TabPane } = Tabs;
 
@@ -13,25 +16,19 @@ const UserManage = (props)=> {
 	const [blockVisibly, setBlockVisibly] = useState(false);
 	const [blockTime, setBlockTime] = useState(0);
 	const [blockId, setBlockid] = useState();
-
-    const handleSubmit = e => {
-          e.preventDefault();
-          props.form.validateFields((err, values) => {
-            if (!err) {
-            //   console.log('Received values of form: ', values);
-            const params = {
-                page:1,
-                size:10,
-                name:values.username
-            }
-            API.searchUsers(params)
-            .then(res=> {
-                if(res.data.code === 0) {
-                    setData(res.data.data);
-                }
-            })
-            }
-          });
+	const [ form ] = Form.useForm();
+    const handleSubmit = values => {
+		const params = {
+			page:1,
+			size:10,
+			name:values.username
+		}
+		API.searchUsers(params)
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data);
+			}
+		})
 	}
 
 	const apply = async (id)=> {
@@ -39,6 +36,7 @@ const UserManage = (props)=> {
 			userId: id,
 			blockDays: 0
 		}
+
 		await API.blockUser(newdata)
 		.then(res=> {
 			if(res.data.code === 0) {
@@ -76,13 +74,12 @@ const UserManage = (props)=> {
 			onCancel={()=>{}}
 			okText= "确认"
 			cancelText="取消"
-		  >
-			<Button >申请</Button>
-		  </Popconfirm>,
+			>
+				<Button>申请</Button>
+			</Popconfirm>
 		},
-    ];
+	];
 	
-
     const handleBlockOk =async ()=> {
 		setBlockModelLoading(true);
 
@@ -90,24 +87,24 @@ const UserManage = (props)=> {
 			userId: blockId,
 			blockDays: blockTime
 		}
+
 		await API.blockUser(newdata)
 		.then(res=> {
 			if(res.data.code === 0) {
-
+				emmiter.emit("handleUsers")
 			}
 		})
+
 		setBlockVisibly(false);
 		setBlockModelLoading(false);
 		setBlockid();
-    }
+	}
+	
     const handleBlockCancel = ()=> {
 		setBlockVisibly(false);
 		setBlockid();
     }
 
-
-
-    const { getFieldDecorator } = props.form
     return (
         <div>
             <div className = "title-text">用户管理</div>
@@ -115,23 +112,18 @@ const UserManage = (props)=> {
             <Divider />
             <div className = "title-text">操作</div>
             <p>查找用户，然后对该用户进行操作。</p>
-            <Form layout="inline" onSubmit={handleSubmit}>
-              <Form.Item >
-                {getFieldDecorator('username', {
-                  rules: [{ required: true, message: '请输入用户名' }],
-                })(
-                  <Input
-                    prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                    placeholder="用户名"
-                    onChange = {()=>{setData()}}
-                  />,
-                )}
-              </Form.Item>
-              <Form.Item>
-                <Button type="primary" htmlType="submit">
-                    查找
-                </Button>
-              </Form.Item>
+            <Form layout="inline" onFinish ={handleSubmit} form = {form}>
+              	<Form.Item name = "username"
+			  		rules =  {[{ required: true, message: '请输入用户名'}]} >
+                  	<Input
+						prefix={<LegacyIcon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+						placeholder="用户名"
+						onChange = {()=>{setData()}}
+                  	/>
+              	</Form.Item>
+              	<Form.Item>
+                	<Button type="primary" htmlType="submit">查找</Button>
+              	</Form.Item>
             </Form>
 				<Modal
 					title="请选择封禁时长"
@@ -143,36 +135,45 @@ const UserManage = (props)=> {
 					okText = "确认"
 					cancelText = "取消"
 				>
-				 <Radio.Group defaultValue={3} size="large" onChange = {(value)=>{setBlockTime(value); message.success(value)}}>
-					<Radio.Button value={3}>3天</Radio.Button>
-					<Radio.Button value={7}>7天</Radio.Button>
-					<Radio.Button value={30}>30天</Radio.Button>
-				</Radio.Group>
-				</Modal>
+					<Radio.Group defaultValue={3} size="large" onChange = {(value)=>{setBlockTime(value); message.success(value)}}>
+						<Radio.Button value={3}>3天</Radio.Button>
+						<Radio.Button value={7}>7天</Radio.Button>
+						<Radio.Button value={30}>30天</Radio.Button>
+					</Radio.Group>
+					</Modal>
                 {data?<>{data.length?<Table columns = {columns} dataSource = {data} /> :<div>搜索的用户不存在</div>}</>:<></>}
         </div>
-    )
-	
+    );
 }
-const WarppedUserManage = Form.create()(UserManage);
 
 const BlcakList = ()=> {
-
+	const Pdata = {
+		page: 1,
+		size: 10
+	}
 	const [data, setData] = useState([]);
 
 	useEffect(()=> {
-		const Pdata = {
-			page: 1,
-			size: 10
-		} 
+		emmiter.addListener("handleUsers", Listen)
 		API.getBlockedList(Pdata)
 		.then(res=> {
 			if(res.data.code === 0) {
 				setData(res.data.data);
 			}
 		})
+		return function cleanUp(){
+			emmiter.removeListener("handleUsers", Listen);
+		}
 	},[])
-
+	
+	const Listen = ()=> {
+		API.getBlockedList(Pdata)
+		.then(res=> {
+			if(res.data.code === 0) {
+				setData(res.data.data);
+			}
+		})
+	}
 
     const columns = [
         {
@@ -198,15 +199,20 @@ const BlcakList = ()=> {
         {
           title: '操作',
           key: 'handle',
-          dataIndex: 'key',
+          dataIndex: 'id',
           render: text => <Button onClick = {()=>{cancel(text)}}>解除</Button>
         },
     ];
       
     const cancel = (id)=> {
-
+		API.removeBlock({userId: id})
+		.then(res=> {
+			if(res.data.code === 0) {
+				const newData = [...data].filter(item => item.id!==id);
+				setData(newData);
+			}
+		})
     }
-    
 
     return (
         <div>
@@ -214,24 +220,26 @@ const BlcakList = ()=> {
             <Table columns = {columns} dataSource = {data} />
         </div>
     )
- 
 }
 
 const Users = ()=> {
 
     return (
-        <div>
-            <div className = "title">用户管理</div>
-            <Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
-                <TabPane tab="用户管理" key="1">
-                    <WarppedUserManage />
-					<div className = "warn">还差一个封禁解除接口</div>
-                </TabPane>
-                <TabPane tab="黑名单" key="2">
-                    <BlcakList />
-                </TabPane>
-            </Tabs>
-        </div>
+        <>
+		<div className = "title">用户管理</div>
+		<Tabs defaultActiveKey="1" style = {{minHeight:"400px"}}>
+			<TabPane tab="用户管理" key="1">
+				<UserManage />
+			</TabPane>
+
+			{
+                    session.getLevelA()?
+					<TabPane tab="黑名单" key="2">
+					<BlcakList />
+					</TabPane>: ""
+                }
+		</Tabs>
+        </>
     )
 }
 

@@ -5,6 +5,10 @@
     "disableCSSModules":true,
     "theme": {
       "primary-color": "#f59a23"
+    },
+    "hash": true,
+    "html": {
+    "template": "./public/index.ejs"
     }
 }
 

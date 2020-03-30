@@ -115,7 +115,6 @@ export default class Carousels extends React.Component{
                     item.operate = item.showed?"下线":"上线";
                     item.delete = "删除"
                 })
-                Data.reverse();
                 this.setState({
                     dataSource: Data
                 })

@@ -5,6 +5,13 @@ import * as API from '../../../../config/api';
   
   const { Option } = Select;
 
+  let picc = {};
+
+  const setPicc = (P) =>{
+    picc = P;
+  }
+
+  
   class RegistrationForm extends React.Component {
     constructor(props){
         super(props);
@@ -17,19 +24,35 @@ import * as API from '../../../../config/api';
           };
     }
 
+    formRef = React.createRef();
+
+    // Pic = {
+    //   name: 'image',
+    //   action: 'http://blog.csxjh.vip:8000/images/upload',
+    //   headers: {
+    //     token: "86f3705005b940a0a21f4d948eb0d04f",
+    //   },
+    //   showUploadList : true,
+    //   onChange(info) {
+    //       if(info.file.status === "done" && info.file.response.code === 0) {
+    //         // this.data.MakePicture(info.file.response.data)      
+    //         console.log("info", info);
+    //       }
+    //     }
+    // }
+
     Pic = {
       name: 'image',
       action: 'http://blog.csxjh.vip:8000/images/upload',
       headers: {
         token: "86f3705005b940a0a21f4d948eb0d04f",
       },
-      showUploadList : true,
       onChange(info) {
           if(info.file.status === "done" && info.file.response.code === 0) {
-            this.data.MakePicture(info.file.response.data)      
+            setPicc(info.file.response.data);
           }
         }
-    }
+    };
     
     MakePicture = (Pic) =>{
       this.setState({
@@ -38,7 +61,8 @@ import * as API from '../../../../config/api';
     }
 
     handleSubmit = e => {
-      e.preventDefault();
+      this.MakePicture(picc);
+      console.log(this.state);
       let standard = true;
       if(this.state.Name === ''){
           message.error("请填写名称");
@@ -75,20 +99,6 @@ import * as API from '../../../../config/api';
         });
         this.handleReset();
       }
-      
-      this.props.form.validateFieldsAndScroll((err, values) => {
-        if (!err) {
-          
-        }
-      });
-    };
-    
-    handleReset = () => {
-        this.setState({
-            types: ''
-        })
-        this.props.form.resetFields();
-        this.props.handleCancel();
     };
 
       ChangeSelect(e){
@@ -101,73 +111,62 @@ import * as API from '../../../../config/api';
         }
     }
 
-    validateServiceName = (rule, value, callback) => {
+    validateServiceName = (e) => {
         this.setState({
-            Name: value
+            Name: e.target.value
         })
     }
     
-    validateServiceActivity = (rule, value, callback) =>{
+    validateServiceActivity = (e) =>{
         this.setState({
-          Activity: value
+          Activity: e.target.value
         })
     }
 
+    handleReset = () => {
+      this.formRef.current.resetFields();
+      this.props.handleCancel();
+    }
 
     render() {
-      const { getFieldDecorator } = this.props.form;
   
       return (
-        <Form onFinish={this.handleSubmit}>
-          <Form.Item label="名称">
-            {getFieldDecorator('Name', {
-              rules: [
+        <Form onFinish={this.handleSubmit} ref={this.formRef}>
+          <Form.Item name="Name" label="名称" rules={[
                 {
                   required: true,
                   message: '请输入名称',
-                },{
-                    validator: this.validateServiceName 
                 }
-              ],
-            })(<Input placeholder="请填写名称"/>)}
+              ]}>
+            <Input placeholder="请填写名称"  onChange={this.validateServiceName}/>
           </Form.Item>
 
-          <Form.Item label="类型">
-            {getFieldDecorator('Type', {
-              rules: [{ required: true, message: '请输入类型' }],
-            })(
+          <Form.Item name="Type" label="类型" rules={[{ required: true, message: '请输入类型' }]}>
               <Select placeholder="请输入类型" onChange={(value)=>this.ChangeSelect(value)}>
                   <Option value="activity">活动</Option>
                   <Option value="picture">图片</Option>
               </Select>
-            )}
           </Form.Item>
           
-          <Form.Item label="活动ID:" className={this.state.types==="activity"?'':'Hidden'}>
-            {getFieldDecorator('Activity:', {
-              rules: [
+          <Form.Item name="act" label="活动ID:" className={this.state.types==="activity"?'':'Hidden'} rules={[
                 {
                   required: this.state.types==="activity"?true:false,
                   message: '请输入活动ID:',
-                },{
-                    validator: this.validateServiceActivity
                 }
-              ],
-            })(<Input placeholder="请填写活动ＩＤ"/>)}
+              ]}>
+            <Input placeholder="请填写活动ＩＤ" onChange={this.validateServiceActivity}/>
           </Form.Item>
-          <Form.Item label="图片:" className={this.state.types==="picture"?'':'Hidden'}>
-            {getFieldDecorator('Picture:', {
-              rules: [
+          <Form.Item name="pic" label="图片:" className={this.state.types==="picture"?'':'Hidden'} rules={[
                 {
                   required: this.state.types==="picture"?true:false,
                   message: '请输入图片:',
                 }
-              ],
-            })(<Upload {...this.Pic} data={ {MakePicture: this.MakePicture}}>
+              ]}>
+            <Upload {...this.Pic}>
                     <Button>
                       <Icon type="upload" />上传图片
                     </Button>
-                </Upload>)}
+                </Upload>
           </Form.Item>
 
           <Form.Item>
@@ -182,29 +181,6 @@ import * as API from '../../../../config/api';
       );
     }
   }
-  
-  // const WrappedRegistrationForm = Form.create({ 
-  //     name: 'register',
-      
-  //     mapPropsToFields(props) {
-  //       return {
-  //         Name: Form.createFormField({
-  //           ...props.Name,
-  //           Name: props.Name,
-  //         }),
-  //         Type: Form.createFormField({
-            
-  //         }),
-  //         Activity: Form.createFormField({
-  //           ...props.Activity,
-  //           Type: props.Activity,
-  //         }),
-  //         Picture: Form.createFormField({
-  //           ...props.Picture,
-  //           Type: props.Picture,
-  //         }),
-  //     }}
-  //   })(RegistrationForm);
 
   export default RegistrationForm;
 

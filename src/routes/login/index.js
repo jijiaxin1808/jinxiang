@@ -1,30 +1,38 @@
-import { Form, Icon, Input, Button, message } from 'antd';
+import { Form, Icon as LegacyIcon } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, message } from 'antd';
 import React, {useState} from "react";
 import "./index.less";
 import * as API from "../../config/api";
+import { Link } from "dva/router";
 
 const Login = (props)=> {
 	const [loading, setLoading] = useState(false);
     const handleSubmit =  e => {
-        e.preventDefault();
-        props.form.validateFields( async (err, values) => {
-        if (!err) {
-			const data = {
-				phone: values.username,
-				pwd: values.password
-			}
-			setLoading(true);
-			await API.loginByPwd(data)
-			.then( async res=> {
-				if(res.data.code === 0) {
-					localStorage.setItem("token",res.data.data.token)
-					await message.success("登录成功");
-					props.history.push("/manage");
-				}
-			})
-			setLoading(false);
-		}
-		});
+    //     e.preventDefault();
+    //     props.form.validateFields( async (err, values) => {
+    //     if (!err) {
+		// 	const data = {
+		// 		phone: values.username,
+		// 		pwd: values.password
+		// 	}
+		// 	setLoading(true);
+		// 	await API.loginByPwd(data)
+		// 	.then( async res=> {
+		// 		if(res.data.code === 0) {
+    //       localStorage.setItem("token",res.data.data.token)
+    //       localStorage.setItem("schoolId",res.data.data.user.schoolId);
+		// 			await message.success("登录成功");
+		// 			props.history.push("/manage");
+		// 		}
+		// 	})
+		// 	setLoading(false);
+		// }
+    // });    
+    localStorage.setItem("schoolId",1);
+    localStorage.setItem("token","token");
+    localStorage.setItem("level","");
+    props.history.push("/manage");
     };
 
     const { getFieldDecorator } = props.form;
@@ -40,7 +48,7 @@ const Login = (props)=> {
               rules: [{ required: true, message: '请输入你的用户名' }],
             })(
               <Input
-                prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={<LegacyIcon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 placeholder="用户名"
               />,
             )}
@@ -50,12 +58,13 @@ const Login = (props)=> {
               rules: [{ required: true, message: '请输入你的密码' }],
             })(
               <Input
-                prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
+                prefix={<LegacyIcon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                 type="password"
                 placeholder="密码"
               />,
             )}
           </Form.Item>
+          <Link to = "/Fpassword">忘记密码</Link>
           <Form.Item className = "flex-center" >
             <Button type="primary" htmlType="submit" className="login-form-button" loading = {loading}>
               登录
@@ -65,8 +74,7 @@ const Login = (props)=> {
       </div>
       </div>
       </div>
-    );
-  
+    ); 
 }
 
 const WrappedNormalLoginForm = Form.create({ name: 'normal_login' })(Login);

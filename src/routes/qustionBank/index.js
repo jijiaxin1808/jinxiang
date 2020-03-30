@@ -1,58 +1,61 @@
 import　React, { useEffect, useState } from "react";
-import { Button, Table, message, Modal, Form, Input } from "antd";
+import '@ant-design/compatible/assets/index.css';
+import { Button, Table, Modal, Input, Form } from "antd";
 import * as API from "../../config/api";
+
 const QustionBank = (props)=> {
 
     const [modalLoading, setModalLoading] = useState(false);
     const [modalVisible, setMoadlVisible] = useState(false);
-    const { getFieldDecorator, validateFields } = props.form;
     const [data, setData] = useState();
-
+    const [ form ] = Form.useForm();
     const handleOk = ()=> {
         setModalLoading(true);
-        validateFields((err, values)=> {
-            if(err) {
-                setModalLoading(false);
+        form.validateFields()
+        .then(values=> {
+            const {A1, A2, A3, A4} = values;
+            const Qdata = {
+                question: values.question,
+                option: `${A1}#${A2}#${A3}#${A4}`
             }
-            else {
-                const {A1, A2, A3, A4} = values;
-                const Qdata = {
-                    question: values.question,
-                    option: `${A1}#${A2}#${A3}#${A4}`
+            API.createQuestion(Qdata)
+            .then(res=> {
+                if(res.data.code === 0) {
+                    const newData = [...data];
+                    newData.unshift({...Qdata,id:res.data.data.id})
+                    setData(newData);
+                    setModalLoading(false);
+                    setMoadlVisible(false);
                 }
-                API.createQuestion(Qdata)
-                .then(res=> {
-                    if(res.data.code === 0) {
-                        const newData = [...data];
-                        newData.unshift(Qdata)
-                        setData(newData);
-                        setModalLoading(false);
-                        setMoadlVisible(false);
-                    }
-                })
-            }
+            })
         })
     }
     const handleCancel = ()=> {
         setMoadlVisible(false);
+        setModalLoading(false);
     }
-
 
     useEffect(()=> {
         const params = {
             page: 1,
-            size:10
+            size:10,
+            schoolId:localStorage.getItem("schoolId")
         }
         API.questionBySchool(params)
         .then(res => {
             if(res.data.code === 0) {
-                // message.success("获取成功")
                 setData(res.data.data)
             }
         })
     },[])
 
     const columns = [
+        {
+        title: 'id',
+        dataIndex: 'id',
+        key: 'id',
+        render: text => text
+        },
       {
         title: '问题',
         dataIndex: 'question',
@@ -83,10 +86,23 @@ const QustionBank = (props)=> {
         dataIndex: "option",
         render: text => text.split("#")[3]
       },
+      {
+        title: '操作',
+        key: 'delete',
+        dataIndex: "id",
+        render: text => <Button onClick = {()=> {deleteQuestion(text)}}>删除</Button>
+      },
     ];
-    
+    const deleteQuestion = (id)=> {
+        API.deleteQuestion({id})
+        .then(res=> {
+            if(res.data.code === 0) {
+                const newData = [...data].filter(item=> item.id!==id);
+                setData(newData);
+            }
+        })
+    }
 
-    
     return (
         <div>
             <div className = "title">题库管理</div>
@@ -94,63 +110,43 @@ const QustionBank = (props)=> {
             <p style = {{display: "inline-block", marginRight: 700}}>为您的学校设置题库，以确保您的用户均为本校学生。</p>
             <Button onClick = {()=> {setMoadlVisible(true)}} type = "primary">新增</Button>
             <Modal
-					title="请选择封禁时长"
-					visible={modalVisible}
-					confirmLoading={modalLoading}
-					onOk={handleOk}
-					onCancel={handleCancel}
-					className = "openPage-modal"
-					okText = "确认"
-					cancelText = "取消"
-				>
-
+            title="新增题目"
+            visible={modalVisible}
+            confirmLoading={modalLoading}
+            onOk={handleOk}
+            onCancel={handleCancel}
+            className = "openPage-modal"
+            okText = "确认"
+            cancelText = "取消"
+			>
             <>
-                <Form  >
-                    <Form.Item>
-                    {getFieldDecorator('question', {
-                        rules: [{ required: true, message: '请输入问题' }],
-                    })(
+                <Form  form = {form}>
+                    <Form.Item name = "question" label = "问题" 
+                    rules = {[{ required: true, message: '请输入问题' },{max:20,message:"超过字数限制"}]}>
                         <Input placeholder="问题"/>
-                    )}
                     </Form.Item>
-                    <Form.Item>
-                    {getFieldDecorator("A1", {
-                        rules: [{ required: true, message: '请输入回答1' }],
-                    })(
+                    <Form.Item name = "A1"  label = "正确选项"
+                    rules = {[{ required: true, message: '正确选项' },{max:20,message:"超过字数限制"}]}>
                         <Input placeholder="正确选项"/>
-                    )}
                     </Form.Item>
-                    <Form.Item>
-                    {getFieldDecorator("A2", {
-                        rules: [{ required: true, message: '请输入回答2' }],
-                    })(
+                    <Form.Item name = "A2" label = "错误选项1"
+                    rules = {[{ required: true, message: '错误选项1' },{max:20,message:"超过字数限制"}]}>
                         <Input placeholder="错误选项1"/>
-                    )}
                     </Form.Item>
-                    <Form.Item>
-                    {getFieldDecorator("A3", {
-                        rules: [{ required: true, message: '请输入回答3' }],
-                    })(
+                    <Form.Item name = "A3" label = "错误选项2"
+                    rules = {[{ required: true, message: '错误选项2' },{max:20,message:"超过字数限制"}]}>
                         <Input placeholder="错误选项2"/>
-                    )}
                     </Form.Item>
-                    <Form.Item>
-                    {getFieldDecorator("A4", {
-                        rules: [{ required: true, message: '请输入回答4' }],
-                    })(
+                    <Form.Item name = "A4" label = "错误选项3"
+                    rules = {[{ required: true, message: '错误选项3' },{max:20,message:"超过字数限制"}]}>
                         <Input placeholder="错误选项3"/>
-                    )}
                     </Form.Item>
                 </Form>
                 </>
 			</Modal>
             <Table columns={columns} dataSource={data} style = {{marginTop: 20}} />
-            <div className = "warn">额  暂时没发现bug</div>
-            <div className = "warn">新增modal标题错误</div>
-            <div className = "warn">莫得删除按钮</div>
-            <div className = "warn">额 字数上限</div>
         </div>
     )
 }
 
-export default Form.create()(QustionBank);
+export default QustionBank;

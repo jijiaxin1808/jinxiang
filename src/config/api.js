@@ -15,7 +15,7 @@ export function topSearchCreate(data) {
     return Axios(url, data, "POST");
 }
 export function getAlltopSearch(params) {
-    const url = "topSearchs/listAll"
+    const url = "topSearchs/listBySchoolId"
     return Axios(spliceUrl(url, params));
 }
 export function deletetopSearch(params) {
@@ -66,7 +66,7 @@ export function createQuestion(data) {
 }
 
 export function getAllActivity(params) {
-    const url = "activities/listAll";
+    const url = "activities/listBySchoolId";
     return Axios(spliceUrl(url, params));
 }
 export function deleteActive(params) {
@@ -98,4 +98,80 @@ export function deleteCarousels(params) {
 export function listFgCarousels(params) {
     const url = "carousels/listFg";
     return Axios(spliceUrl(url, params));
+}
+export function createActive(data) {
+    const url = "activities/create";
+    return Axios(url, data, "POST");
+}
+export function removeBlock(data) {
+    const url = "admins/removeBlock";
+    return Axios(url, data, "PUT");
+}
+export function deleteQuestion(params) {
+    const url = "questionBanks/delete";
+    return Axios(spliceUrl(url, params), {}, "DELETE")
+}
+export function getAllLabelCategories() {
+    const url = "labelCategories/listAll";
+    return Axios(url);
+}
+export function getALlCategories() {
+    const url = "categories/listAll";
+    return Axios(url);
+}
+export function getAllmainCategories() {
+    const url = "mainCategories/listAll";
+    return Axios(url);
+}
+export function getCategoriesFirst() {
+    const url = "categories/listFirst";
+    return Axios(url);
+};
+export function createCategories(data) {
+    const url = "categories/create";
+    return Axios(url, data, "POST")
+}
+export function getShowedTopSearch(params) {
+    const url = "topSearchs/listByShowed";
+    return Axios(spliceUrl(url,params))
+}
+export function updateCategories(data) {
+    const url = "categories/update";
+    return Axios(url, data, "PUT");
+}
+export function createLabelCategories(data) {
+    const url = "labelCategories/create";
+    return Axios(url, data, "POST");
+}
+export function deleteLabelCategories(params) {
+    const url = "labelCategories/delete";
+    return Axios(spliceUrl(url, params), {}, "DELETE");
+}
+export function updateOpenPage(data) {
+    const url = "bootPages/updateShowed";
+    return Axios(url, data, "PUT");
+}
+export function updateMainSort(data) {
+    const url = "mainCategories/update";
+    return Axios(url,data,"PUT");
+}
+export function createMainCategories(data) {
+    const url = "mainCategories/create";
+    return Axios(url,data,"POST");
+}
+export function deleteMainCategories(params) {
+    const url = "mainCategories/delete";
+    return Axios(spliceUrl(url, params), {}, "DELETE")
+}
+export function sendUsersSms(params) {
+    const url = "users/smsSend";
+    return Axios(spliceUrl(url, params));
+}
+export function updatePwd(data) {
+    const url = "admins/updatePwd";
+    return Axios(url, data, "PUT");
+}
+export function getAllOffical(params) {
+    const url = "admins/listOfficial";
+    return Axios(spliceUrl(url, params))
 }

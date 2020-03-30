@@ -4,10 +4,9 @@
 /node_modules
 
 # production
-# /dist
+/dist
 
 # misc
 .DS_Store
-npm-debug.log*
-
+npm-debug.log
 .now
