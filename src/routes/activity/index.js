@@ -415,7 +415,7 @@ const Activity = ()=> {
                 <TabPane tab="添加活动" key="1">
                     <WarppedAdd />
                 </TabPane>
-                <TabPane tab="管理活动" key="2">
+                <TabPane tab="管理活动jjx" key="2">
                     <WarppedManage />
                 </TabPane>
             </Tabs>
